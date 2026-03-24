@@ -9,10 +9,19 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://bespoke-sable-f314da.netlify.app'
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://bespoke-sable-f314da.netlify.app'
+    ];
+    if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.options('*', cors());
