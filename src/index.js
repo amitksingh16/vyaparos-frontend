@@ -53,6 +53,14 @@ const startServer = async () => {
     try {
         const { sequelize } = require('./config/db');
         
+        // Ensure connection is established
+        await sequelize.authenticate();
+        console.log('[DB] Connection established successfully.');
+        
+        // Force table alteration/creation temporarily for deployment
+        console.log('[DB] Syncing models to database...');
+        await sequelize.sync({ alter: true });
+        
         // Deep Database Sync: Cleanup orphaned staff_client_assignments
         console.log('[SYNC] Cleaning up orphaned client assignments...');
         await sequelize.query(`
