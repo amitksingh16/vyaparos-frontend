@@ -11,18 +11,17 @@ try {
     // If running server-side without a JSON file, provide credentials via ENV:
     // GOOGLE_APPLICATION_CREDENTIALS="/path/to/key.json"
     
-    // Alternatively, for dev fallback:
-    const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+    const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
     
-    if (serviceAccountPath) {
-        const serviceAccount = require(serviceAccountPath);
+    if (serviceAccountJson) {
+        const serviceAccount = JSON.parse(serviceAccountJson);
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount)
         });
         initialized = true;
-        console.log('[FIREBASE] Admin SDK Initialized Successfully');
+        console.log('[FIREBASE] Admin SDK Initialized Successfully from ENV');
     } else {
-        console.warn('[FIREBASE] Admin SDK requires FIREBASE_SERVICE_ACCOUNT_PATH in .env for full verification.');
+        console.warn('[FIREBASE] Admin SDK requires FIREBASE_SERVICE_ACCOUNT json string in .env');
     }
 } catch (e) {
     console.error('[FIREBASE] Admin SDK Init Error:', e.message);

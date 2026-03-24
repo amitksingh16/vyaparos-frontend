@@ -40,7 +40,7 @@ const cron = require('node-cron');
 const { runDailyReminders } = require('./utils/reminderEngine');
 
 app.get('/', (req, res) => {
-    res.send('VyaparOS API is running');
+    res.send('Backend is Alive');
 });
 
 // Intelligent Reminder System: Run daily at midnight
