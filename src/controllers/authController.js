@@ -9,8 +9,8 @@ const register = async (req, res) => {
     try {
         const { email, name, role, phone, idToken } = req.body;
 
-        if (!email || !idToken) {
-            return res.status(400).json({ message: 'Email and Firebase ID Token are required' });
+        if (!email || !idToken || !phone) {
+            return res.status(400).json({ message: 'Email, Phone Number, and Firebase ID Token are required' });
         }
 
         let decodedToken;

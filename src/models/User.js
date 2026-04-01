@@ -9,7 +9,7 @@ const User = sequelize.define('User', {
     },
     phone: {
         type: DataTypes.STRING(15),
-        allowNull: true,
+        allowNull: false,
     },
     firebase_uid: {
         type: DataTypes.STRING(255),
