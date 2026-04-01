@@ -7,33 +7,54 @@ const { verifyIdToken } = require('../config/firebase');
 // @access  Public
 const register = async (req, res) => {
     try {
-        const { phone, email, name, role } = req.body;
+        const { email, name, role, phone, idToken } = req.body;
 
-        if (!phone) {
-            return res.status(400).json({ message: 'Phone number is required' });
+        if (!email || !idToken) {
+            return res.status(400).json({ message: 'Email and Firebase ID Token are required' });
         }
 
-        const userExists = await User.findOne({ where: { phone } });
+        let decodedToken;
+        try {
+            decodedToken = await verifyIdToken(idToken);
+        } catch (e) {
+            return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
+        }
+
+        const firebase_uid = decodedToken.uid;
+
+        const userExists = await User.findOne({ where: { email } });
         if (userExists) {
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: 'User already exists with this email' });
         }
 
-        // Create user (unverified)
+        // Create user (verified)
         const user = await User.create({
             phone,
             email,
             name,
             role: role || 'owner',
-            is_verified: false,
+            firebase_uid,
+            is_verified: true,
+            setup_completed: true,
         });
 
+        const token = generateToken(user.id, user.role);
+
         res.status(201).json({
-            message: 'User registered. Proceed with Firebase OTP verification.',
-            userId: user.id,
+            message: 'User registered successfully.',
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                is_verified: user.is_verified,
+                setup_completed: user.setup_completed,
+            }
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Registration Error:', error);
+        res.status(500).json({ message: 'Server error during registration' });
     }
 };
 
@@ -42,76 +63,37 @@ const register = async (req, res) => {
 // @access  Public
 const login = async (req, res) => {
     try {
-        const { phone } = req.body;
+        const { idToken } = req.body;
 
-        if (!phone) {
-            return res.status(400).json({ message: 'Phone number is required' });
+        if (!idToken) {
+            return res.status(400).json({ message: 'Firebase ID Token is required' });
         }
 
-        const user = await User.findOne({ where: { phone } });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found. Please register first.' });
+        let decodedToken;
+        try {
+            decodedToken = await verifyIdToken(idToken);
+        } catch (e) {
+            return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
         }
 
-        // Frontend will now trigger Firebase Phone Auth directly
-        res.status(200).json({ message: 'User recognized. Trigger Firebase OTP.' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
+        const firebase_uid = decodedToken.uid;
+        const email = decodedToken.email;
 
-// @desc    Verify OTP and return Token
-// @route   POST /api/auth/verify-otp
-// @access  Public
-const verifyOtp = async (req, res) => {
-    try {
-        const { phone, otp, idToken } = req.body;
+        let user = await User.findOne({ where: { firebase_uid } });
 
-        if (!phone) {
-            return res.status(400).json({ message: 'Phone is required' });
-        }
-
-        let decodedToken = null;
-        if (idToken) {
-            // Live Firebase Validation
-            try {
-                decodedToken = await verifyIdToken(idToken);
-                // We rely on Firebase ensuring this phone number owns the token
-            } catch (e) {
-                console.error('Firebase Token Verification Failed:', e.message);
-                if (idToken !== 'mock_token_123') {
-                    return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
-                }
-            }
-        } else if (otp === '123456') {
-            // Temporary backward-compatibility loop for local environments lacking credentials
-            console.warn('[AUTH] Bypassing Firebase with mock OTP for development.');
-        } else {
-            return res.status(400).json({ message: 'Provide exactly one of: Firebase idToken or test OTP' });
-        }
-
-        let user = null;
-        const firebase_uid = decodedToken ? decodedToken.uid : null;
-
-        if (firebase_uid) {
-            user = await User.findOne({ where: { firebase_uid } });
-        }
-
-        if (!user && phone) {
-            user = await User.findOne({ where: { phone } });
-            if (user && firebase_uid) {
-                // Bridge the identity immediately
+        if (!user && email) {
+            // Fallback to email if firebase_uid doesn't match (for migration)
+            user = await User.findOne({ where: { email } });
+            if (user && !user.firebase_uid) {
                 user.firebase_uid = firebase_uid;
                 await user.save();
             }
         }
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User not found. Please register first.' });
         }
 
-        // Mark verified
         if (!user.is_verified) {
             user.is_verified = true;
             await user.save();
@@ -128,7 +110,6 @@ const verifyOtp = async (req, res) => {
             console.error('Failed to log login activity:', err);
         }
 
-        // Generate Token
         const token = generateToken(user.id, user.role);
 
         res.status(200).json({
@@ -144,8 +125,8 @@ const verifyOtp = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Login Error:', error);
+        res.status(500).json({ message: 'Server error during login' });
     }
 };
 
@@ -258,7 +239,6 @@ const mockStaffLogin = async (req, res) => {
 module.exports = {
     register,
     login,
-    verifyOtp,
     getProfile,
     staffSetup,
     mockStaffLogin

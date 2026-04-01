@@ -34,10 +34,10 @@ const validateInvitation = async (req, res) => {
     }
 };
 
-const acceptInvitation = async (req, res) => {
+    const acceptInvitation = async (req, res) => {
     try {
         const { token } = req.params;
-        const { name, idToken, phone } = req.body;
+        const { name, idToken, email } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: 'Name is required' });
@@ -69,15 +69,15 @@ const acceptInvitation = async (req, res) => {
             }
         }
 
-        const authPhone = phone || invitation.phone;
-        const existingUser = await User.findOne({ where: { phone: authPhone } });
+        const authEmail = email || invitation.email;
+        const existingUser = await User.findOne({ where: { email: authEmail } });
         if (existingUser) {
-            return res.status(400).json({ message: 'An account with this phone already exists' });
+            return res.status(400).json({ message: 'An account with this email already exists' });
         }
 
         const newUser = await User.create({
             name,
-            email: invitation.email,
+            email: authEmail,
             phone: invitation.phone,
             firebase_uid: decodedToken ? decodedToken.uid : null,
             role: invitation.role,

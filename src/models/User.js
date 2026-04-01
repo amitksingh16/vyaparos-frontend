@@ -10,7 +10,6 @@ const User = sequelize.define('User', {
     phone: {
         type: DataTypes.STRING(15),
         allowNull: true,
-        unique: true,
     },
     firebase_uid: {
         type: DataTypes.STRING(255),
@@ -20,6 +19,7 @@ const User = sequelize.define('User', {
     email: {
         type: DataTypes.STRING(255),
         allowNull: true,
+        unique: true,
     },
     name: {
         type: DataTypes.STRING(255),
