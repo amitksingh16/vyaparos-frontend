@@ -8,7 +8,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: 'https://bespoke-sable-f314da.netlify.app', credentials: true }));
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
+app.options('*', cors());
 app.use(express.json());
 
 const authRoutes = require('./routes/authRoutes');
@@ -36,7 +40,7 @@ const cron = require('node-cron');
 const { runDailyReminders } = require('./utils/reminderEngine');
 
 app.get('/', (req, res) => {
-    res.send('VyaparOS API is running');
+    res.send('Backend is Alive');
 });
 
 // Intelligent Reminder System: Run daily at midnight
@@ -48,6 +52,14 @@ cron.schedule('0 0 * * *', async () => {
 const startServer = async () => {
     try {
         const { sequelize } = require('./config/db');
+        
+        // Ensure connection is established
+        await sequelize.authenticate();
+        console.log('[DB] Connection established successfully.');
+        
+        // Force table alteration/creation temporarily for deployment
+        console.log('[DB] Syncing models to database...');
+        await sequelize.sync({ alter: true });
         
         // Deep Database Sync: Cleanup orphaned staff_client_assignments
         console.log('[SYNC] Cleaning up orphaned client assignments...');
