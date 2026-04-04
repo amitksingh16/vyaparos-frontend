@@ -39,6 +39,72 @@ app.use('/api/actions', actionRoutes);
 const cron = require('node-cron');
 const { runDailyReminders } = require('./utils/reminderEngine');
 
+// ── TEMPORARY ADMIN CLEANUP ENDPOINT ─────────────────────────────────────────
+// DELETE after use. Protected by secret key.
+app.delete('/api/_admin/clean-test-user', async (req, res) => {
+    const SECRET = 'vyaparos-dev-cleanup-2026';
+    if (req.headers['x-admin-secret'] !== SECRET) {
+        return res.status(403).json({ message: 'Forbidden' });
+    }
+    try {
+        const { sequelize } = require('./config/db');
+        const TARGET_EMAIL = 'singh.amitk82@gmail.com';
+        const TARGET_PHONE = '9554140800';
+
+        const [users] = await sequelize.query(
+            `SELECT id, name, email, phone, role FROM users WHERE email = ? OR phone = ?`,
+            { replacements: [TARGET_EMAIL, TARGET_PHONE] }
+        );
+
+        if (users.length === 0) {
+            return res.json({ message: 'No matching user found. Already clean.' });
+        }
+
+        const userIds = users.map(u => u.id);
+        const placeholders = userIds.map(() => '?').join(', ');
+
+        const [businesses] = await sequelize.query(
+            `SELECT id FROM businesses WHERE owner_id IN (${placeholders})`,
+            { replacements: userIds }
+        );
+        const businessIds = businesses.map(b => b.id);
+
+        if (businessIds.length > 0) {
+            const bPlaceholders = businessIds.map(() => '?').join(', ');
+            await sequelize.query(`DELETE FROM notification_logs WHERE business_id IN (${bPlaceholders})`, { replacements: businessIds });
+            await sequelize.query(`DELETE FROM compliance_items WHERE business_id IN (${bPlaceholders})`, { replacements: businessIds });
+            await sequelize.query(`DELETE FROM documents WHERE business_id IN (${bPlaceholders})`, { replacements: businessIds });
+            await sequelize.query(`DELETE FROM ca_clients WHERE business_id IN (${bPlaceholders})`, { replacements: businessIds });
+            await sequelize.query(`DELETE FROM staff_client_assignments WHERE business_id IN (${bPlaceholders})`, { replacements: businessIds });
+            await sequelize.query(`DELETE FROM client_metas WHERE business_id IN (${bPlaceholders})`, { replacements: businessIds });
+            await sequelize.query(`DELETE FROM activity_logs WHERE client_id IN (${bPlaceholders})`, { replacements: businessIds });
+            await sequelize.query(`DELETE FROM businesses WHERE id IN (${bPlaceholders})`, { replacements: businessIds });
+        }
+
+        await sequelize.query(`DELETE FROM reminders WHERE user_id IN (${placeholders})`, { replacements: userIds });
+        await sequelize.query(`DELETE FROM activity_logs WHERE performed_by IN (${placeholders})`, { replacements: userIds });
+        await sequelize.query(`DELETE FROM notifications WHERE user_id IN (${placeholders})`, { replacements: userIds });
+        await sequelize.query(`DELETE FROM invitations WHERE ca_id IN (${placeholders})`, { replacements: userIds });
+        await sequelize.query(`DELETE FROM ca_clients WHERE ca_id IN (${placeholders})`, { replacements: userIds });
+        await sequelize.query(`DELETE FROM staff_client_assignments WHERE staff_id IN (${placeholders})`, { replacements: userIds });
+        await sequelize.query(`DELETE FROM documents WHERE uploaded_by IN (${placeholders})`, { replacements: userIds });
+        await sequelize.query(`DELETE FROM users WHERE parent_ca_id IN (${placeholders})`, { replacements: userIds });
+        await sequelize.query(`DELETE FROM users WHERE id IN (${placeholders})`, { replacements: userIds });
+
+        return res.json({
+            message: `✅ Cleaned up ${users.length} user(s)`,
+            deleted_users: users.map(u => ({ id: u.id, email: u.email, phone: u.phone, role: u.role })),
+            deleted_businesses: businessIds
+        });
+    } catch (err) {
+        console.error('[CLEANUP] Error:', err);
+        return res.status(500).json({ message: 'Cleanup failed', error: err.message });
+    }
+});
+// ── END TEMPORARY ENDPOINT ────────────────────────────────────────────────────
+
+
+
 app.get('/', (req, res) => {
     res.send('Backend is Alive');
 });

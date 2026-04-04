@@ -1,5 +1,5 @@
 const { User, ActivityLog } = require('../models');
-const { verifyIdToken } = require('../config/firebase');
+const { admin } = require('../config/firebase');
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -7,17 +7,24 @@ const { verifyIdToken } = require('../config/firebase');
 const register = async (req, res) => {
     try {
         const { email, name, role, phone } = req.body;
-        const idToken = req.headers.authorization?.split(" ")[1];
+        const token = req.headers.authorization?.split(" ")[1];
 
-        if (!email || !idToken || !phone) {
-            return res.status(400).json({ message: 'Email, Phone Number, and Firebase ID Token are required' });
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided' });
         }
+
+        console.log("RECEIVED TOKEN:", token);
 
         let decodedToken;
         try {
-            decodedToken = await verifyIdToken(idToken);
+            decodedToken = await admin.auth().verifyIdToken(token);
+            console.log("DECODED TOKEN:", decodedToken);
         } catch (e) {
-            return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
+            return res.status(401).json({ message: 'Invalid Firebase token' });
+        }
+
+        if (!email || !phone) {
+            return res.status(400).json({ message: 'Email and Phone Number are required' });
         }
 
         const firebase_uid = decodedToken.uid;
@@ -35,7 +42,7 @@ const register = async (req, res) => {
             role: role || 'owner',
             firebase_uid,
             is_verified: true,
-            setup_completed: true,
+            setup_completed: false,
         });
 
         res.status(201).json({
@@ -60,17 +67,20 @@ const register = async (req, res) => {
 // @access  Public
 const login = async (req, res) => {
     try {
-        const idToken = req.headers.authorization?.split(" ")[1];
+        const token = req.headers.authorization?.split(" ")[1];
 
-        if (!idToken) {
-            return res.status(400).json({ message: 'Firebase ID Token is required' });
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided' });
         }
+
+        console.log("RECEIVED TOKEN:", token);
 
         let decodedToken;
         try {
-            decodedToken = await verifyIdToken(idToken);
+            decodedToken = await admin.auth().verifyIdToken(token);
+            console.log("DECODED TOKEN:", decodedToken);
         } catch (e) {
-            return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
+            return res.status(401).json({ message: 'Invalid Firebase token' });
         }
 
         const firebase_uid = decodedToken.uid;
