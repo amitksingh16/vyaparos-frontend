@@ -1,23 +1,33 @@
 const { User, ActivityLog } = require('../models');
-const { generateToken } = require('../utils/jwtService');
-const { verifyIdToken } = require('../config/firebase');
+const { admin } = require('../config/firebase');
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
 const register = async (req, res) => {
     try {
-        const { email, name, role, phone, idToken } = req.body;
+        const { email, name, role, phone } = req.body;
+        const token = req.headers.authorization?.split(" ")[1];
 
-        if (!email || !idToken || !phone) {
-            return res.status(400).json({ message: 'Email, Phone Number, and Firebase ID Token are required' });
+        if (!token) {
+            console.log('[REGISTER] No token. Header:', req.headers.authorization);
+            return res.status(401).json({ message: 'No token provided' });
         }
+
+        console.log('[REGISTER] AUTH HEADER:', req.headers.authorization);
+        console.log('[REGISTER] TOKEN:', token?.substring(0, 30) + '...');
 
         let decodedToken;
         try {
-            decodedToken = await verifyIdToken(idToken);
+            decodedToken = await admin.auth().verifyIdToken(token);
+            console.log('[REGISTER] DECODED:', { uid: decodedToken.uid, email: decodedToken.email });
         } catch (e) {
-            return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
+            console.error('[REGISTER] VERIFY ERROR:', e.message);
+            return res.status(401).json({ message: 'Invalid Firebase token' });
+        }
+
+        if (!email || !phone) {
+            return res.status(400).json({ message: 'Email and Phone Number are required' });
         }
 
         const firebase_uid = decodedToken.uid;
@@ -35,14 +45,11 @@ const register = async (req, res) => {
             role: role || 'owner',
             firebase_uid,
             is_verified: true,
-            setup_completed: true,
+            setup_completed: false,
         });
-
-        const token = generateToken(user.id, user.role);
 
         res.status(201).json({
             message: 'User registered successfully.',
-            token,
             user: {
                 id: user.id,
                 name: user.name,
@@ -63,17 +70,23 @@ const register = async (req, res) => {
 // @access  Public
 const login = async (req, res) => {
     try {
-        const { idToken } = req.body;
+        const token = req.headers.authorization?.split(" ")[1];
 
-        if (!idToken) {
-            return res.status(400).json({ message: 'Firebase ID Token is required' });
+        if (!token) {
+            console.log('[LOGIN] No token. Header:', req.headers.authorization);
+            return res.status(401).json({ message: 'No token provided' });
         }
+
+        console.log('[LOGIN] AUTH HEADER:', req.headers.authorization);
+        console.log('[LOGIN] TOKEN:', token?.substring(0, 30) + '...');
 
         let decodedToken;
         try {
-            decodedToken = await verifyIdToken(idToken);
+            decodedToken = await admin.auth().verifyIdToken(token);
+            console.log('[LOGIN] DECODED:', { uid: decodedToken.uid, email: decodedToken.email });
         } catch (e) {
-            return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
+            console.error('[LOGIN] VERIFY ERROR:', e.message);
+            return res.status(401).json({ message: 'Invalid Firebase token' });
         }
 
         const firebase_uid = decodedToken.uid;
@@ -110,11 +123,8 @@ const login = async (req, res) => {
             console.error('Failed to log login activity:', err);
         }
 
-        const token = generateToken(user.id, user.role);
-
         res.status(200).json({
             message: 'Login successful',
-            token,
             user: {
                 id: user.id,
                 name: user.name,
@@ -177,11 +187,8 @@ const staffSetup = async (req, res) => {
 
         await user.save();
 
-        const jwtToken = generateToken(user.id, user.role);
-
         res.status(200).json({
             message: 'Staff account setup successfully',
-            token: jwtToken,
             user: {
                 id: user.id,
                 name: user.name,
