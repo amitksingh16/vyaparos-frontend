@@ -1,4 +1,4 @@
-const { admin: firebaseAdmin, isInitialized } = require('../config/firebase');
+const admin = require('../config/firebaseAdmin');
 const { User } = require('../models');
 
 const protect = async (req, res, next) => {
@@ -20,21 +20,16 @@ const protect = async (req, res, next) => {
         console.log('[AUTH] AUTH HEADER:', req.headers.authorization);
         console.log('[AUTH] TOKEN:', token?.substring(0, 30) + '...');
 
-        if (!isInitialized()) {
-            console.error('[AUTH] Firebase Admin is NOT initialized — cannot verify token');
-            return res.status(500).json({ message: 'Auth service unavailable' });
-        }
+        const decoded = await admin.auth().verifyIdToken(token);
+        console.log("DECODED:", decoded);
 
-        const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
-        console.log("DECODED:", decodedToken);
-
-        const user = await User.findOne({ where: { firebase_uid: decodedToken.uid } });
+        const user = await User.findOne({ where: { firebase_uid: decoded.uid } });
 
         if (user) {
             req.user = { id: user.id, role: user.role };
             return next();
         } else {
-            console.warn('[AUTH] Firebase UID not linked to any local user:', decodedToken.uid);
+            console.warn('[AUTH] Firebase UID not linked to any local user:', decoded.uid);
             return res.status(401).json({ message: 'Firebase identity not bridged to local user' });
         }
     } catch (err) {

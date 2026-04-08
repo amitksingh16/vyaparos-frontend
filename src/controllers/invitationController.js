@@ -1,5 +1,5 @@
 const { Invitation, User, StaffClientAssignment, CAClient } = require('../models');
-const { verifyIdToken } = require('../config/firebase');
+const admin = require('../config/firebaseAdmin');
 
 const validateInvitation = async (req, res) => {
     try {
@@ -61,9 +61,9 @@ const validateInvitation = async (req, res) => {
 
         let decodedToken = null;
         try {
-            decodedToken = await verifyIdToken(idToken);
-        } catch (e) {
-            console.error('Firebase Token Verification Failed:', e.message);
+            decodedToken = await admin.auth().verifyIdToken(idToken);
+        } catch (err) {
+            console.error('VERIFY ERROR FULL:', err);
             if (idToken !== 'mock_token_123') {
                 return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
             }

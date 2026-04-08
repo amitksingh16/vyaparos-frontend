@@ -1,5 +1,5 @@
 const { User, ActivityLog } = require('../models');
-const { admin } = require('../config/firebase');
+const admin = require('../config/firebaseAdmin');
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
