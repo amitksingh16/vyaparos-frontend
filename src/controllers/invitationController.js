@@ -1,5 +1,4 @@
 const { Invitation, User, StaffClientAssignment, CAClient } = require('../models');
-const { generateToken } = require('../utils/jwtService');
 const { verifyIdToken } = require('../config/firebase');
 
 const validateInvitation = async (req, res) => {
@@ -37,7 +36,8 @@ const validateInvitation = async (req, res) => {
     const acceptInvitation = async (req, res) => {
     try {
         const { token } = req.params;
-        const { name, idToken, email } = req.body;
+        const { name, email } = req.body;
+        const idToken = req.headers.authorization?.split(" ")[1];
 
         if (!name) {
             return res.status(400).json({ message: 'Name is required' });
@@ -121,12 +121,8 @@ const validateInvitation = async (req, res) => {
         invitation.status = 'accepted';
         await invitation.save();
 
-        // Generate Auth Token
-        const authToken = generateToken(newUser.id, newUser.role);
-
         res.status(201).json({
             message: 'Invitation accepted successfully',
-            token: authToken,
             user: {
                 id: newUser.id,
                 name: newUser.name,

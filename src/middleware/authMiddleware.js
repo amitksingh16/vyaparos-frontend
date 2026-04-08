@@ -26,7 +26,7 @@ const protect = async (req, res, next) => {
         }
 
         const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
-        console.log('[AUTH] DECODED:', { uid: decodedToken.uid, email: decodedToken.email });
+        console.log("DECODED:", decodedToken);
 
         const user = await User.findOne({ where: { firebase_uid: decodedToken.uid } });
 
@@ -38,7 +38,7 @@ const protect = async (req, res, next) => {
             return res.status(401).json({ message: 'Firebase identity not bridged to local user' });
         }
     } catch (err) {
-        console.error('[AUTH] VERIFY ERROR:', err.message);
+        console.error("VERIFY ERROR FULL:", err);
         return res.status(401).json({ message: 'Invalid Firebase token' });
     }
 };

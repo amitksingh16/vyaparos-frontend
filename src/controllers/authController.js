@@ -20,9 +20,9 @@ const register = async (req, res) => {
         let decodedToken;
         try {
             decodedToken = await admin.auth().verifyIdToken(token);
-            console.log('[REGISTER] DECODED:', { uid: decodedToken.uid, email: decodedToken.email });
-        } catch (e) {
-            console.error('[REGISTER] VERIFY ERROR:', e.message);
+            console.log("DECODED:", decodedToken);
+        } catch (err) {
+            console.error("VERIFY ERROR FULL:", err);
             return res.status(401).json({ message: 'Invalid Firebase token' });
         }
 
@@ -83,9 +83,9 @@ const login = async (req, res) => {
         let decodedToken;
         try {
             decodedToken = await admin.auth().verifyIdToken(token);
-            console.log('[LOGIN] DECODED:', { uid: decodedToken.uid, email: decodedToken.email });
-        } catch (e) {
-            console.error('[LOGIN] VERIFY ERROR:', e.message);
+            console.log("DECODED:", decodedToken);
+        } catch (err) {
+            console.error("VERIFY ERROR FULL:", err);
             return res.status(401).json({ message: 'Invalid Firebase token' });
         }
 
