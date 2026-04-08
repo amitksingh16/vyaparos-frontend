@@ -34,7 +34,7 @@ const protect = async (req, res, next) => {
         }
     } catch (err) {
         console.error("VERIFY ERROR FULL:", err);
-        return res.status(401).json({ message: 'Invalid Firebase token' });
+        return res.status(401).json({ message: 'Invalid Firebase token. Detail: ' + (err.message || 'unknown error') });
     }
 };
 

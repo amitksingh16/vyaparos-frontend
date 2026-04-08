@@ -23,7 +23,7 @@ const register = async (req, res) => {
             console.log("DECODED:", decodedToken);
         } catch (err) {
             console.error("VERIFY ERROR FULL:", err);
-            return res.status(401).json({ message: 'Invalid Firebase token' });
+            return res.status(401).json({ message: 'Invalid Firebase token. Detail: ' + (err.message || 'unknown error') });
         }
 
         if (!email || !phone) {
@@ -86,7 +86,7 @@ const login = async (req, res) => {
             console.log("DECODED:", decodedToken);
         } catch (err) {
             console.error("VERIFY ERROR FULL:", err);
-            return res.status(401).json({ message: 'Invalid Firebase token' });
+            return res.status(401).json({ message: 'Invalid Firebase token. Detail: ' + (err.message || 'unknown error') });
         }
 
         const firebase_uid = decodedToken.uid;
