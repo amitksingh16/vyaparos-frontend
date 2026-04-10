@@ -1,5 +1,5 @@
 const { User, ActivityLog } = require('../models');
-
+const admin = require("../config/firebaseAdmin");
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -7,6 +7,15 @@ const register = async (req, res) => {
     try {
         const { email, name, role, phone } = req.body;
         const token = req.headers.authorization?.split(" ")[1];
+        let decoded;
+
+        try {
+            decoded = await admin.auth().verifyIdToken(token);
+            console.log("✅ Token Verified:", decoded.uid);
+        } catch (err) {
+            console.error("❌ Token Verification Failed:", err.message);
+            return res.status(401).json({ message: "Invalid Firebase token" });
+        }
 
         if (!token) {
             console.log('[REGISTER] No token. Header:', req.headers.authorization);
@@ -174,7 +183,7 @@ const mockStaffLogin = async (req, res) => {
 
         // Find the specific (or first available) staff member or CA
         const staff = await User.findOne({ where: whereClause });
-        
+
         if (!staff) {
             return res.status(404).json({ message: `No user found for query. Please seed first.` });
         }
