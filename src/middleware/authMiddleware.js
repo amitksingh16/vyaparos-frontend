@@ -1,4 +1,3 @@
-const admin = require('../config/firebaseAdmin');
 const { User } = require('../models');
 
 const protect = async (req, res, next) => {
@@ -20,21 +19,12 @@ const protect = async (req, res, next) => {
         console.log('[AUTH] AUTH HEADER:', req.headers.authorization);
         console.log('[AUTH] TOKEN:', token?.substring(0, 30) + '...');
 
-        const decoded = await admin.auth().verifyIdToken(token);
-        console.log("DECODED:", decoded);
+        // Firebase authentication temporarily removed for reset
 
-        const user = await User.findOne({ where: { firebase_uid: decoded.uid } });
-
-        if (user) {
-            req.user = { id: user.id, role: user.role };
-            return next();
-        } else {
-            console.warn('[AUTH] Firebase UID not linked to any local user:', decoded.uid);
-            return res.status(401).json({ message: 'Firebase identity not bridged to local user' });
-        }
+        return res.status(401).json({ message: 'Authentication disabled during reset' });
     } catch (err) {
         console.error("VERIFY ERROR FULL:", err);
-        return res.status(401).json({ message: 'Invalid Firebase token. Detail: ' + (err.message || 'unknown error') });
+        return res.status(401).json({ message: 'Invalid token' });
     }
 };
 

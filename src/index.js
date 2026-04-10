@@ -5,6 +5,9 @@ const path = require('path');
 
 dotenv.config();
 
+// Initialize Firebase Admin globally
+require('./config/firebaseAdmin');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -71,6 +74,7 @@ const startServer = async () => {
 
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
+            console.log("✅ Backend running without Firebase (Step 1 clean)");
         });
     } catch (err) {
         console.error('Failed to start server:', err);

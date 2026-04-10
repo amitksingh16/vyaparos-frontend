@@ -1,5 +1,4 @@
 const { User, ActivityLog } = require('../models');
-const admin = require('../config/firebaseAdmin');
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -17,20 +16,9 @@ const register = async (req, res) => {
         console.log('[REGISTER] AUTH HEADER:', req.headers.authorization);
         console.log('[REGISTER] TOKEN:', token?.substring(0, 30) + '...');
 
-        let decodedToken;
-        try {
-            decodedToken = await admin.auth().verifyIdToken(token);
-            console.log("DECODED:", decodedToken);
-        } catch (err) {
-            console.error("VERIFY ERROR FULL:", err);
-            return res.status(401).json({ message: 'Invalid Firebase token. Detail: ' + (err.message || 'unknown error') });
-        }
-
         if (!email || !phone) {
             return res.status(400).json({ message: 'Email and Phone Number are required' });
         }
-
-        const firebase_uid = decodedToken.uid;
 
         const userExists = await User.findOne({ where: { email } });
         if (userExists) {
@@ -43,7 +31,6 @@ const register = async (req, res) => {
             email,
             name,
             role: role || 'owner',
-            firebase_uid,
             is_verified: true,
             setup_completed: false,
         });
@@ -80,37 +67,7 @@ const login = async (req, res) => {
         console.log('[LOGIN] AUTH HEADER:', req.headers.authorization);
         console.log('[LOGIN] TOKEN:', token?.substring(0, 30) + '...');
 
-        let decodedToken;
-        try {
-            decodedToken = await admin.auth().verifyIdToken(token);
-            console.log("DECODED:", decodedToken);
-        } catch (err) {
-            console.error("VERIFY ERROR FULL:", err);
-            return res.status(401).json({ message: 'Invalid Firebase token. Detail: ' + (err.message || 'unknown error') });
-        }
-
-        const firebase_uid = decodedToken.uid;
-        const email = decodedToken.email;
-
-        let user = await User.findOne({ where: { firebase_uid } });
-
-        if (!user && email) {
-            // Fallback to email if firebase_uid doesn't match (for migration)
-            user = await User.findOne({ where: { email } });
-            if (user && !user.firebase_uid) {
-                user.firebase_uid = firebase_uid;
-                await user.save();
-            }
-        }
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found. Please register first.' });
-        }
-
-        if (!user.is_verified) {
-            user.is_verified = true;
-            await user.save();
-        }
+        return res.status(401).json({ message: 'Login disabled during reset' });
 
         // Log the successful authentication event
         try {

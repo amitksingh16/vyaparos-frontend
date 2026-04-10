@@ -3,23 +3,29 @@ const admin = require("firebase-admin");
 let serviceAccount;
 
 try {
-    if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
-        const decoded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf8');
-        serviceAccount = JSON.parse(decoded);
-    } else {
+    // Load from environment variable
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
         serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+
+        // Fix newline issue in private key
+        if (serviceAccount.private_key) {
+            serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+        }
+        
+        console.log("Firebase Project:", serviceAccount.project_id);
     }
 } catch (err) {
-    console.error("🔥 FIREBASE CONFIG ERROR:", err.message);
+    console.error("❌ Firebase config parse error:", err.message);
 }
 
 if (!admin.apps.length && serviceAccount) {
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
     });
+
+    console.log("🔥 Firebase Admin Initialized Successfully");
 } else {
-    console.error("❌ Firebase Admin NOT initialized");
+    console.warn("⚠️ Firebase Admin already initialized or missing config");
 }
 
 module.exports = admin;

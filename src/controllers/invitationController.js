@@ -1,6 +1,4 @@
 const { Invitation, User, StaffClientAssignment, CAClient } = require('../models');
-const admin = require('../config/firebaseAdmin');
-
 const validateInvitation = async (req, res) => {
     try {
         const { token } = req.params;
@@ -59,14 +57,8 @@ const validateInvitation = async (req, res) => {
             return res.status(400).json({ message: 'Invitation has expired' });
         }
 
-        let decodedToken = null;
-        try {
-            decodedToken = await admin.auth().verifyIdToken(idToken);
-        } catch (err) {
-            console.error('VERIFY ERROR FULL:', err);
-            if (idToken !== 'mock_token_123') {
-                return res.status(401).json({ message: 'Invalid or expired Firebase Auth Token' });
-            }
+        if (idToken !== 'mock_token_123') {
+            return res.status(401).json({ message: 'Authentication disabled during reset' });
         }
 
         const authEmail = email || invitation.email;
@@ -79,7 +71,6 @@ const validateInvitation = async (req, res) => {
             name,
             email: authEmail,
             phone: invitation.phone,
-            firebase_uid: decodedToken ? decodedToken.uid : null,
             role: invitation.role,
             parent_ca_id: invitation.ca_id,
             invite_status: 'active',
