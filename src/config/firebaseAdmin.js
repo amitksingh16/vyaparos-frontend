@@ -1,4 +1,7 @@
 const admin = require("firebase-admin");
+console.log("ENV FULL CHECK:", Object.keys(process.env));
+console.log("FIREBASE VALUE:", process.env.FIREBASE_SERVICE_ACCOUNT);
+console.log("🔥 FIREBASE ADMIN FILE LOADED");
 
 let serviceAccount;
 
@@ -11,7 +14,7 @@ try {
         if (serviceAccount.private_key) {
             serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
         }
-        
+
         console.log("Firebase Project:", serviceAccount.project_id);
     }
 } catch (err) {
