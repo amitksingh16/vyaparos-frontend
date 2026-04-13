@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Folder, FolderOpen, FileText, Download, ChevronRight, Clock3, Loader2, Image as ImageIcon, File, Home, MessageCircle, X, Check, Copy, Trash2, Tag } from 'lucide-react';
 import UploadCenter from './UploadCenter';
@@ -14,7 +14,6 @@ const DocumentVault = ({ businessId, user, clientName }) => {
     const [downloading, setDownloading] = useState(false);
 
     // WhatsApp Simulation State
-    const [showWhatsApp, setShowWhatsApp] = useState(false);
     const [pendingDocs, setPendingDocs] = useState([]);
     const [approvingDoc, setApprovingDoc] = useState(null);
     const [previewDoc, setPreviewDoc] = useState(null);
@@ -29,7 +28,13 @@ const DocumentVault = ({ businessId, user, clientName }) => {
     const [toast, setToast] = useState({ message: null, type: 'success' });
 
 
-    const fetchDocuments = async () => {
+    const fetchDocuments = useCallback(async () => {
+        if (!businessId) {
+            setVault({});
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
             const res = await axios.get(`/documents/${businessId}`);
@@ -41,9 +46,14 @@ const DocumentVault = ({ businessId, user, clientName }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [businessId]);
 
-    const fetchPendingDocs = async () => {
+    const fetchPendingDocs = useCallback(async () => {
+        if (!businessId) {
+            setPendingDocs([]);
+            return;
+        }
+
         try {
             const res = await axios.get(`/documents/${businessId}/whatsapp`);
             setPendingDocs(res.data.pendingDocs || []);
@@ -51,7 +61,7 @@ const DocumentVault = ({ businessId, user, clientName }) => {
             console.error('Error fetching pending WhatsApp docs:', error);
             setPendingDocs([]);
         }
-    };
+    }, [businessId]);
 
     useEffect(() => {
         if (businessId) {
@@ -61,7 +71,7 @@ const DocumentVault = ({ businessId, user, clientName }) => {
             setPendingDocs([]);
             setVault({});
         }
-    }, [businessId]);
+    }, [businessId, fetchDocuments, fetchPendingDocs]);
 
     // Helpers
     const formatSize = (bytes) => {

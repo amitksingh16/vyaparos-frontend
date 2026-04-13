@@ -50,10 +50,9 @@ const InviteAccept = () => {
             // Create user in Firebase
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const idToken = await userCredential.user.getIdToken();
-            console.log("Firebase ID Token generated:", idToken);
             
             // Post to backend to consume invite
-            const res = await axios.post(`/invitations/${token}/accept`, 
+            await axios.post(`/invitations/${token}/accept`, 
                 { name, email },
                 { headers: { Authorization: `Bearer ${idToken}` } }
             );

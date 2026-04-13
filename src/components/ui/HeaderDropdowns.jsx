@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, User as UserIcon, LogOut, Settings, Users, Building2, ChevronRight, Activity, Clock, AlertTriangle, CreditCard, HelpCircle } from 'lucide-react';
+import axios from 'axios';
+import { Bell, User as UserIcon, LogOut, Settings, ChevronRight, Activity, Clock, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,43 +24,44 @@ function useOnClickOutside(ref, handler) {
 
 export const NotificationDropdown = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [loading, setLoading] = useState(false);
     const ref = useRef();
     
     useOnClickOutside(ref, () => setIsOpen(false));
 
-    // Dummy notifications for demo readiness
-    const notifications = [
-        {
-            id: 1,
-            type: 'alert',
-            title: 'Overdue Filing',
-            message: 'GST Returns for Q3 are currently overdue.',
-            time: '2 hours ago',
-            icon: AlertTriangle,
-            color: 'text-red-500',
-            bg: 'bg-red-50'
-        },
-        {
-            id: 2,
-            type: 'warning',
-            title: 'Upcoming Deadline',
-            message: 'TDS Payment is due in 3 days.',
-            time: '5 hours ago',
-            icon: Clock,
-            color: 'text-amber-500',
-            bg: 'bg-amber-50'
-        },
-        {
-            id: 3,
-            type: 'info',
-            title: 'Recent Activity',
-            message: 'Client uploaded 3 new documents to the Vault.',
-            time: 'Yesterday',
-            icon: Activity,
-            color: 'text-indigo-500',
-            bg: 'bg-indigo-50'
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const fetchNotifications = async () => {
+            try {
+                setLoading(true);
+                const res = await axios.get('/notifications');
+                setNotifications(Array.isArray(res.data) ? res.data : (res.data?.notifications || []));
+            } catch (error) {
+                console.error('Failed to fetch notifications', error);
+                setNotifications([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchNotifications();
+    }, [isOpen]);
+
+    const getNotificationAppearance = (notification) => {
+        const type = notification.type || notification.severity || notification.level || 'info';
+
+        if (type === 'alert' || type === 'error' || type === 'critical') {
+            return { icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-50' };
         }
-    ];
+
+        if (type === 'warning') {
+            return { icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50' };
+        }
+
+        return { icon: Activity, color: 'text-indigo-500', bg: 'bg-indigo-50' };
+    };
 
     return (
         <div className="relative" ref={ref}>
@@ -69,33 +71,47 @@ export const NotificationDropdown = () => {
                 title="Notifications"
             >
                 <Bell className="w-5 h-5" />
-                {/* Notification Badge */}
-                <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border-2 border-white"></span>
-                </span>
+                {notifications.length > 0 && (
+                    <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border-2 border-white"></span>
+                    </span>
+                )}
             </button>
 
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-80 sm:w-80 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
                     <div className="px-5 py-3 border-b border-slate-100 flex justify-between items-center">
                         <h3 className="font-bold text-slate-800">Notifications</h3>
-                        <span className="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold">{notifications.length} New</span>
+                        <span className="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold">
+                            {loading ? 'Loading' : `${notifications.length} New`}
+                        </span>
                     </div>
                     
                     <div className="max-h-80 overflow-y-auto">
-                        {notifications.length > 0 ? (
+                        {loading ? (
+                            <div className="px-5 py-8 text-center text-slate-500">
+                                <Bell className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                                <p className="text-sm font-medium">Loading notifications...</p>
+                            </div>
+                        ) : notifications.length > 0 ? (
                             notifications.map((notif) => {
-                                const Icon = notif.icon;
+                                const { icon: Icon, color, bg } = getNotificationAppearance(notif);
                                 return (
                                     <div key={notif.id} className="px-5 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer group flex gap-3">
-                                        <div className={`mt-0.5 w-8 h-8 rounded-full ${notif.bg} flex items-center justify-center flex-shrink-0`}>
-                                            <Icon className={`w-4 h-4 ${notif.color}`} />
+                                        <div className={`mt-0.5 w-8 h-8 rounded-full ${bg} flex items-center justify-center flex-shrink-0`}>
+                                            <Icon className={`w-4 h-4 ${color}`} />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors">{notif.title}</p>
-                                            <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{notif.message}</p>
-                                            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">{notif.time}</p>
+                                            <p className="text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                                                {notif.title || 'Notification'}
+                                            </p>
+                                            <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">
+                                                {notif.message || notif.description || 'No details available.'}
+                                            </p>
+                                            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">
+                                                {notif.time || notif.created_at || notif.createdAt || 'Just now'}
+                                            </p>
                                         </div>
                                     </div>
                                 );
@@ -108,14 +124,16 @@ export const NotificationDropdown = () => {
                         )}
                     </div>
                     
-                    <div className="px-3 pt-2 pb-1">
+                    {notifications.length > 0 && (
+                        <div className="px-3 pt-2 pb-1">
                         <button 
                             className="w-full text-center text-sm font-bold text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 py-2 rounded-xl transition-colors flex items-center justify-center gap-1"
                             onClick={() => setIsOpen(false)}
                         >
                             View all notifications <ChevronRight className="w-4 h-4" />
                         </button>
-                    </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
@@ -136,7 +154,6 @@ export const ProfileDropdown = () => {
         navigate('/login');
     };
 
-    const isCA = user?.role === 'ca' || user?.role === 'ca_staff' || user?.role === 'ca_article';
     const firmName = user?.business_name || "VyaparOS Firm";
     const userName = user?.name || "Professional";
     

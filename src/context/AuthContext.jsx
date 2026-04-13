@@ -13,7 +13,7 @@ if (API_BASE_URL) {
     }
 }
 
-axios.defaults.baseURL = API_BASE_URL || 'http://localhost:8080/api';
+axios.defaults.baseURL = API_BASE_URL || '/api';
 
 const AuthContext = createContext();
 

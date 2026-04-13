@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { X, CheckCircle2, FileText, ChevronRight, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,13 @@ const ReviewDocumentsModal = ({ client, onClose }) => {
     const [loading, setLoading] = useState(true);
     const [approvingIds, setApprovingIds] = useState([]);
 
-    const fetchDocs = async () => {
+    const fetchDocs = useCallback(async () => {
+        if (!client) {
+            setDocs([]);
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
             const res = await axios.get(`/documents/${client.id}/whatsapp`);
@@ -19,11 +25,11 @@ const ReviewDocumentsModal = ({ client, onClose }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [client]);
 
     useEffect(() => {
         if (client) fetchDocs();
-    }, [client]);
+    }, [client, fetchDocs]);
 
     const handleApprove = async (doc) => {
         setApprovingIds(prev => [...prev, doc.id]);

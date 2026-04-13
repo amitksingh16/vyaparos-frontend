@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Building2, FileText, CheckCircle2, UserPlus } from 'lucide-react';
 import axios from 'axios';
 import Button from '../ui/Button';

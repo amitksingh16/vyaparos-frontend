@@ -249,21 +249,32 @@ const CADashboard = () => {
 
             // Ensure unique clients based on business id
             const uniqueClientsMap = new Map();
-            if (res.data?.clients) {
+            if (Array.isArray(res.data?.clients)) {
                 res.data.clients.forEach(client => {
                     uniqueClientsMap.set(client.id, client);
                 });
             }
 
             setDashboardData({
-                stats: res.data.stats,
+                stats: {
+                    total: res.data?.stats?.total ?? 0,
+                    healthy: res.data?.stats?.healthy ?? 0,
+                    attention: res.data?.stats?.attention ?? 0,
+                    critical: res.data?.stats?.critical ?? 0
+                },
                 clients: Array.from(uniqueClientsMap.values())
             });
             
-            setTeam(teamRes.data);
-            setUnidentifiedDocs(unidentRes?.data?.documents || []);
+            setTeam(Array.isArray(teamRes.data) ? teamRes.data : []);
+            setUnidentifiedDocs(Array.isArray(unidentRes?.data?.documents) ? unidentRes.data.documents : []);
         } catch (err) {
             console.error("Error fetching CA dashboard data", err);
+            setDashboardData({
+                stats: { total: 0, healthy: 0, attention: 0, critical: 0 },
+                clients: []
+            });
+            setTeam([]);
+            setUnidentifiedDocs([]);
         } finally {
             setLoading(false);
         }
@@ -295,8 +306,6 @@ const CADashboard = () => {
     };
 
     const handleViewClient = (businessId) => {
-        // We'll reuse the owner dashboard for the client detail page by simulating a context switch or passing businessId
-        // For now, let's just log or navigate to a dummy client detail page
         navigate(`/ca/client/${businessId}`);
     };
 
@@ -361,62 +370,6 @@ const CADashboard = () => {
                             <span className="text-xl font-bold text-[#0A2C4B] font-display">VyaparOS <span className="text-[#F5A623] text-sm font-semibold ml-1 bg-[#F5A623]/10 px-2 py-0.5 rounded-full">CA Dashboard</span></span>
                         </div>
                         <div className="flex items-center gap-4">
-                            {/* Dev Testing Buttons */}
-                            {user?.role === 'ca' && (
-                                <div className="flex gap-2 mr-2">
-                                    <button 
-                                        onClick={async () => {
-                                            try {
-                                                const res = await axios.post('/auth/mock-staff-login?name=Rahul Article');
-                                                localStorage.setItem('token', res.data.token);
-                                                window.location.href = '/ca/dashboard';
-                                            } catch (err) {
-                                                alert(err.response?.data?.message || 'Failed to trigger Rahul login.');
-                                            }
-                                        }}
-                                        className="bg-indigo-50 text-indigo-700 font-bold border border-indigo-200 px-3 py-1.5 rounded-lg text-xs hover:bg-indigo-100 transition-colors flex items-center gap-1"
-                                    >
-                                        <UserIcon className="w-3 h-3" />
-                                        Staff View (Rahul)
-                                    </button>
-                                    <button 
-                                        onClick={async () => {
-                                            try {
-                                                const res = await axios.post('/auth/mock-staff-login?name=Priya Staff');
-                                                localStorage.setItem('token', res.data.token);
-                                                window.location.href = '/ca/dashboard';
-                                            } catch (err) {
-                                                alert(err.response?.data?.message || 'Failed to trigger Priya login.');
-                                            }
-                                        }}
-                                        className="bg-indigo-50 text-indigo-700 font-bold border border-indigo-200 px-3 py-1.5 rounded-lg text-xs hover:bg-indigo-100 transition-colors flex items-center gap-1"
-                                    >
-                                        <UserIcon className="w-3 h-3" />
-                                        Staff View (Priya)
-                                    </button>
-                                </div>
-                            )}
-                            
-                            {user?.role === 'ca_staff' && (
-                                <div className="flex gap-2 mr-2">
-                                    <button 
-                                        onClick={async () => {
-                                            try {
-                                                const res = await axios.post('/auth/mock-staff-login?role=ca');
-                                                localStorage.setItem('token', res.data.token);
-                                                window.location.href = '/ca/dashboard';
-                                            } catch (err) {
-                                                alert(err.response?.data?.message || 'Failed to trigger CA login.');
-                                            }
-                                        }}
-                                        className="bg-amber-50 text-amber-700 font-bold border border-amber-200 px-3 py-1.5 rounded-lg text-xs hover:bg-amber-100 transition-colors flex items-center gap-1"
-                                    >
-                                        <Shield className="w-3 h-3" />
-                                        Back to CA View
-                                    </button>
-                                </div>
-                            )}
-
                             <NotificationDropdown />
                             <ProfileDropdown />
                         </div>

@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Shield, Lock, Eye, EyeOff, Loader2, User as UserIcon, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
 
 const InviteLanding = () => {
     const navigate = useNavigate();
     const { token } = useParams();
-    const { login } = useAuth(); // If we need it
 
     const [inviteData, setInviteData] = useState(null);
     const [loading, setLoading] = useState(true);

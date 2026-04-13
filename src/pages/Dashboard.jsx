@@ -700,7 +700,7 @@ const Dashboard = () => {
                                             document.body.appendChild(link);
                                             link.click();
                                             link.parentNode.removeChild(link);
-                                        } catch(e) {
+                                        } catch {
                                             alert('Error downloading report.');
                                         }
                                     }}

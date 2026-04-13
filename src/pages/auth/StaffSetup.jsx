@@ -1,13 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Shield, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
 
 const StaffSetup = () => {
-    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const { login } = useAuth(); // using a custom mock login if we needed, but we can set token manually
     const token = searchParams.get('token');
 
     const [password, setPassword] = useState('');
@@ -15,12 +12,6 @@ const StaffSetup = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        if (!token) {
-            setError('Invalid or missing invitation token.');
-        }
-    }, [token]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
