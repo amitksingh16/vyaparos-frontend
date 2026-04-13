@@ -1,0 +1,26 @@
+﻿
+D:\VyaparOS\client\parse.js
+  1:12  error  'require' is not defined  no-undef
+
+D:\VyaparOS\client\src\components\auth\RoleSelector.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\components\ui\Input.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\components\ui\Toast.jsx
+  1:27  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\pages\Dashboard.jsx
+  166:8   warning  React Hook useEffect has a missing dependency: 'user?.role'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  182:18  error    'error' is defined but never used                                                                              no-unused-vars
+  196:9   error    'mostOverdue' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                    no-unused-vars
+
+D:\VyaparOS\client\src\pages\auth\Signup.jsx
+  1:20  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\pages\onboarding\CAOnboarding.jsx
+  21:24  error  'user' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+Γ£û 9 problems (8 errors, 1 warning)
+

@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+:root {
+    /* Font System */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Cal Sans', 'Inter', sans-serif;
+
+    /* Weights */
+    --regular: 400;
+    --medium: 500;
+    --semibold: 600;
+    --bold: 700;
+
+    /* Colors */
+    --color-primary-dark: #0A2C4B;
+    --color-primary-light: #1E4A6F;
+    --color-accent: #F5A623;
+    --color-success: #0F5C4A;
+}
+
+body {
+    font-family: var(--font-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-display, var(--font-primary));
+}
+
+@layer components {
+
+    /* AI Priority Severity Classes */
+    .severity-high {
+        border-left-color: #ef4444 !important;
+        /* Tailwind's red-500 */
+    }
+
+    .severity-high .severity-icon-bg {
+        @apply bg-red-50 text-red-600;
+    }
+
+    .severity-high .severity-icon-text {
+        @apply text-red-600;
+    }
+
+    .severity-high .severity-badge {
+        @apply bg-red-50 text-red-700 border border-red-200 shadow-sm;
+    }
+
+    .severity-medium {
+        border-left-color: #f59e0b !important;
+        /* Tailwind's amber-500 */
+    }
+
+    .severity-medium .severity-icon-bg {
+        @apply bg-amber-50 text-amber-600;
+    }
+
+    .severity-medium .severity-icon-text {
+        @apply text-amber-600;
+    }
+
+    .severity-medium .severity-badge {
+        @apply bg-amber-50 text-amber-700 border border-amber-200 shadow-sm;
+    }
+
+    .severity-review {
+        border-left-color: #3b82f6 !important;
+        /* Tailwind's blue-500 */
+    }
+
+    .severity-review .severity-icon-bg {
+        @apply bg-blue-50 text-blue-600;
+    }
+
+    .severity-review .severity-icon-text {
+        @apply text-blue-600;
+    }
+
+    .severity-review .severity-badge {
+        @apply bg-blue-50 text-blue-700 border border-blue-200 shadow-sm;
+    }
+}
+
+/* Custom CSS Animations */
+@keyframes liquidFill {
+    0% {
+        transform: skewX(-12deg) translateX(-150%);
+    }
+
+    100% {
+        transform: skewX(-12deg) translateX(150%);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+}

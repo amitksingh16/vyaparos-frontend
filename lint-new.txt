@@ -1,0 +1,73 @@
+
+D:\VyaparOS\client\src\components\auth\RoleSelector.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\components\ui\Button.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\components\ui\Card.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\components\ui\Input.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\components\ui\Toast.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\VyaparOS\client\src\context\AuthContext.jsx
+  12:5   error    Error: This value cannot be modified
+
+Modifying a variable defined outside a component or hook is not allowed. Consider using an effect.
+
+  10 |
+  11 |     // Configure Axios base URL
+> 12 |     axios.defaults.baseURL = 'http://localhost:5000/api';
+     |     ^^^^^^^^^^^^^^ value cannot be modified
+  13 |
+  14 |     const fetchUser = async () => {
+  15 |         console.log('AuthContext: Checking for token...');                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/immutability
+  25:17  error    Error: Cannot access variable before it is declared
+
+`logout` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  23 |             } catch (error) {
+  24 |                 console.error('AuthContext: Failed to fetch user', error.response || error);
+> 25 |                 logout('Failed to fetch user profile');
+     |                 ^^^^^^ `logout` accessed before it is declared
+  26 |             }
+  27 |         } else {
+  28 |             console.log('AuthContext: No token found in state/localStorage');
+
+  60 |     };
+  61 |
+> 62 |     const logout = (reason = 'Unknown') => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 63 |         console.warn('AuthContext: Logging out. Reason:', reason);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         localStorage.removeItem('token');
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |         setToken(null);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |         setUser(null);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |         delete axios.defaults.headers.common['Authorization'];
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 68 |     };
+     | ^^^^^^^ `logout` is declared here
+  69 |
+  70 |     return (
+  71 |         <AuthContext.Provider value={{ user, token, loading, login, verifyOtp, register, logout, fetchUser }}>  react-hooks/immutability
+  35:8   warning  React Hook useEffect has a missing dependency: 'fetchUser'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  77:14  error    Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-refresh/only-export-components
+
+D:\VyaparOS\client\src\pages\Dashboard.jsx
+  62:30  error  'e' is defined but never used  no-unused-vars
+
+D:\VyaparOS\client\src\pages\auth\Login.jsx
+  48:18  error  'error' is defined but never used  no-unused-vars
+
+D:\VyaparOS\client\src\pages\compliance\Calendar.jsx
+  38:18  error  'error' is defined but never used  no-unused-vars
+
+✖ 12 problems (11 errors, 1 warning)
+
