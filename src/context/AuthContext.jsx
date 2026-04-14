@@ -3,17 +3,12 @@ import axios from 'axios';
 
 /* eslint-disable react-refresh/only-export-components */
 
-// 1. Dynamic API Base URL Configuration
-let API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL;
+// ✅ CLEAN & SAFE BASE URL CONFIG
+const BASE_URL = import.meta.env.VITE_BACKEND_URL
+    ? import.meta.env.VITE_BACKEND_URL.replace(/\/$/, '')
+    : '';
 
-if (API_BASE_URL) {
-    API_BASE_URL = API_BASE_URL.replace(/\/$/, ''); // Remove trailing slash
-    if (!API_BASE_URL.endsWith('/api')) {
-        API_BASE_URL = `${API_BASE_URL}/api`;
-    }
-}
-
-axios.defaults.baseURL = API_BASE_URL || '/api';
+axios.defaults.baseURL = BASE_URL ? `${BASE_URL}/api` : '/api';
 
 const AuthContext = createContext();
 
@@ -22,8 +17,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [loading, setLoading] = useState(true);
 
-    // 2. AXIOS INTERCEPTOR: Banker's Security Guard
-    // Ye har request ke saath Token bhejna pakka karega
+    // ✅ AXIOS INTERCEPTORS
     useEffect(() => {
         const requestInterceptor = axios.interceptors.request.use(
             (config) => {
@@ -63,11 +57,12 @@ export const AuthProvider = ({ children }) => {
         const storedToken = localStorage.getItem('token');
         if (storedToken) {
             try {
-                console.log('AuthContext: Fetching user profile from Railway...');
+                console.log('BASE URL:', axios.defaults.baseURL);
+                console.log('AuthContext: Fetching user profile...');
                 const res = await axios.get('/auth/me');
                 setUser(res.data);
             } catch (error) {
-                console.error('AuthContext: Profile fetch failed', error.response?.data || error.message);
+                console.error('Profile fetch failed', error.response?.data || error.message);
                 logout('Invalid Session');
             }
         }
@@ -83,7 +78,7 @@ export const AuthProvider = ({ children }) => {
         console.log('AuthContext: Verifying Login with Backend...');
         try {
             const res = await axios.post('/auth/login', {}, {
-                headers: { "Authorization": `Bearer ${firebaseToken}` }
+                headers: { Authorization: `Bearer ${firebaseToken}` }
             });
 
             const { user: authUser } = res.data;
@@ -92,7 +87,7 @@ export const AuthProvider = ({ children }) => {
             setUser(authUser);
             return res;
         } catch (error) {
-            console.error('AuthContext: Login API Error', error.response?.data);
+            console.error('Login API Error', error.response?.data);
             throw error;
         }
     };
@@ -102,7 +97,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const res = await axios.post('/auth/register',
                 { email, name, role, phone },
-                { headers: { "Authorization": `Bearer ${firebaseToken}` } }
+                { headers: { Authorization: `Bearer ${firebaseToken}` } }
             );
 
             const { user: authUser } = res.data;
@@ -111,7 +106,7 @@ export const AuthProvider = ({ children }) => {
             setUser(authUser);
             return res;
         } catch (error) {
-            console.error('AuthContext: Registration API Error', error.response?.data);
+            console.error('Registration API Error', error.response?.data);
             throw error;
         }
     };

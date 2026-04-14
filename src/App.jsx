@@ -9,6 +9,7 @@ import Calendar from './pages/compliance/Calendar';
 import CADashboard from './pages/ca/CADashboard';
 import StaffSetup from './pages/auth/StaffSetup';
 import InviteAccept from './pages/auth/InviteAccept';
+import SetupPassword from './pages/auth/SetupPassword';
 import Home from './pages/Home';
 
 // Profile Pages
@@ -119,6 +120,7 @@ function App() {
 
                         <Route path="/staff-setup" element={<StaffSetup />} />
                         <Route path="/invite/:token" element={<InviteAccept />} />
+                        <Route path="/setup-password" element={<SetupPassword />} />
                         <Route path="/" element={<Home />} />
                     </Routes>
                 </div>
