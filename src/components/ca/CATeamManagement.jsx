@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Users, Mail, Shield, Plus, X, Trash2, ChevronRight, Check, ClipboardList, FileText, CheckCircle2, AlertTriangle, User as UserIcon, Copy, Send } from 'lucide-react';
 import EmptyStateCard from './EmptyStateCard';
 
-const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refreshDashboard, openInviteSignal = 0 }) => {
+const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refreshDashboard, openInviteSignal = 0, onTeamMemberAdded }) => {
     const [team, setTeam] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -99,6 +99,7 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
             setApiError('');
             fetchTeam();
             if (refreshDashboard) refreshDashboard();
+            if (onTeamMemberAdded) onTeamMemberAdded();
         } catch (err) {
             console.error("Failed to invite:", err);
             setApiError(err.response?.data?.message || 'Failed to send invite');
@@ -220,9 +221,11 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
                                     <EmptyStateCard
                                         icon={Users}
                                         title="Build your team workspace"
-                                        description="Invite your first team member so they can help manage clients, filings, and follow-ups."
-                                        actionLabel="Invite Team Member"
+                                        description="Invite your first team member so work can be distributed faster across filings, follow-ups, and client communication."
+                                        helperText="This helps your firm share workload early instead of bottlenecking everything with the owner."
+                                        actionLabel="Invite Your First Team Member"
                                         onAction={openInviteModal}
+                                        animateIcon
                                     />
                                 </td>
                             </tr>

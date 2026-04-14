@@ -12,7 +12,8 @@ import ReassignClientModal from '../../components/ca/ReassignClientModal';
 import CAUnidentifiedModal from '../../components/ca/CAUnidentifiedModal';
 import ReviewDocumentsModal from '../../components/ca/ReviewDocumentsModal';
 import EmptyStateCard from '../../components/ca/EmptyStateCard';
-import OnboardingModal from '../../components/ca/OnboardingModal';
+import OnboardingSetupModal from '../../components/ca/OnboardingSetupModal';
+import OnboardingProgressBanner from '../../components/ca/OnboardingProgressBanner';
 import { NotificationDropdown, ProfileDropdown } from '../../components/ui/HeaderDropdowns';
 
 // Utility to convert timestamp to relative generic time
@@ -98,7 +99,7 @@ const PortfolioStatCard = ({
     return (
         <button
             onClick={onClick}
-            className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-br p-5 text-left shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_30px_70px_-34px_rgba(15,23,42,0.35)] focus:outline-none focus:ring-2 ${classes.card} ${isActive ? `ring-2 ${classes.active}` : 'border-slate-200/80'}`}
+            className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-br p-5 text-left shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-all duration-200 ease-in-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_30px_70px_-34px_rgba(15,23,42,0.35)] focus:outline-none focus:ring-2 ${classes.card} ${isActive ? `ring-2 ${classes.active}` : 'border-slate-200/80'}`}
         >
             <div className={`absolute -right-6 -top-8 h-24 w-24 rounded-full blur-2xl transition-transform duration-200 group-hover:scale-110 ${classes.orb}`} />
             <div className="relative flex items-start justify-between gap-4">
@@ -106,6 +107,9 @@ const PortfolioStatCard = ({
                     <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{title}</div>
                     <div className="mt-3 text-4xl font-bold tracking-[-0.04em] text-slate-900 font-display">
                         {loading ? '-' : <CountUp end={value} duration={0.8} preserveValue />}
+                    </div>
+                    <div className="mt-2 text-sm font-medium text-slate-500">
+                        {loading ? 'Loading insights...' : value === 0 ? 'No data yet' : 'Live compliance snapshot'}
                     </div>
                 </div>
                 <div className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-sm transition-all duration-200 ${isActive ? classes.icon : classes.idleIcon}`}>
@@ -432,7 +436,10 @@ const CADashboard = () => {
     const isIndeterminate = selectedClients.length > 0 && selectedClients.length < sortedAndFilteredClients.length;
     const totalClients = dashboardData.clients.length;
     const teamMembers = team.length;
+    const completedSetupSteps = (teamMembers > 0 ? 1 : 0) + (totalClients > 0 ? 1 : 0);
     const onboardingStep = teamMembers > 0 ? 2 : 1;
+    const onboardingPercent = Math.round((completedSetupSteps / 2) * 100);
+    const showOnboardingBanner = user?.role === 'ca' && completedSetupSteps < 2;
 
     useEffect(() => {
         if (user?.role !== 'ca' || loading || onboardingDismissed) return;
@@ -457,14 +464,28 @@ const CADashboard = () => {
 
     const handleOpenInviteTeam = () => {
         setShowOnboardingModal(false);
+        setOnboardingInProgress(true);
         setActiveTab('team');
         setInviteModalSignal(prev => prev + 1);
     };
 
     const handleOpenAddClient = () => {
         setShowOnboardingModal(false);
+        setOnboardingInProgress(true);
+        setOnboardingDismissed(false);
         setActiveTab('portfolio');
         setShowAddModal(true);
+    };
+
+    const handleTeamMemberAdded = () => {
+        setOnboardingDismissed(false);
+        setOnboardingInProgress(true);
+        setShowOnboardingModal(true);
+    };
+
+    const handleContinueSetup = () => {
+        setOnboardingDismissed(false);
+        setShowOnboardingModal(true);
     };
 
     return (
@@ -580,9 +601,9 @@ const CADashboard = () => {
                         <button
                             onClick={() => setShowAddModal(true)}
                             disabled={selectedClients.length > 0}
-                            className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0A2C4B] text-white font-medium shadow-sm transition-all whitespace-nowrap ${selectedClients.length > 0
+                            className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] text-white font-medium shadow-sm transition-all duration-200 ease-in-out whitespace-nowrap ${selectedClients.length > 0
                                 ? 'opacity-50 pointer-events-none'
-                                : 'hover:bg-[#0A2C4B]/90 focus:ring-2 focus:ring-[#0A2C4B]/20'
+                                : 'hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)] focus:ring-2 focus:ring-[#0A2C4B]/20'
                                 }`}
                         >
                             <Plus className="w-5 h-5" />
@@ -590,6 +611,20 @@ const CADashboard = () => {
                         </button>
                     )}
                 </div>
+
+                {showOnboardingBanner && (
+                    <>
+                        <OnboardingProgressBanner
+                            completedSteps={completedSetupSteps}
+                            totalSteps={2}
+                            percentComplete={onboardingPercent}
+                            onContinue={handleContinueSetup}
+                        />
+                        <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-900 shadow-sm">
+                            <span className="font-semibold">Tip:</span> Invite your team first to distribute workload efficiently and keep client follow-ups moving.
+                        </div>
+                    </>
+                )}
 
                 {/* Inline Tab Navigation for CA Owners */}
                 {user?.role === 'ca' && (
@@ -1040,8 +1075,12 @@ const CADashboard = () => {
                                                         description={dashboardData.clients.length === 0
                                                             ? 'Start by adding your first client to begin tracking compliance across your portfolio.'
                                                             : 'Try adjusting your search or filters to surface the right client record.'}
-                                                        actionLabel={dashboardData.clients.length === 0 && user?.role === 'ca' ? 'Add Client' : undefined}
+                                                        helperText={dashboardData.clients.length === 0
+                                                            ? 'Once your first client is added, deadlines, documents, and follow-ups become visible in one place.'
+                                                            : 'Search by client name, filing type, or assigned teammate to narrow your results.'}
+                                                        actionLabel={dashboardData.clients.length === 0 && user?.role === 'ca' ? 'Add Your First Client' : undefined}
                                                         onAction={dashboardData.clients.length === 0 && user?.role === 'ca' ? () => setShowAddModal(true) : undefined}
+                                                        animateIcon
                                                     />
                                                 </td>
                                             </tr>
@@ -1070,6 +1109,7 @@ const CADashboard = () => {
                         unidentifiedDocs={unidentifiedDocs}
                         refreshDashboard={fetchCADashboard}
                         openInviteSignal={inviteModalSignal}
+                        onTeamMemberAdded={handleTeamMemberAdded}
                     />
                 )}
 
@@ -1107,9 +1147,12 @@ const CADashboard = () => {
                 onClose={() => { setReviewClientDocs(null); fetchCADashboard(); }} 
             />
 
-            <OnboardingModal
+            <OnboardingSetupModal
                 isOpen={showOnboardingModal}
                 currentStep={onboardingStep}
+                percentComplete={onboardingPercent}
+                completedSteps={completedSetupSteps}
+                totalSteps={2}
                 onInviteTeam={handleOpenInviteTeam}
                 onAddClient={handleOpenAddClient}
                 onClose={handleDismissOnboarding}

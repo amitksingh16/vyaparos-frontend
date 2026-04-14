@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { Check, ChevronRight, Sparkles, UserPlus, Users } from 'lucide-react';
 
-export const StepCard = ({
+const StepCard = ({
     stepNumber,
     title,
     description,
@@ -78,9 +78,12 @@ export const StepCard = ({
     );
 };
 
-const OnboardingModal = ({
+const OnboardingSetupModal = ({
     isOpen,
     currentStep,
+    percentComplete,
+    completedSteps,
+    totalSteps,
     onInviteTeam,
     onAddClient,
     onClose,
@@ -116,16 +119,20 @@ const OnboardingModal = ({
                         </button>
                     </div>
 
-                    <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-3">
-                        <div className={`h-2 flex-1 rounded-full ${currentStep >= 1 ? 'bg-[#0A2C4B]' : 'bg-slate-200'}`} />
-                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                            Step 1
+                    <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-4">
+                        <div className="flex items-center justify-between gap-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            <span>Setup Progress</span>
+                            <span>{percentComplete}% complete</span>
                         </div>
-                        <div className="text-slate-300">→</div>
-                        <div className={`h-2 flex-1 rounded-full ${currentStep >= 2 ? 'bg-emerald-500' : 'bg-slate-200'}`} />
-                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                            Step 2
+                        <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-200">
+                            <div
+                                className="h-full rounded-full bg-[linear-gradient(90deg,#0A2C4B,#0F5C4A)] transition-all duration-300 ease-in-out"
+                                style={{ width: `${percentComplete}%` }}
+                            />
                         </div>
+                        <p className="mt-3 text-sm font-medium text-slate-600">
+                            {completedSteps} of {totalSteps} setup steps complete
+                        </p>
                     </div>
 
                     <div className="mt-6 grid gap-4 lg:grid-cols-2">
@@ -138,6 +145,7 @@ const OnboardingModal = ({
                             icon={UserPlus}
                             isActive={currentStep === 1}
                             isComplete={stepOneComplete}
+                            progressLabel={stepOneComplete ? 'Completed' : 'Required to unlock Step 2'}
                         />
                         <StepCard
                             stepNumber={2}
@@ -149,6 +157,7 @@ const OnboardingModal = ({
                             isActive={currentStep === 2}
                             isComplete={false}
                             isDisabled={currentStep < 2}
+                            progressLabel={currentStep < 2 ? 'Available after inviting your team' : 'Now active'}
                         />
                     </div>
                 </div>
@@ -157,4 +166,4 @@ const OnboardingModal = ({
     );
 };
 
-export default OnboardingModal;
+export default OnboardingSetupModal;
