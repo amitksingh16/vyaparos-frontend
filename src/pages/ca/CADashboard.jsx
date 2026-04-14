@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import CountUp from 'react-countup';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 // framer-motion removed
@@ -10,6 +11,8 @@ import CATeamManagement from '../../components/ca/CATeamManagement';
 import ReassignClientModal from '../../components/ca/ReassignClientModal';
 import CAUnidentifiedModal from '../../components/ca/CAUnidentifiedModal';
 import ReviewDocumentsModal from '../../components/ca/ReviewDocumentsModal';
+import EmptyStateCard from '../../components/ca/EmptyStateCard';
+import OnboardingModal from '../../components/ca/OnboardingModal';
 import { NotificationDropdown, ProfileDropdown } from '../../components/ui/HeaderDropdowns';
 
 // Utility to convert timestamp to relative generic time
@@ -50,6 +53,69 @@ const highlightMatch = (text, query) => {
     );
 };
 
+const PortfolioStatCard = ({
+    title,
+    value,
+    icon,
+    tone,
+    isActive,
+    onClick,
+    loading,
+}) => {
+    const toneClasses = {
+        blue: {
+            card: 'from-blue-50 via-white to-sky-50 border-blue-100/80',
+            active: 'ring-blue-500/20 border-blue-200 shadow-blue-200/50',
+            icon: 'bg-blue-600 text-white',
+            idleIcon: 'bg-blue-100 text-blue-700',
+            orb: 'bg-blue-400/20',
+        },
+        green: {
+            card: 'from-emerald-50 via-white to-green-50 border-emerald-100/80',
+            active: 'ring-emerald-500/20 border-emerald-200 shadow-emerald-200/50',
+            icon: 'bg-emerald-600 text-white',
+            idleIcon: 'bg-emerald-100 text-emerald-700',
+            orb: 'bg-emerald-400/20',
+        },
+        orange: {
+            card: 'from-amber-50 via-white to-orange-50 border-amber-100/80',
+            active: 'ring-amber-500/20 border-amber-200 shadow-amber-200/50',
+            icon: 'bg-amber-600 text-white',
+            idleIcon: 'bg-amber-100 text-amber-700',
+            orb: 'bg-amber-400/20',
+        },
+        red: {
+            card: 'from-rose-50 via-white to-red-50 border-rose-100/80',
+            active: 'ring-red-500/20 border-red-200 shadow-red-200/50',
+            icon: 'bg-red-600 text-white',
+            idleIcon: 'bg-red-100 text-red-700',
+            orb: 'bg-red-400/20',
+        },
+    };
+
+    const classes = toneClasses[tone];
+
+    return (
+        <button
+            onClick={onClick}
+            className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-br p-5 text-left shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_30px_70px_-34px_rgba(15,23,42,0.35)] focus:outline-none focus:ring-2 ${classes.card} ${isActive ? `ring-2 ${classes.active}` : 'border-slate-200/80'}`}
+        >
+            <div className={`absolute -right-6 -top-8 h-24 w-24 rounded-full blur-2xl transition-transform duration-200 group-hover:scale-110 ${classes.orb}`} />
+            <div className="relative flex items-start justify-between gap-4">
+                <div>
+                    <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">{title}</div>
+                    <div className="mt-3 text-4xl font-bold tracking-[-0.04em] text-slate-900 font-display">
+                        {loading ? '-' : <CountUp end={value} duration={0.8} preserveValue />}
+                    </div>
+                </div>
+                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-sm transition-all duration-200 ${isActive ? classes.icon : classes.idleIcon}`}>
+                    {React.createElement(icon, { className: 'h-5 w-5' })}
+                </div>
+            </div>
+        </button>
+    );
+};
+
 const CADashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -80,6 +146,10 @@ const CADashboard = () => {
 
     const [visibleCount, setVisibleCount] = useState(15);
     const [activeTab, setActiveTab] = useState('portfolio');
+    const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+    const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+    const [onboardingInProgress, setOnboardingInProgress] = useState(false);
+    const [inviteModalSignal, setInviteModalSignal] = useState(0);
     let displayName = user?.name || "User";
     if (displayName.toLowerCase().endsWith(' staff')) {
         displayName = displayName.substring(0, displayName.length - 6).trim();
@@ -286,6 +356,8 @@ const CADashboard = () => {
 
     const handleClientAdded = () => {
         setShowAddModal(false);
+        setShowOnboardingModal(false);
+        setOnboardingInProgress(false);
         fetchCADashboard();
     };
 
@@ -358,6 +430,42 @@ const CADashboard = () => {
 
     const isAllSelected = sortedAndFilteredClients.length > 0 && selectedClients.length === sortedAndFilteredClients.length;
     const isIndeterminate = selectedClients.length > 0 && selectedClients.length < sortedAndFilteredClients.length;
+    const totalClients = dashboardData.clients.length;
+    const teamMembers = team.length;
+    const onboardingStep = teamMembers > 0 ? 2 : 1;
+
+    useEffect(() => {
+        if (user?.role !== 'ca' || loading || onboardingDismissed) return;
+
+        if (totalClients === 0 && (teamMembers === 0 || onboardingInProgress)) {
+            setShowOnboardingModal(true);
+            setOnboardingInProgress(true);
+            return;
+        }
+
+        if (totalClients > 0) {
+            setShowOnboardingModal(false);
+            setOnboardingInProgress(false);
+        }
+    }, [loading, onboardingDismissed, onboardingInProgress, teamMembers, totalClients, user?.role]);
+
+    const handleDismissOnboarding = () => {
+        setShowOnboardingModal(false);
+        setOnboardingDismissed(true);
+        setOnboardingInProgress(false);
+    };
+
+    const handleOpenInviteTeam = () => {
+        setShowOnboardingModal(false);
+        setActiveTab('team');
+        setInviteModalSignal(prev => prev + 1);
+    };
+
+    const handleOpenAddClient = () => {
+        setShowOnboardingModal(false);
+        setActiveTab('portfolio');
+        setShowAddModal(true);
+    };
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans pb-12">
@@ -602,102 +710,43 @@ const CADashboard = () => {
                         )}
 
                         {/* 2. Stats Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-                            {/* Total Clients */}
-                            <button 
+                        <div className="mb-8 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
+                            <PortfolioStatCard
+                                title="Total Clients"
+                                value={dashboardData.stats.total}
+                                icon={Users}
+                                tone="blue"
+                                isActive={riskFilter === 'All'}
                                 onClick={() => setRiskFilter('All')}
-                                className={`text-left rounded-2xl p-5 border relative overflow-hidden group transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-lg focus:outline-none ${
-                                    riskFilter === 'All' 
-                                        ? 'bg-blue-50/50 border-blue-200 shadow-md ring-2 ring-blue-500/20' 
-                                        : 'bg-white border-slate-100 shadow-sm'
-                                }`}
-                            >
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                                        riskFilter === 'All' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'
-                                    }`}>
-                                        <Users className="w-5 h-5" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Clients</h3>
-                                    <div className="text-4xl font-bold text-slate-800 font-display">
-                                        {loading ? '-' : dashboardData.stats.total}
-                                    </div>
-                                </div>
-                            </button>
-
-                            {/* Healthy Clients */}
-                            <button 
+                                loading={loading}
+                            />
+                            <PortfolioStatCard
+                                title="Healthy Clients"
+                                value={dashboardData.stats.healthy}
+                                icon={CheckCircle2}
+                                tone="green"
+                                isActive={riskFilter === 'Healthy'}
                                 onClick={() => setRiskFilter('Healthy')}
-                                className={`text-left rounded-2xl p-5 border relative overflow-hidden group transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-lg focus:outline-none ${
-                                    riskFilter === 'Healthy' 
-                                        ? 'bg-green-50/50 border-green-200 shadow-md ring-2 ring-green-500/20' 
-                                        : 'bg-white border-slate-100 shadow-sm'
-                                }`}
-                            >
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                                        riskFilter === 'Healthy' ? 'bg-green-600 text-white' : 'bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white'
-                                    }`}>
-                                        <CheckCircle2 className="w-5 h-5" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Healthy Clients</h3>
-                                    <div className="text-4xl font-bold text-slate-800 font-display">
-                                        {loading ? '-' : dashboardData.stats.healthy}
-                                    </div>
-                                </div>
-                            </button>
-
-                            {/* Attention Needed */}
-                            <button 
+                                loading={loading}
+                            />
+                            <PortfolioStatCard
+                                title="Attention Needed"
+                                value={dashboardData.stats.attention}
+                                icon={AlertCircle}
+                                tone="orange"
+                                isActive={riskFilter === 'Attention'}
                                 onClick={() => setRiskFilter('Attention')}
-                                className={`text-left rounded-2xl p-5 border relative overflow-hidden group transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-lg focus:outline-none ${
-                                    riskFilter === 'Attention' 
-                                        ? 'bg-orange-50/50 border-orange-200 shadow-md ring-2 ring-orange-500/20' 
-                                        : 'bg-white border-slate-100 shadow-sm'
-                                }`}
-                            >
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                                        riskFilter === 'Attention' ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white'
-                                    }`}>
-                                        <AlertCircle className="w-5 h-5" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Attention Needed</h3>
-                                    <div className="text-4xl font-bold text-slate-800 font-display">
-                                        {loading ? '-' : dashboardData.stats.attention}
-                                    </div>
-                                </div>
-                            </button>
-
-                            {/* Critical Clients */}
-                            <button 
+                                loading={loading}
+                            />
+                            <PortfolioStatCard
+                                title="Critical Priority"
+                                value={dashboardData.stats.critical}
+                                icon={AlertTriangle}
+                                tone="red"
+                                isActive={riskFilter === 'Critical'}
                                 onClick={() => setRiskFilter('Critical')}
-                                className={`text-left rounded-2xl p-5 border relative overflow-hidden group transition-all duration-200 cursor-pointer hover:-translate-y-1 hover:shadow-lg focus:outline-none ${
-                                    riskFilter === 'Critical' 
-                                        ? 'bg-red-50/50 border-red-200 shadow-md ring-2 ring-red-500/20' 
-                                        : 'bg-white border-slate-100 shadow-sm'
-                                }`}
-                            >
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                                        riskFilter === 'Critical' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white'
-                                    }`}>
-                                        <AlertTriangle className="w-5 h-5" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Critical Priority</h3>
-                                    <div className="text-4xl font-bold text-slate-800 font-display">
-                                        {loading ? '-' : dashboardData.stats.critical}
-                                    </div>
-                                </div>
-                            </button>
+                                loading={loading}
+                            />
                         </div>
 
                         {/* Smart Alerts Strip */}
@@ -985,28 +1034,15 @@ const CADashboard = () => {
                                         ) : (
                                             <tr>
                                                 <td colSpan="8" className="px-6 py-16 text-center">
-                                                    <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
-                                                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400">
-                                                            {searchQuery ? <Search className="w-8 h-8" /> : <Users className="w-8 h-8" />}
-                                                        </div>
-                                                        <h3 className="text-lg font-bold text-slate-800 mb-1">
-                                                            {dashboardData.clients.length === 0 ? 'Get started with VyaparOS' : 'No matching clients found'}
-                                                        </h3>
-                                                        <p className="text-slate-500 text-sm mb-6 text-center">
-                                                            {dashboardData.clients.length === 0
-                                                                ? (user?.role === 'ca' ? 'You haven\'t added any clients to your portfolio yet. Invite your team so they can add clients.' : 'No clients have been assigned to you yet.')
-                                                                : 'We couldn\'t find any clients matching your criteria. Try adjusting your search or filters.'}
-                                                        </p>
-                                                        {dashboardData.clients.length === 0 && user?.role === 'ca' && (
-                                                            <button
-                                                                onClick={() => setActiveTab('team')}
-                                                                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#002D50] text-white font-medium shadow-md shadow-[#002D50]/20 hover:bg-[#002D50]/90 transition-all hover:-translate-y-0.5"
-                                                            >
-                                                                <Users className="w-5 h-5" />
-                                                                + Invite Team Member to start onboarding
-                                                            </button>
-                                                        )}
-                                                    </div>
+                                                    <EmptyStateCard
+                                                        icon={dashboardData.clients.length === 0 ? Users : Search}
+                                                        title={dashboardData.clients.length === 0 ? 'No clients yet' : 'No matching clients found'}
+                                                        description={dashboardData.clients.length === 0
+                                                            ? 'Start by adding your first client to begin tracking compliance across your portfolio.'
+                                                            : 'Try adjusting your search or filters to surface the right client record.'}
+                                                        actionLabel={dashboardData.clients.length === 0 && user?.role === 'ca' ? 'Add Client' : undefined}
+                                                        onAction={dashboardData.clients.length === 0 && user?.role === 'ca' ? () => setShowAddModal(true) : undefined}
+                                                    />
                                                 </td>
                                             </tr>
                                         )}
@@ -1028,7 +1064,13 @@ const CADashboard = () => {
                         </div>
                     </>
                 ) : (
-                    <CATeamManagement firmClients={dashboardData.clients} caUserId={user?.id} unidentifiedDocs={unidentifiedDocs} refreshDashboard={fetchCADashboard} />
+                    <CATeamManagement
+                        firmClients={dashboardData.clients}
+                        caUserId={user?.id}
+                        unidentifiedDocs={unidentifiedDocs}
+                        refreshDashboard={fetchCADashboard}
+                        openInviteSignal={inviteModalSignal}
+                    />
                 )}
 
             </main>
@@ -1063,6 +1105,14 @@ const CADashboard = () => {
             <ReviewDocumentsModal 
                 client={reviewClientDocs} 
                 onClose={() => { setReviewClientDocs(null); fetchCADashboard(); }} 
+            />
+
+            <OnboardingModal
+                isOpen={showOnboardingModal}
+                currentStep={onboardingStep}
+                onInviteTeam={handleOpenInviteTeam}
+                onAddClient={handleOpenAddClient}
+                onClose={handleDismissOnboarding}
             />
         </div >
     );

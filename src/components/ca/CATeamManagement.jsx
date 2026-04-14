@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Users, Mail, Shield, Plus, X, Trash2, ChevronRight, Check, ClipboardList, FileText, CheckCircle2, AlertTriangle, User as UserIcon, Copy, Send } from 'lucide-react';
+import EmptyStateCard from './EmptyStateCard';
 
-const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refreshDashboard }) => {
+const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refreshDashboard, openInviteSignal = 0 }) => {
     const [team, setTeam] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -29,6 +30,17 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
     const [assigningDocId, setAssigningDocId] = useState(null);
     const [assignTargetClient, setAssignTargetClient] = useState("");
 
+    const openInviteModal = () => {
+        setShowAddModal(true);
+        setErrors({});
+        setApiError('');
+        setName('');
+        setEmail('');
+        setPhone('');
+        setRole('ca_article');
+        setSelectedClients([]);
+    };
+
     const fetchTeam = async () => {
         try {
             setLoading(true);
@@ -44,6 +56,12 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
     useEffect(() => {
         fetchTeam();
     }, []);
+
+    useEffect(() => {
+        if (openInviteSignal > 0) {
+            openInviteModal();
+        }
+    }, [openInviteSignal]);
 
     const handleInvite = async (e) => {
         e.preventDefault();
@@ -80,6 +98,7 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
             setErrors({});
             setApiError('');
             fetchTeam();
+            if (refreshDashboard) refreshDashboard();
         } catch (err) {
             console.error("Failed to invite:", err);
             setApiError(err.response?.data?.message || 'Failed to send invite');
@@ -97,6 +116,7 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
             });
             setShowRemoveModal(null);
             fetchTeam();
+            if (refreshDashboard) refreshDashboard();
         } catch (err) {
             console.error("Failed to remove:", err);
             alert('Failed to remove staff member');
@@ -122,6 +142,7 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
             });
             setShowAssignModal(null);
             fetchTeam();
+            if (refreshDashboard) refreshDashboard();
         } catch (err) {
             console.error("Failed to update assignments:", err);
             alert('Failed to update client assignments');
@@ -171,16 +192,7 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
                     <p className="text-sm text-slate-500">Manage your team members and assign client portfolios.</p>
                 </div>
                 <button
-                    onClick={() => {
-                        setShowAddModal(true);
-                        setErrors({});
-                        setApiError('');
-                        setName('');
-                        setEmail('');
-                        setPhone('');
-                        setRole('ca_article');
-                        setSelectedClients([]);
-                    }}
+                    onClick={openInviteModal}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0F5C4A] text-white text-sm font-medium shadow-sm hover:bg-[#0F5C4A]/90 transition-all"
                 >
                     <Plus className="w-4 h-4" />
@@ -205,13 +217,13 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
                         {team.length === 0 ? (
                             <tr>
                                 <td colSpan="5" className="px-6 py-12 text-center text-slate-500 bg-slate-50/50">
-                                    <div className="flex flex-col items-center justify-center">
-                                        <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-3">
-                                            <Users className="w-6 h-6 text-indigo-500" />
-                                        </div>
-                                        <p className="font-medium text-slate-700">No team members yet</p>
-                                        <p className="text-sm mt-1">Invite articles or senior staff to help manage your clients.</p>
-                                    </div>
+                                    <EmptyStateCard
+                                        icon={Users}
+                                        title="Build your team workspace"
+                                        description="Invite your first team member so they can help manage clients, filings, and follow-ups."
+                                        actionLabel="Invite Team Member"
+                                        onAction={openInviteModal}
+                                    />
                                 </td>
                             </tr>
                         ) : (
