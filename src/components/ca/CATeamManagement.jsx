@@ -194,7 +194,7 @@ const CATeamManagement = ({ firmClients, caUserId, unidentifiedDocs = [], refres
                 </div>
                 <button
                     onClick={openInviteModal}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0F5C4A] text-white text-sm font-medium shadow-sm hover:bg-[#0F5C4A]/90 transition-all"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0A2C4B]/15 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)]"
                 >
                     <Plus className="w-4 h-4" />
                     Invite Member
