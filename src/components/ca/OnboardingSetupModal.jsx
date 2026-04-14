@@ -19,7 +19,7 @@ const StepCard = ({
                 isActive
                     ? 'border-[#0A2C4B]/20 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(239,246,255,0.9))] shadow-[0_24px_48px_-32px_rgba(10,44,75,0.45)]'
                     : 'border-slate-200 bg-white/90'
-            } ${isDisabled ? 'opacity-60' : 'hover:-translate-y-1 hover:shadow-[0_30px_70px_-40px_rgba(15,23,42,0.35)]'}`}
+            } ${isDisabled ? 'border-amber-200/80 bg-[linear-gradient(180deg,rgba(255,251,235,0.95),rgba(255,255,255,0.98))] shadow-[0_18px_40px_-34px_rgba(245,158,11,0.4)] ring-1 ring-amber-100' : 'hover:-translate-y-1 hover:shadow-[0_30px_70px_-40px_rgba(15,23,42,0.35)]'}`}
         >
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
@@ -65,7 +65,7 @@ const StepCard = ({
                 disabled={isDisabled}
                 className={`mt-5 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ease-in-out ${
                     isDisabled
-                        ? 'cursor-not-allowed bg-slate-100 text-slate-400'
+                        ? 'cursor-not-allowed border border-amber-200 bg-white text-amber-700 shadow-sm'
                         : isActive
                             ? 'bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] text-white shadow-lg shadow-[#0A2C4B]/15 hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)]'
                             : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -157,7 +157,7 @@ const OnboardingSetupModal = ({
                             isActive={currentStep === 2}
                             isComplete={false}
                             isDisabled={currentStep < 2}
-                            progressLabel={currentStep < 2 ? 'Available after inviting your team' : 'Now active'}
+                            progressLabel={currentStep < 2 ? 'Complete Step 1 to unlock this step 🔓' : 'Now active'}
                         />
                     </div>
                 </div>

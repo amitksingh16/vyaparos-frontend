@@ -65,32 +65,32 @@ const PortfolioStatCard = ({
 }) => {
     const toneClasses = {
         blue: {
-            card: 'from-blue-50 via-white to-sky-50 border-blue-100/80',
+            card: 'from-blue-50/90 via-white to-sky-50/70 border-blue-100/70',
             active: 'ring-blue-500/20 border-blue-200 shadow-blue-200/50',
             icon: 'bg-blue-600 text-white',
             idleIcon: 'bg-blue-100 text-blue-700',
-            orb: 'bg-blue-400/20',
+            orb: 'bg-blue-400/15',
         },
         green: {
-            card: 'from-emerald-50 via-white to-green-50 border-emerald-100/80',
+            card: 'from-emerald-50/90 via-white to-green-50/70 border-emerald-100/70',
             active: 'ring-emerald-500/20 border-emerald-200 shadow-emerald-200/50',
             icon: 'bg-emerald-600 text-white',
             idleIcon: 'bg-emerald-100 text-emerald-700',
-            orb: 'bg-emerald-400/20',
+            orb: 'bg-emerald-400/15',
         },
         orange: {
-            card: 'from-amber-50 via-white to-orange-50 border-amber-100/80',
+            card: 'from-amber-50/90 via-white to-orange-50/70 border-amber-100/70',
             active: 'ring-amber-500/20 border-amber-200 shadow-amber-200/50',
             icon: 'bg-amber-600 text-white',
             idleIcon: 'bg-amber-100 text-amber-700',
-            orb: 'bg-amber-400/20',
+            orb: 'bg-amber-400/15',
         },
         red: {
-            card: 'from-rose-50 via-white to-red-50 border-rose-100/80',
+            card: 'from-rose-50/90 via-white to-red-50/70 border-rose-100/70',
             active: 'ring-red-500/20 border-red-200 shadow-red-200/50',
             icon: 'bg-red-600 text-white',
             idleIcon: 'bg-red-100 text-red-700',
-            orb: 'bg-red-400/20',
+            orb: 'bg-red-400/15',
         },
     };
 
@@ -613,17 +613,12 @@ const CADashboard = () => {
                 </div>
 
                 {showOnboardingBanner && (
-                    <>
-                        <OnboardingProgressBanner
-                            completedSteps={completedSetupSteps}
-                            totalSteps={2}
-                            percentComplete={onboardingPercent}
-                            onContinue={handleContinueSetup}
-                        />
-                        <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-900 shadow-sm">
-                            <span className="font-semibold">Tip:</span> Invite your team first to distribute workload efficiently and keep client follow-ups moving.
-                        </div>
-                    </>
+                    <OnboardingProgressBanner
+                        completedSteps={completedSetupSteps}
+                        totalSteps={2}
+                        percentComplete={onboardingPercent}
+                        onContinue={handleContinueSetup}
+                    />
                 )}
 
                 {/* Inline Tab Navigation for CA Owners */}
@@ -1078,6 +1073,11 @@ const CADashboard = () => {
                                                         helperText={dashboardData.clients.length === 0
                                                             ? 'Once your first client is added, deadlines, documents, and follow-ups become visible in one place.'
                                                             : 'Search by client name, filing type, or assigned teammate to narrow your results.'}
+                                                        highlights={dashboardData.clients.length === 0 ? [
+                                                            'Track compliance health in real-time',
+                                                            'Monitor upcoming deadlines',
+                                                            'Assign work to your team',
+                                                        ] : undefined}
                                                         actionLabel={dashboardData.clients.length === 0 && user?.role === 'ca' ? 'Add Your First Client' : undefined}
                                                         onAction={dashboardData.clients.length === 0 && user?.role === 'ca' ? () => setShowAddModal(true) : undefined}
                                                         animateIcon

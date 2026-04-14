@@ -5,6 +5,7 @@ const EmptyStateCard = ({
     title,
     description,
     helperText,
+    highlights,
     actionLabel,
     onAction,
     animateIcon = false,
@@ -25,6 +26,19 @@ const EmptyStateCard = ({
                 >
                     {actionLabel}
                 </button>
+            )}
+            {highlights?.length > 0 && (
+                <div className="mt-5 w-full rounded-2xl border border-slate-200 bg-white/80 px-4 py-4 text-left">
+                    <p className="text-sm font-semibold text-slate-700">When you add your first client:</p>
+                    <ul className="mt-3 space-y-2 text-sm text-slate-500">
+                        {highlights.map((highlight) => (
+                            <li key={highlight} className="flex items-start gap-2">
+                                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#0F5C4A]" />
+                                <span>{highlight}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             )}
         </div>
     );
