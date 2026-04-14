@@ -1,15 +1,23 @@
 import { motion } from 'framer-motion';
-import CountUp from 'react-countup';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BellRing, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react';
 import { staggerContainer, staggerItem } from './motion';
 
 void motion;
 
-const heroStats = [
-    { label: 'Client Entities', value: 142, suffix: '+' },
-    { label: 'Deadline Visibility', value: 99, suffix: '%' },
-    { label: 'Hours Saved Weekly', value: 18, suffix: 'h' },
+const heroHighlights = [
+    {
+        title: 'Multi-client portfolio tracking',
+        description: 'Manage all your clients and compliance workflows from a single unified dashboard.',
+    },
+    {
+        title: 'Real-time deadline visibility',
+        description: 'Stay ahead of filings with clear, prioritized deadline tracking across all entities.',
+    },
+    {
+        title: 'Automated follow-ups',
+        description: 'Reduce manual effort with structured reminders and task workflows.',
+    },
 ];
 
 const dashboardRows = [
@@ -87,7 +95,7 @@ const HeroSection = () => {
                                 to="/login"
                                 className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white/80 px-6 py-4 text-base font-semibold text-slate-700 shadow-lg shadow-slate-200/40 backdrop-blur transition-colors duration-300 hover:border-slate-300 hover:bg-white"
                             >
-                                CA Sign In
+                                Sign In
                             </Link>
                         </motion.div>
                     </motion.div>
@@ -114,16 +122,17 @@ const HeroSection = () => {
                         variants={staggerItem}
                         className="mt-12 grid gap-4 sm:grid-cols-3"
                     >
-                        {heroStats.map((stat) => (
+                        {heroHighlights.map((highlight) => (
                             <div
-                                key={stat.label}
+                                key={highlight.title}
                                 className="rounded-3xl border border-white/70 bg-white/70 p-5 shadow-xl shadow-blue-100/40 backdrop-blur-xl"
                             >
-                                <div className="text-3xl font-black tracking-[-0.04em] text-slate-950">
-                                    <CountUp end={stat.value} duration={2.4} />
-                                    {stat.suffix}
+                                <div className="text-lg font-black tracking-[-0.04em] text-slate-950 sm:text-xl">
+                                    {highlight.title}
                                 </div>
-                                <div className="mt-2 text-sm font-medium text-slate-500">{stat.label}</div>
+                                <div className="mt-2 text-sm font-medium leading-6 text-slate-500">
+                                    {highlight.description}
+                                </div>
                             </div>
                         ))}
                     </motion.div>

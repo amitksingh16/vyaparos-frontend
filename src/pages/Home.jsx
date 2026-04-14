@@ -36,7 +36,7 @@ const Home = () => {
                             to="/login"
                             className="hidden rounded-2xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-950 sm:inline-flex"
                         >
-                            CA Sign In
+                            Sign In
                         </Link>
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Link
