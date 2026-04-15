@@ -1,4 +1,5 @@
-import { createElement } from 'react';
+import React, { useState, createElement } from 'react';
+import axios from 'axios';
 import { Check, ChevronRight, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -13,6 +14,8 @@ const StepCard = ({
     isComplete,
     isDisabled = false,
     progressLabel,
+    hideButton = false,
+    children,
 }) => {
     return (
         <div
@@ -61,7 +64,10 @@ const StepCard = ({
                 </div>
             </div>
 
-            <button
+            {children}
+
+            {!hideButton && (
+                <button
                 onClick={onAction}
                 disabled={isDisabled}
                 className={`mt-5 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ease-in-out ${
@@ -75,6 +81,7 @@ const StepCard = ({
                 {actionLabel}
                 {!isDisabled && <ChevronRight className="h-4 w-4" />}
             </button>
+            )}
         </div>
     );
 };
@@ -95,6 +102,26 @@ const OnboardingSetupModal = ({
     const stepOneComplete = currentStep > 1;
     const stepTwoComplete = currentStep > 2;
 
+    const [firmData, setFirmData] = useState({
+        name: '',
+        size: '',
+        portfolio: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleFirmSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            await axios.post('/api/ca/setup', firmData);
+            if (onSetupFirm) onSetupFirm(firmData);
+        } catch (error) {
+            console.error('Failed to setup firm', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-md">
             <div className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
@@ -110,7 +137,7 @@ const OnboardingSetupModal = ({
                                 Welcome to VyaparOS <span className="inline-block">👋</span>
                             </h2>
                             <p className="mt-2 text-base text-slate-500">
-                                Let&apos;s set up your workspace in 2 quick steps
+                                Let&apos;s set up your workspace in 3 quick steps
                             </p>
                         </div>
 
@@ -138,7 +165,7 @@ const OnboardingSetupModal = ({
                         </p>
                     </div>
 
-                    <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                    <div className="mt-6 grid items-start gap-4 lg:grid-cols-3">
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -154,7 +181,59 @@ const OnboardingSetupModal = ({
                                 isActive={currentStep === 1}
                                 isComplete={stepOneComplete}
                                 progressLabel={stepOneComplete ? 'Completed' : 'Required to unlock Step 2'}
-                            />
+                                hideButton={!stepOneComplete}
+                            >
+                                {!stepOneComplete && (
+                                    <form onSubmit={handleFirmSubmit} className="mt-5 flex flex-col gap-4">
+                                        <div>
+                                            <label className="mb-1 block text-xs font-semibold text-slate-700">Firm Name / Practice Name</label>
+                                            <input 
+                                                required 
+                                                type="text" 
+                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                value={firmData.name}
+                                                onChange={(e) => setFirmData({...firmData, name: e.target.value})}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="mb-1 block text-xs font-semibold text-slate-700">Estimated Number of Clients</label>
+                                            <select 
+                                                required
+                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                value={firmData.size}
+                                                onChange={(e) => setFirmData({...firmData, size: e.target.value})}
+                                            >
+                                                <option value="">Select size...</option>
+                                                <option value="1-50">1-50</option>
+                                                <option value="51-200">51-200</option>
+                                                <option value="200+">200+</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="mb-1 block text-xs font-semibold text-slate-700">Primary Portfolio Composition</label>
+                                            <select 
+                                                required
+                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                value={firmData.portfolio}
+                                                onChange={(e) => setFirmData({...firmData, portfolio: e.target.value})}
+                                            >
+                                                <option value="">Select composition...</option>
+                                                <option value="Mixed">Mixed</option>
+                                                <option value="Only GST">Only GST</option>
+                                                <option value="Only IT Returns">Only IT Returns</option>
+                                            </select>
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0A2C4B]/15 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)] disabled:cursor-not-allowed disabled:opacity-70"
+                                        >
+                                            {isSubmitting ? 'Saving...' : 'Save Firm Details'}
+                                            {!isSubmitting && <ChevronRight className="h-4 w-4" />}
+                                        </button>
+                                    </form>
+                                )}
+                            </StepCard>
                         </motion.div>
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}

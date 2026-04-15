@@ -473,11 +473,7 @@ const CADashboard = () => {
         setOnboardingInProgress(false);
     };
 
-    const handleOpenSetupFirm = () => {
-        setShowOnboardingModal(false);
-        setOnboardingInProgress(true);
-        setShowFirmSetupModal(true);
-    };
+
 
     const handleFirmSetupSuccess = () => {
         setShowFirmSetupModal(false);
@@ -1177,7 +1173,7 @@ const CADashboard = () => {
                 percentComplete={onboardingPercent}
                 completedSteps={completedSetupSteps}
                 totalSteps={3}
-                onSetupFirm={handleOpenSetupFirm}
+                onSetupFirm={handleFirmSetupSuccess}
                 onInviteTeam={handleOpenInviteTeam}
                 onAddClient={handleOpenAddClient}
                 onClose={handleDismissOnboarding}
