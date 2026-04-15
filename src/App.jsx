@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import BusinessProfile from './pages/onboarding/BusinessProfile';
-import CAOnboarding from './pages/onboarding/CAOnboarding';
+import OnboardingSetupModal from './components/ca/OnboardingSetupModal';
 import Dashboard from './pages/Dashboard';
 import Calendar from './pages/compliance/Calendar';
 import CADashboard from './pages/ca/CADashboard';
@@ -74,7 +74,7 @@ function App() {
                             path="/onboarding/ca"
                             element={
                                 <ProtectedRoute requireRole="ca" requireSetup={false} blockIfSetupComplete={true}>
-                                    <CAOnboarding />
+                                    <OnboardingSetupModal isOpen={true} currentStep={1} percentComplete={0} completedSteps={0} totalSteps={3} />
                                 </ProtectedRoute>
                             }
                         />

@@ -19,7 +19,7 @@ const StepCard = ({
 }) => {
     return (
         <div
-            className={`rounded-3xl border p-5 transition-all duration-200 ease-in-out ${
+            className={`flex flex-col h-full rounded-3xl border p-5 transition-all duration-200 ease-in-out ${
                 isActive
                     ? 'border-[#0A2C4B]/20 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(239,246,255,0.9))] shadow-[0_24px_48px_-32px_rgba(10,44,75,0.45)]'
                     : 'border-slate-200 bg-white/90'
@@ -70,7 +70,7 @@ const StepCard = ({
                 <button
                 onClick={onAction}
                 disabled={isDisabled}
-                className={`mt-5 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ease-in-out ${
+                className={`mt-auto inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ease-in-out ${
                     isDisabled
                         ? 'cursor-not-allowed border border-amber-200 bg-white text-amber-700 shadow-sm'
                         : isActive
@@ -124,7 +124,7 @@ const OnboardingSetupModal = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-md">
-            <div className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
+            <div className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden overflow-y-auto rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
                 <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_top_right,rgba(245,158,11,0.16),transparent_36%)]" />
                 <div className="relative p-6 sm:p-8">
                     <div className="flex items-start justify-between gap-4">
@@ -165,8 +165,9 @@ const OnboardingSetupModal = ({
                         </p>
                     </div>
 
-                    <div className="mt-6 grid items-start gap-4 lg:grid-cols-3">
+                    <div className="mt-6 grid items-stretch gap-4 lg:grid-cols-3">
                         <motion.div
+                            className="h-full flex flex-col"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
@@ -184,13 +185,13 @@ const OnboardingSetupModal = ({
                                 hideButton={!stepOneComplete}
                             >
                                 {!stepOneComplete && (
-                                    <form onSubmit={handleFirmSubmit} className="mt-5 flex flex-col gap-4">
+                                    <form onSubmit={handleFirmSubmit} className="mt-4 flex flex-col gap-3 flex-grow">
                                         <div>
                                             <label className="mb-1 block text-xs font-semibold text-slate-700">Firm Name / Practice Name</label>
                                             <input 
                                                 required 
                                                 type="text" 
-                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
                                                 value={firmData.name}
                                                 onChange={(e) => setFirmData({...firmData, name: e.target.value})}
                                             />
@@ -199,7 +200,7 @@ const OnboardingSetupModal = ({
                                             <label className="mb-1 block text-xs font-semibold text-slate-700">Estimated Number of Clients</label>
                                             <select 
                                                 required
-                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
                                                 value={firmData.size}
                                                 onChange={(e) => setFirmData({...firmData, size: e.target.value})}
                                             >
@@ -213,7 +214,7 @@ const OnboardingSetupModal = ({
                                             <label className="mb-1 block text-xs font-semibold text-slate-700">Primary Portfolio Composition</label>
                                             <select 
                                                 required
-                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
                                                 value={firmData.portfolio}
                                                 onChange={(e) => setFirmData({...firmData, portfolio: e.target.value})}
                                             >
@@ -226,7 +227,7 @@ const OnboardingSetupModal = ({
                                         <button
                                             type="submit"
                                             disabled={isSubmitting}
-                                            className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0A2C4B]/15 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)] disabled:cursor-not-allowed disabled:opacity-70"
+                                            className="mt-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0A2C4B]/15 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)] disabled:cursor-not-allowed disabled:opacity-70"
                                         >
                                             {isSubmitting ? 'Saving...' : 'Save Firm Details'}
                                             {!isSubmitting && <ChevronRight className="h-4 w-4" />}
@@ -236,6 +237,7 @@ const OnboardingSetupModal = ({
                             </StepCard>
                         </motion.div>
                         <motion.div
+                            className="h-full flex flex-col"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
@@ -254,6 +256,7 @@ const OnboardingSetupModal = ({
                             />
                         </motion.div>
                         <motion.div
+                            className="h-full flex flex-col"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
