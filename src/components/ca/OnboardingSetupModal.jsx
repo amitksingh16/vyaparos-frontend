@@ -1,5 +1,6 @@
 import { createElement } from 'react';
-import { Check, ChevronRight, Sparkles, UserPlus, Users } from 'lucide-react';
+import { Check, ChevronRight, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const StepCard = ({
     stepNumber,
@@ -84,6 +85,7 @@ const OnboardingSetupModal = ({
     percentComplete,
     completedSteps,
     totalSteps,
+    onSetupFirm,
     onInviteTeam,
     onAddClient,
     onClose,
@@ -91,6 +93,7 @@ const OnboardingSetupModal = ({
     if (!isOpen) return null;
 
     const stepOneComplete = currentStep > 1;
+    const stepTwoComplete = currentStep > 2;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-md">
@@ -135,30 +138,60 @@ const OnboardingSetupModal = ({
                         </p>
                     </div>
 
-                    <div className="mt-6 grid gap-4 lg:grid-cols-2">
-                        <StepCard
-                            stepNumber={1}
-                            title="Invite your team"
-                            description="Add your staff so they can manage clients and filings"
-                            actionLabel="Invite Team"
-                            onAction={onInviteTeam}
-                            icon={UserPlus}
-                            isActive={currentStep === 1}
-                            isComplete={stepOneComplete}
-                            progressLabel={stepOneComplete ? 'Completed' : 'Required to unlock Step 2'}
-                        />
-                        <StepCard
-                            stepNumber={2}
-                            title="Add your first client"
-                            description="Start tracking compliance for your clients"
-                            actionLabel="Add Client"
-                            onAction={onAddClient}
-                            icon={Users}
-                            isActive={currentStep === 2}
-                            isComplete={false}
-                            isDisabled={currentStep < 2}
-                            progressLabel={currentStep < 2 ? 'Complete Step 1 to unlock this step 🔓' : 'Now active'}
-                        />
+                    <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <StepCard
+                                stepNumber={1}
+                                title="Setup your firm"
+                                description="Add your firm details to personalize your workspace"
+                                actionLabel="Setup Firm"
+                                onAction={onSetupFirm}
+                                icon={Building2}
+                                isActive={currentStep === 1}
+                                isComplete={stepOneComplete}
+                                progressLabel={stepOneComplete ? 'Completed' : 'Required to unlock Step 2'}
+                            />
+                        </motion.div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <StepCard
+                                stepNumber={2}
+                                title="Invite your team"
+                                description="Add your staff so they can manage clients and filings"
+                                actionLabel="Invite Team"
+                                onAction={onInviteTeam}
+                                icon={UserPlus}
+                                isActive={currentStep === 2}
+                                isComplete={stepTwoComplete}
+                                isDisabled={currentStep < 2}
+                                progressLabel={stepTwoComplete ? 'Completed' : currentStep < 2 ? 'Complete Step 1 to unlock this step 🔓' : 'Required to unlock Step 3'}
+                            />
+                        </motion.div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            <StepCard
+                                stepNumber={3}
+                                title="Add your first client"
+                                description="Start tracking compliance for your clients"
+                                actionLabel="Add Client"
+                                onAction={onAddClient}
+                                icon={Users}
+                                isActive={currentStep === 3}
+                                isComplete={false}
+                                isDisabled={currentStep < 3}
+                                progressLabel={currentStep < 3 ? 'Complete Step 2 to unlock this step 🔓' : 'Now active'}
+                            />
+                        </motion.div>
                     </div>
                 </div>
             </div>

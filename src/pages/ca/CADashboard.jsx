@@ -13,6 +13,7 @@ import CAUnidentifiedModal from '../../components/ca/CAUnidentifiedModal';
 import ReviewDocumentsModal from '../../components/ca/ReviewDocumentsModal';
 import EmptyStateCard from '../../components/ca/EmptyStateCard';
 import OnboardingSetupModal from '../../components/ca/OnboardingSetupModal';
+import FirmSetupForm from '../../components/ca/FirmSetupForm';
 import OnboardingProgressBanner from '../../components/ca/OnboardingProgressBanner';
 import { NotificationDropdown, ProfileDropdown } from '../../components/ui/HeaderDropdowns';
 
@@ -151,8 +152,12 @@ const CADashboard = () => {
     const [visibleCount, setVisibleCount] = useState(15);
     const [activeTab, setActiveTab] = useState('portfolio');
     const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+    const [showFirmSetupModal, setShowFirmSetupModal] = useState(false);
     const [onboardingDismissed, setOnboardingDismissed] = useState(false);
     const [onboardingInProgress, setOnboardingInProgress] = useState(false);
+    const [firmCreated, setFirmCreated] = useState(() => {
+        return localStorage.getItem('firmSetupComplete') === 'true';
+    });
     const [inviteModalSignal, setInviteModalSignal] = useState(0);
     let displayName = user?.name || "User";
     if (displayName.toLowerCase().endsWith(' staff')) {
@@ -436,30 +441,49 @@ const CADashboard = () => {
     const isIndeterminate = selectedClients.length > 0 && selectedClients.length < sortedAndFilteredClients.length;
     const totalClients = dashboardData.clients.length;
     const teamMembers = team.length;
-    const completedSetupSteps = (teamMembers > 0 ? 1 : 0) + (totalClients > 0 ? 1 : 0);
-    const onboardingStep = teamMembers > 0 ? 2 : 1;
-    const onboardingPercent = Math.round((completedSetupSteps / 2) * 100);
-    const showOnboardingBanner = user?.role === 'ca' && completedSetupSteps < 2;
+    const completedSetupSteps = (firmCreated ? 1 : 0) + (teamMembers > 0 ? 1 : 0) + (totalClients > 0 ? 1 : 0);
+    
+    let onboardingStep = 1;
+    if (firmCreated) onboardingStep = 2;
+    if (firmCreated && teamMembers > 0) onboardingStep = 3;
+
+    const onboardingPercent = Math.round((completedSetupSteps / 3) * 100);
+    const showOnboardingBanner = user?.role === 'ca' && completedSetupSteps < 3;
 
     useEffect(() => {
         if (user?.role !== 'ca' || loading || onboardingDismissed) return;
 
-        if (totalClients === 0 && (teamMembers === 0 || onboardingInProgress)) {
-            setShowOnboardingModal(true);
-            setOnboardingInProgress(true);
-            return;
+        if (completedSetupSteps < 3) {
+            if (completedSetupSteps === 0 || onboardingInProgress) {
+                setShowOnboardingModal(true);
+                setOnboardingInProgress(true);
+                return;
+            }
         }
 
-        if (totalClients > 0) {
+        if (completedSetupSteps === 3) {
             setShowOnboardingModal(false);
             setOnboardingInProgress(false);
         }
-    }, [loading, onboardingDismissed, onboardingInProgress, teamMembers, totalClients, user?.role]);
+    }, [loading, onboardingDismissed, onboardingInProgress, completedSetupSteps, user?.role]);
 
     const handleDismissOnboarding = () => {
         setShowOnboardingModal(false);
         setOnboardingDismissed(true);
         setOnboardingInProgress(false);
+    };
+
+    const handleOpenSetupFirm = () => {
+        setShowOnboardingModal(false);
+        setOnboardingInProgress(true);
+        setShowFirmSetupModal(true);
+    };
+
+    const handleFirmSetupSuccess = () => {
+        setShowFirmSetupModal(false);
+        setFirmCreated(true);
+        localStorage.setItem('firmSetupComplete', 'true');
+        setShowOnboardingModal(true);
     };
 
     const handleOpenInviteTeam = () => {
@@ -615,7 +639,7 @@ const CADashboard = () => {
                 {showOnboardingBanner && (
                     <OnboardingProgressBanner
                         completedSteps={completedSetupSteps}
-                        totalSteps={2}
+                        totalSteps={3}
                         percentComplete={onboardingPercent}
                         onContinue={handleContinueSetup}
                     />
@@ -1152,10 +1176,17 @@ const CADashboard = () => {
                 currentStep={onboardingStep}
                 percentComplete={onboardingPercent}
                 completedSteps={completedSetupSteps}
-                totalSteps={2}
+                totalSteps={3}
+                onSetupFirm={handleOpenSetupFirm}
                 onInviteTeam={handleOpenInviteTeam}
                 onAddClient={handleOpenAddClient}
                 onClose={handleDismissOnboarding}
+            />
+
+            <FirmSetupForm
+                isOpen={showFirmSetupModal}
+                onClose={() => setShowFirmSetupModal(false)}
+                onSuccess={handleFirmSetupSuccess}
             />
         </div >
     );
