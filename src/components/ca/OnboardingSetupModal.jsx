@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createElement } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { Check, ChevronRight, ChevronLeft, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -43,6 +44,8 @@ const OnboardingSetupModal = ({
 }) => {
     if (!isOpen) return null;
 
+    const navigate = useNavigate();
+
     const [activeStep, setActiveStep] = useState(currentStep || 1);
     
     // Sync active step if prop changes (optional but good practice)
@@ -59,11 +62,11 @@ const OnboardingSetupModal = ({
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Step 2 State
-    const [teamInviteData, setTeamInviteData] = useState({ name: '', email: '', role: 'ca_staff' });
+    const [teamInviteData, setTeamInviteData] = useState({ name: '', email: '', mobile: '', role: 'ca_staff' });
     const [isInviting, setIsInviting] = useState(false);
 
     // Step 3 State
-    const [clientData, setClientData] = useState({ business_name: '', filing_type: 'GST & IT' });
+    const [clientData, setClientData] = useState({ business_name: '', filing_type: 'GST & IT', primary_mobile: '', secondary_mobile: '', pan_number: '', gst_number: '' });
 
     const handleFirmSubmit = async (e) => {
         e.preventDefault();
@@ -100,6 +103,7 @@ const OnboardingSetupModal = ({
         e.preventDefault();
         if (onAddClient) onAddClient(clientData);
         else if (onClose) onClose();
+        navigate('/ca/dashboard');
     };
     
     // UI Helpers
@@ -137,8 +141,8 @@ const OnboardingSetupModal = ({
     );
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-md">
-            <div className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 sm:p-8">
+            <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
                 <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_top_right,rgba(245,158,11,0.16),transparent_36%)]" />
                 <div className="relative p-6 sm:p-8">
                     <div className="flex items-start justify-between gap-4">
@@ -166,7 +170,7 @@ const OnboardingSetupModal = ({
                     <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-4 max-w-xl mx-auto">
                         <div className="flex items-center justify-between gap-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                             <span>Setup Progress</span>
-                            <span>{activePercent}% complete</span>
+                            <span>{activePercent}% COMPLETED</span>
                         </div>
                         <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-200">
                             <div
@@ -288,6 +292,17 @@ const OnboardingSetupModal = ({
                                                     onChange={(e) => setTeamInviteData({...teamInviteData, email: e.target.value})}
                                                 />
                                             </div>
+                                            <div>
+                                                <label className="mb-1.5 block text-xs font-semibold text-slate-700">Mobile Number</label>
+                                                <input 
+                                                    required 
+                                                    type="tel" 
+                                                    placeholder="e.g. 9876543210"
+                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                    value={teamInviteData.mobile}
+                                                    onChange={(e) => setTeamInviteData({...teamInviteData, mobile: e.target.value})}
+                                                />
+                                            </div>
                                             <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
                                                 <BackButton onClick={() => setActiveStep(1)} />
                                                 <div className="flex items-center gap-2">
@@ -320,28 +335,72 @@ const OnboardingSetupModal = ({
                                         icon={Users}
                                     >
                                         <form onSubmit={handleClientSubmit} className="flex flex-col gap-4 mt-2">
-                                            <div>
-                                                <label className="mb-1.5 block text-xs font-semibold text-slate-700">Business Name</label>
-                                                <input 
-                                                    required 
-                                                    type="text" 
-                                                    placeholder="e.g. Acme Corp"
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
-                                                    value={clientData.business_name}
-                                                    onChange={(e) => setClientData({...clientData, business_name: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="mb-1.5 block text-xs font-semibold text-slate-700">Filing Type</label>
-                                                <select 
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
-                                                    value={clientData.filing_type}
-                                                    onChange={(e) => setClientData({...clientData, filing_type: e.target.value})}
-                                                >
-                                                    <option>GST & IT</option>
-                                                    <option>GST Only</option>
-                                                    <option>IT Only</option>
-                                                </select>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Business Name</label>
+                                                    <input 
+                                                        required 
+                                                        type="text" 
+                                                        placeholder="e.g. Acme Corp"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        value={clientData.business_name}
+                                                        onChange={(e) => setClientData({...clientData, business_name: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Filing Type</label>
+                                                    <select 
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        value={clientData.filing_type}
+                                                        onChange={(e) => setClientData({...clientData, filing_type: e.target.value})}
+                                                    >
+                                                        <option>GST & IT</option>
+                                                        <option>GST Only</option>
+                                                        <option>IT Only</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Primary Mobile (WhatsApp)</label>
+                                                    <input 
+                                                        required 
+                                                        type="tel" 
+                                                        placeholder="e.g. 9876543210"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        value={clientData.primary_mobile}
+                                                        onChange={(e) => setClientData({...clientData, primary_mobile: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Secondary Mobile</label>
+                                                    <input 
+                                                        type="tel" 
+                                                        placeholder="Optional"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        value={clientData.secondary_mobile}
+                                                        onChange={(e) => setClientData({...clientData, secondary_mobile: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">PAN Number</label>
+                                                    <input 
+                                                        required 
+                                                        type="text" 
+                                                        placeholder="ABCDE1234F"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20 uppercase"
+                                                        value={clientData.pan_number}
+                                                        onChange={(e) => setClientData({...clientData, pan_number: e.target.value.toUpperCase()})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">GST Number</label>
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Optional"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20 uppercase"
+                                                        value={clientData.gst_number}
+                                                        onChange={(e) => setClientData({...clientData, gst_number: e.target.value.toUpperCase()})}
+                                                    />
+                                                </div>
                                             </div>
                                             <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
                                                 <BackButton onClick={() => setActiveStep(2)} />
