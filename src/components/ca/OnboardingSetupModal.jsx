@@ -138,7 +138,7 @@ const OnboardingSetupModal = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-md">
-            <div className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden overflow-y-auto rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
+            <div className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
                 <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_top_right,rgba(245,158,11,0.16),transparent_36%)]" />
                 <div className="relative p-6 sm:p-8">
                     <div className="flex items-start justify-between gap-4">
@@ -179,7 +179,7 @@ const OnboardingSetupModal = ({
                         </p>
                     </div>
 
-                    <div className="mt-8 relative max-w-xl mx-auto flex items-center justify-center">
+                    <div className="mt-8 relative max-w-xl mx-auto flex items-center justify-center min-h-[380px]">
                         <AnimatePresence mode="wait">
                             {activeStep === 1 && (
                                 <motion.div
@@ -294,7 +294,7 @@ const OnboardingSetupModal = ({
                                                     <SkipButton onClick={() => setActiveStep(3)} />
                                                     <PrimaryButton 
                                                         isSubmit 
-                                                        label="Send Invite & Next" 
+                                                        label="Send Invites & Next" 
                                                         loading={isInviting} 
                                                     />
                                                 </div>
