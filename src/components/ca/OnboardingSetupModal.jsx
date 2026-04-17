@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createElement } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { Check, ChevronRight, ChevronLeft, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,27 +13,60 @@ const StepCard = ({
     children,
 }) => {
     return (
-        <div className="flex flex-col rounded-3xl border border-[#0A2C4B]/20 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(239,246,255,0.9))] shadow-[0_24px_48px_-32px_rgba(10,44,75,0.45)] p-6 sm:p-8 transition-all duration-300 w-full">
+        <div className="flex flex-col rounded-3xl border border-[#0A2C4B]/20 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(239,246,255,0.9))] shadow-[0_24px_48px_-32px_rgba(10,44,75,0.45)] p-5 transition-all duration-300 w-full">
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#0A2C4B] text-white shadow-md flex-shrink-0">
-                        {createElement(icon, { className: 'h-6 w-6' })}
+                    <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-[#0A2C4B] text-white shadow-md flex-shrink-0">
+                        {createElement(icon, { className: 'h-5 w-5' })}
                     </div>
                     <div>
-                        <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-400">
                             Step {stepNumber}
                         </div>
-                        <h3 className="mt-1 text-lg sm:text-xl font-bold text-slate-900">{title}</h3>
-                        <p className="mt-1 sm:mt-2 text-sm leading-6 text-slate-500">{description}</p>
+                        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+                        <p className="mt-0.5 text-xs text-slate-500">{description}</p>
                     </div>
                 </div>
             </div>
-            <div className="mt-6 flex-grow flex flex-col">
+            <div className="mt-4 flex-grow flex flex-col">
                 {children}
             </div>
         </div>
     );
 };
+
+const PrimaryButton = ({ label, onClick, disabled, loading, isSubmit = false }) => (
+    <button
+        type={isSubmit ? "submit" : "button"}
+        onClick={!isSubmit ? onClick : undefined}
+        disabled={disabled || loading}
+        className="inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-[#0A2C4B]/15 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)] disabled:cursor-not-allowed disabled:opacity-70"
+    >
+        {loading ? 'Processing...' : label}
+        {!loading && <ChevronRight className="h-4 w-4" />}
+    </button>
+);
+
+const BackButton = ({ onClick }) => (
+    <button
+        type="button"
+        onClick={onClick}
+        className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
+    >
+        <ChevronLeft className="h-4 w-4" />
+        Back
+    </button>
+);
+
+const SkipButton = ({ onClick }) => (
+    <button
+        type="button"
+        onClick={onClick}
+        className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:text-slate-700"
+    >
+        Skip
+    </button>
+);
 
 const OnboardingSetupModal = ({
     isOpen,
@@ -45,6 +79,7 @@ const OnboardingSetupModal = ({
     if (!isOpen) return null;
 
     const navigate = useNavigate();
+    const { fetchUser } = useAuth();
 
     const [activeStep, setActiveStep] = useState(currentStep || 1);
     
@@ -99,91 +134,64 @@ const OnboardingSetupModal = ({
         }
     };
 
-    const handleClientSubmit = (e) => {
+    const handleClientSubmit = async (e) => {
         e.preventDefault();
-        if (onAddClient) onAddClient(clientData);
-        else if (onClose) onClose();
+        try {
+            if (onAddClient) {
+                await onAddClient(clientData);
+            } else {
+                await axios.post('/api/businesses', clientData);
+            }
+        } catch (error) {
+            console.error('Failed to setup client', error);
+        }
+        await fetchUser();
+        if (onClose) onClose();
         navigate('/ca/dashboard');
     };
-    
-    // UI Helpers
-    const PrimaryButton = ({ label, onClick, disabled, loading, isSubmit = false }) => (
-        <button
-            type={isSubmit ? "submit" : "button"}
-            onClick={!isSubmit ? onClick : undefined}
-            disabled={disabled || loading}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#0A2C4B]/15 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)] disabled:cursor-not-allowed disabled:opacity-70"
-        >
-            {loading ? 'Processing...' : label}
-            {!loading && <ChevronRight className="h-4 w-4" />}
-        </button>
-    );
-
-    const BackButton = ({ onClick }) => (
-        <button
-            type="button"
-            onClick={onClick}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
-        >
-            <ChevronLeft className="h-4 w-4" />
-            Back
-        </button>
-    );
-
-    const SkipButton = ({ onClick }) => (
-        <button
-            type="button"
-            onClick={onClick}
-            className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-400 transition-colors hover:text-slate-700"
-        >
-            Skip
-        </button>
-    );
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 sm:p-8">
-            <div className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
-                <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_top_right,rgba(245,158,11,0.16),transparent_36%)]" />
-                <div className="relative p-6 sm:p-8">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 sm:p-6">
+            <div className="relative w-full max-w-2xl flex flex-col max-h-[90vh] rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
+                <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_top_right,rgba(245,158,11,0.16),transparent_36%)] rounded-t-[2rem]" />
+                
+                <div className="relative flex flex-col flex-1 overflow-y-auto p-5 sm:p-7">
                     <div className="flex items-start justify-between gap-4">
                         <div>
-                            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                            <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                                <Sparkles className="h-3 w-3 text-amber-500" />
                                 Guided Setup
                             </div>
-                            <h2 className="mt-4 text-3xl font-bold tracking-[-0.04em] text-slate-950">
+                            <h2 className="mt-2 text-2xl font-bold tracking-[-0.02em] text-slate-950">
                                 Welcome to VyaparOS <span className="inline-block">👋</span>
                             </h2>
-                            <p className="mt-2 text-base text-slate-500">
+                            <p className="mt-1 text-sm text-slate-500">
                                 Let&apos;s set up your workspace in 3 quick steps
                             </p>
                         </div>
 
                         <button
                             onClick={onClose}
-                            className="rounded-full px-3 py-2 text-sm font-medium text-slate-500 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-800"
+                            className="rounded-full px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-800"
                         >
                             I&apos;ll do this later
                         </button>
                     </div>
 
-                    <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50/90 px-4 py-4 max-w-xl mx-auto">
-                        <div className="flex items-center justify-between gap-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/90 px-4 py-3 max-w-xl mx-auto w-full">
+                        <div className="flex items-center justify-between gap-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
                             <span>Setup Progress</span>
                             <span>{activePercent}% COMPLETED</span>
                         </div>
-                        <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-200">
+                        <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
                             <div
                                 className="h-full rounded-full bg-[linear-gradient(90deg,#0A2C4B,#0F5C4A)] transition-all duration-300 ease-in-out"
                                 style={{ width: `${activePercent}%` }}
                             />
                         </div>
-                        <p className="mt-3 text-sm font-medium text-slate-600">
-                            Step {activeStep} of 3
-                        </p>
                     </div>
 
-                    <div className="mt-8 relative max-w-xl mx-auto flex items-center justify-center min-h-[380px]">
+                    <div className="mt-5 relative w-full mb-2">
                         <AnimatePresence mode="wait">
                             {activeStep === 1 && (
                                 <motion.div
@@ -206,7 +214,7 @@ const OnboardingSetupModal = ({
                                                 <input 
                                                     required 
                                                     type="text" 
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                     value={firmData.name}
                                                     onChange={(e) => setFirmData({...firmData, name: e.target.value})}
                                                     placeholder="e.g. Sharma & Associates"
@@ -217,7 +225,7 @@ const OnboardingSetupModal = ({
                                                     <label className="mb-1.5 block text-xs font-semibold text-slate-700">Client Est.</label>
                                                     <select 
                                                         required
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                         value={firmData.size}
                                                         onChange={(e) => setFirmData({...firmData, size: e.target.value})}
                                                     >
@@ -231,7 +239,7 @@ const OnboardingSetupModal = ({
                                                     <label className="mb-1.5 block text-xs font-semibold text-slate-700">Portfolio</label>
                                                     <select 
                                                         required
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                         value={firmData.portfolio}
                                                         onChange={(e) => setFirmData({...firmData, portfolio: e.target.value})}
                                                     >
@@ -276,7 +284,7 @@ const OnboardingSetupModal = ({
                                                     required 
                                                     type="text" 
                                                     placeholder="e.g. Rahul Sharma"
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                     value={teamInviteData.name}
                                                     onChange={(e) => setTeamInviteData({...teamInviteData, name: e.target.value})}
                                                 />
@@ -287,7 +295,7 @@ const OnboardingSetupModal = ({
                                                     required 
                                                     type="email" 
                                                     placeholder="rahul@example.com"
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                     value={teamInviteData.email}
                                                     onChange={(e) => setTeamInviteData({...teamInviteData, email: e.target.value})}
                                                 />
@@ -298,7 +306,7 @@ const OnboardingSetupModal = ({
                                                     required 
                                                     type="tel" 
                                                     placeholder="e.g. 9876543210"
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                     value={teamInviteData.mobile}
                                                     onChange={(e) => setTeamInviteData({...teamInviteData, mobile: e.target.value})}
                                                 />
@@ -342,7 +350,7 @@ const OnboardingSetupModal = ({
                                                         required 
                                                         type="text" 
                                                         placeholder="e.g. Acme Corp"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                         value={clientData.business_name}
                                                         onChange={(e) => setClientData({...clientData, business_name: e.target.value})}
                                                     />
@@ -350,7 +358,7 @@ const OnboardingSetupModal = ({
                                                 <div>
                                                     <label className="mb-1.5 block text-xs font-semibold text-slate-700">Filing Type</label>
                                                     <select 
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                         value={clientData.filing_type}
                                                         onChange={(e) => setClientData({...clientData, filing_type: e.target.value})}
                                                     >
@@ -365,7 +373,7 @@ const OnboardingSetupModal = ({
                                                         required 
                                                         type="tel" 
                                                         placeholder="e.g. 9876543210"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                         value={clientData.primary_mobile}
                                                         onChange={(e) => setClientData({...clientData, primary_mobile: e.target.value})}
                                                     />
@@ -375,7 +383,7 @@ const OnboardingSetupModal = ({
                                                     <input 
                                                         type="tel" 
                                                         placeholder="Optional"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                         value={clientData.secondary_mobile}
                                                         onChange={(e) => setClientData({...clientData, secondary_mobile: e.target.value})}
                                                     />
@@ -386,7 +394,7 @@ const OnboardingSetupModal = ({
                                                         required 
                                                         type="text" 
                                                         placeholder="ABCDE1234F"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20 uppercase"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent uppercase"
                                                         value={clientData.pan_number}
                                                         onChange={(e) => setClientData({...clientData, pan_number: e.target.value.toUpperCase()})}
                                                     />
@@ -396,7 +404,7 @@ const OnboardingSetupModal = ({
                                                     <input 
                                                         type="text" 
                                                         placeholder="Optional"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-[#0A2C4B] focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]/20 uppercase"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent uppercase"
                                                         value={clientData.gst_number}
                                                         onChange={(e) => setClientData({...clientData, gst_number: e.target.value.toUpperCase()})}
                                                     />
