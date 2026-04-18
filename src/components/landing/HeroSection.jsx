@@ -80,7 +80,7 @@ const HeroSection = () => {
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Link
                                 to="/signup?role=ca"
-                                className="group relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 px-7 py-4 text-base font-semibold text-white shadow-[0_18px_60px_-18px_rgba(79,70,229,0.85)] transition-all duration-300"
+                                className="cta-primary-glow group relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 px-7 py-4 text-base font-semibold text-white shadow-[0_18px_60px_-18px_rgba(79,70,229,0.85)] transition-all duration-300"
                             >
                                 <span className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                                 <span className="relative z-10 flex items-center gap-2">
@@ -139,16 +139,12 @@ const HeroSection = () => {
                 </motion.div>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ duration: 0.7, ease: 'easeOut', delay: 0.15 }}
                     className="relative"
                 >
-                    <motion.div
-                        animate={{ y: [0, -12, 0] }}
-                        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-                        className="relative mx-auto max-w-2xl"
-                    >
+                    <div className="hero-dashboard-float relative mx-auto max-w-2xl">
                         <div className="absolute -left-8 top-10 h-28 w-28 rounded-full bg-blue-400/20 blur-3xl" />
                         <div className="absolute -right-5 bottom-8 h-36 w-36 rounded-full bg-fuchsia-400/20 blur-3xl" />
 
@@ -182,11 +178,9 @@ const HeroSection = () => {
                                                 </div>
                                             </div>
                                             <div className="mt-6 h-2 rounded-full bg-white/10">
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: '86%' }}
-                                                    transition={{ duration: 1.1, delay: 0.4 }}
+                                                <div
                                                     className="h-2 rounded-full bg-gradient-to-r from-blue-400 via-indigo-400 to-fuchsia-400"
+                                                    style={{ width: '86%' }}
                                                 />
                                             </div>
                                         </div>
@@ -226,11 +220,8 @@ const HeroSection = () => {
 
                                         <div className="mt-5 space-y-3">
                                             {dashboardRows.map((row, index) => (
-                                                <motion.div
+                                                <div
                                                     key={row.name}
-                                                    initial={{ opacity: 0, x: 24 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ duration: 0.45, delay: 0.35 + (index * 0.12) }}
                                                     className="grid grid-cols-[1.35fr_0.55fr_0.9fr] items-center gap-3 rounded-2xl border border-white/8 bg-slate-900/55 px-4 py-3"
                                                 >
                                                     <div>
@@ -247,14 +238,14 @@ const HeroSection = () => {
                                                             />
                                                         </div>
                                                     </div>
-                                                </motion.div>
+                                                </div>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
                 </motion.div>
             </div>
         </section>

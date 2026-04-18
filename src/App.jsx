@@ -19,7 +19,7 @@ import Billing from './pages/profile/Billing';
 import Support from './pages/profile/Support';
 
 const ProtectedRoute = ({ children, requireSetup = true, blockIfSetupComplete = false, requireRole = null }) => {
-    const { token, user, loading } = useAuth();
+    const { token, user, loading, onboardingComplete } = useAuth();
     console.log('ProtectedRoute: State check', { token, loading, user });
 
     if (loading) return <div>Loading...</div>;
@@ -39,19 +39,31 @@ const ProtectedRoute = ({ children, requireSetup = true, blockIfSetupComplete = 
             }
         }
         // If route requires setup but user hasn't completed it, force them to onboarding
-        if (requireSetup && !user.setup_completed) {
+        const userOnboardingComplete = onboardingComplete || user.isOnboardingComplete || user.setup_completed;
+
+        if (requireSetup && !userOnboardingComplete) {
             console.warn('ProtectedRoute: User needs to complete setup, redirecting...');
             return <Navigate to={user.role === 'ca' ? '/onboarding/ca' : '/onboarding/business'} replace />;
         }
 
         // If route is specifically for onboarding, but user already did it, boot to dashboard
-        if (blockIfSetupComplete && user.setup_completed) {
+        if (blockIfSetupComplete && userOnboardingComplete) {
             console.warn('ProtectedRoute: Setup already completed, preventing access...');
             return <Navigate to="/dashboard" replace />;
         }
     }
 
     return children;
+};
+
+const DashboardRoute = () => {
+    const { user } = useAuth();
+
+    if (['ca', 'ca_staff', 'ca_article'].includes(user?.role)) {
+        return <Navigate to="/ca/dashboard" replace />;
+    }
+
+    return <Dashboard />;
 };
 
 function App() {
@@ -82,7 +94,7 @@ function App() {
                             path="/dashboard"
                             element={
                                 <ProtectedRoute>
-                                    <Dashboard />
+                                    <DashboardRoute />
                                 </ProtectedRoute>
                             }
                         />

@@ -122,7 +122,7 @@ const PortfolioStatCard = ({
 };
 
 const CADashboard = () => {
-    const { user } = useAuth();
+    const { user, onboardingComplete, setOnboardingComplete, fetchUser } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -155,6 +155,8 @@ const CADashboard = () => {
     const [showFirmSetupModal, setShowFirmSetupModal] = useState(false);
     const [onboardingDismissed, setOnboardingDismissed] = useState(false);
     const [onboardingInProgress, setOnboardingInProgress] = useState(false);
+    const [teamInvited, setTeamInvited] = useState(false);
+    const [clientAdded, setClientAdded] = useState(false);
     const [firmCreated, setFirmCreated] = useState(() => {
         return localStorage.getItem('firmSetupComplete') === 'true';
     });
@@ -346,6 +348,8 @@ const CADashboard = () => {
             
             setTeam(Array.isArray(teamRes.data) ? teamRes.data : []);
             setUnidentifiedDocs(Array.isArray(unidentRes?.data?.documents) ? unidentRes.data.documents : []);
+            setTeamInvited(Array.isArray(teamRes.data) && teamRes.data.length > 0);
+            setClientAdded(Array.isArray(res.data?.clients) && res.data.clients.length > 0);
         } catch (err) {
             console.error("Error fetching CA dashboard data", err);
             setDashboardData({
@@ -354,6 +358,8 @@ const CADashboard = () => {
             });
             setTeam([]);
             setUnidentifiedDocs([]);
+            setTeamInvited(false);
+            setClientAdded(false);
         } finally {
             setLoading(false);
         }
@@ -367,6 +373,7 @@ const CADashboard = () => {
         setShowAddModal(false);
         setShowOnboardingModal(false);
         setOnboardingInProgress(false);
+        setClientAdded(true);
         fetchCADashboard();
     };
 
@@ -440,18 +447,17 @@ const CADashboard = () => {
     const isAllSelected = sortedAndFilteredClients.length > 0 && selectedClients.length === sortedAndFilteredClients.length;
     const isIndeterminate = selectedClients.length > 0 && selectedClients.length < sortedAndFilteredClients.length;
     const totalClients = dashboardData.clients.length;
-    const teamMembers = team.length;
-    const completedSetupSteps = (firmCreated ? 1 : 0) + (teamMembers > 0 ? 1 : 0) + (totalClients > 0 ? 1 : 0);
+    const completedSetupSteps = [firmCreated, teamInvited, clientAdded].filter(Boolean).length;
     
     let onboardingStep = 1;
     if (firmCreated) onboardingStep = 2;
-    if (firmCreated && teamMembers > 0) onboardingStep = 3;
+    if (firmCreated && teamInvited) onboardingStep = 3;
 
     const onboardingPercent = Math.round((completedSetupSteps / 3) * 100);
-    const showOnboardingBanner = user?.role === 'ca' && completedSetupSteps < 3;
+    const showOnboardingBanner = user?.role === 'ca' && completedSetupSteps < 3 && !onboardingComplete;
 
     useEffect(() => {
-        if (user?.role !== 'ca' || loading || onboardingDismissed) return;
+        if (user?.role !== 'ca' || loading || onboardingDismissed || onboardingComplete) return;
 
         if (completedSetupSteps < 3) {
             if (completedSetupSteps === 0 || onboardingInProgress) {
@@ -465,7 +471,7 @@ const CADashboard = () => {
             setShowOnboardingModal(false);
             setOnboardingInProgress(false);
         }
-    }, [loading, onboardingDismissed, onboardingInProgress, completedSetupSteps, user?.role]);
+    }, [completedSetupSteps, loading, onboardingComplete, onboardingDismissed, onboardingInProgress, user?.role]);
 
     const handleDismissOnboarding = () => {
         setShowOnboardingModal(false);
@@ -482,22 +488,25 @@ const CADashboard = () => {
         setShowOnboardingModal(true);
     };
 
-    const handleOpenInviteTeam = () => {
-        setShowOnboardingModal(false);
+    const handleInviteTeamSuccess = () => {
+        setTeamInvited(true);
+        setOnboardingDismissed(false);
         setOnboardingInProgress(true);
-        setActiveTab('team');
-        setInviteModalSignal(prev => prev + 1);
+        fetchCADashboard();
     };
 
-    const handleOpenAddClient = () => {
-        setShowOnboardingModal(false);
-        setOnboardingInProgress(true);
+    const handleOnboardingClientAdded = async () => {
+        setClientAdded(true);
         setOnboardingDismissed(false);
-        setActiveTab('portfolio');
-        setShowAddModal(true);
+        setOnboardingInProgress(false);
+        setShowOnboardingModal(false);
+        setOnboardingComplete(true);
+        await fetchCADashboard();
+        await fetchUser();
     };
 
     const handleTeamMemberAdded = () => {
+        setTeamInvited(true);
         setOnboardingDismissed(false);
         setOnboardingInProgress(true);
         setShowOnboardingModal(true);
@@ -1174,8 +1183,8 @@ const CADashboard = () => {
                 completedSteps={completedSetupSteps}
                 totalSteps={3}
                 onSetupFirm={handleFirmSetupSuccess}
-                onInviteTeam={handleOpenInviteTeam}
-                onAddClient={handleOpenAddClient}
+                onInviteTeam={handleInviteTeamSuccess}
+                onAddClient={handleOnboardingClientAdded}
                 onClose={handleDismissOnboarding}
             />
 

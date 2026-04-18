@@ -2,7 +2,7 @@ import React, { useState, useEffect, createElement } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Check, ChevronRight, ChevronLeft, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const StepCard = ({
@@ -76,38 +76,56 @@ const OnboardingSetupModal = ({
     onAddClient,
     onClose,
 }) => {
-    if (!isOpen) return null;
-
     const navigate = useNavigate();
-    const { fetchUser } = useAuth();
+    const { fetchUser, setOnboardingComplete } = useAuth();
 
     const [activeStep, setActiveStep] = useState(currentStep || 1);
-    
-    // Sync active step if prop changes (optional but good practice)
-    useEffect(() => {
-        if (currentStep && currentStep > activeStep) {
-            setActiveStep(currentStep);
-        }
-    }, [currentStep]);
-
-    const activePercent = Math.round((activeStep / 3) * 100);
-
-    // Step 1 State
     const [firmData, setFirmData] = useState({ name: '', size: '', portfolio: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Step 2 State
-    const [teamInviteData, setTeamInviteData] = useState({ name: '', email: '', mobile: '', role: 'ca_staff' });
+    const [teamInviteData, setTeamInviteData] = useState({ name: '', email: '', phone: '', role: 'ca_staff' });
     const [isInviting, setIsInviting] = useState(false);
+    const [inviteSuccess, setInviteSuccess] = useState('');
+    const [clientData, setClientData] = useState({
+        business_name: '',
+        email: '',
+        entity_type: 'prop',
+        filing_type: 'monthly',
+        primary_mobile: '',
+        whatsapp_mobile: '',
+        pan_number: '',
+        gstin: '',
+        state: '',
+    });
+    const [isFinishing, setIsFinishing] = useState(false);
 
-    // Step 3 State
-    const [clientData, setClientData] = useState({ business_name: '', filing_type: 'GST & IT', primary_mobile: '', secondary_mobile: '', pan_number: '', gst_number: '' });
+    useEffect(() => {
+        if (!isOpen) {
+            return undefined;
+        }
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (currentStep && currentStep !== activeStep) {
+            setActiveStep(currentStep);
+        }
+    }, [activeStep, currentStep]);
+
+    if (!isOpen) return null;
+
+    const activePercent = Math.round((activeStep / 3) * 100);
 
     const handleFirmSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await axios.post('/api/ca/setup', firmData);
+            await axios.post('/ca/setup', firmData);
             if (onSetupFirm) onSetupFirm(firmData);
             setActiveStep(2);
         } catch (error) {
@@ -122,13 +140,16 @@ const OnboardingSetupModal = ({
     const handleInviteSubmit = async (e) => {
         e.preventDefault();
         setIsInviting(true);
+        setInviteSuccess('');
         try {
-            await axios.post('/api/ca/team/invite', teamInviteData);
-            if (onInviteTeam) onInviteTeam(teamInviteData);
+            await axios.post('/team/invite', teamInviteData);
+            if (onInviteTeam) {
+                await onInviteTeam(teamInviteData);
+            }
+            setInviteSuccess('Invitation sent successfully.');
             setActiveStep(3);
         } catch (error) {
             console.error('Failed to invite team', error);
-            setActiveStep(3);
         } finally {
             setIsInviting(false);
         }
@@ -136,26 +157,47 @@ const OnboardingSetupModal = ({
 
     const handleClientSubmit = async (e) => {
         e.preventDefault();
+        setIsFinishing(true);
         try {
+            const payload = {
+                business_name: clientData.business_name,
+                email: clientData.email,
+                primary_mobile: clientData.primary_mobile,
+                whatsapp_mobile: clientData.whatsapp_mobile || clientData.primary_mobile,
+                pan_number: clientData.pan_number,
+                gstin: clientData.gstin || undefined,
+                gst_registered: Boolean(clientData.gstin),
+                business_type: clientData.entity_type,
+                entity_type: clientData.entity_type,
+                filing_type: clientData.filing_type,
+                state: clientData.state,
+            };
+
+            const clientResponse = await axios.post('/ca/clients', payload);
+
             if (onAddClient) {
-                await onAddClient(clientData);
-            } else {
-                await axios.post('/api/businesses', clientData);
+                await onAddClient(clientResponse.data?.business || payload);
             }
+
+            await axios.post('/onboarding/complete');
+            setOnboardingComplete(true);
+            await fetchUser();
+
+            if (onClose) onClose();
+            navigate('/dashboard');
         } catch (error) {
             console.error('Failed to setup client', error);
+        } finally {
+            setIsFinishing(false);
         }
-        await fetchUser();
-        if (onClose) onClose();
-        navigate('/ca/dashboard');
     };
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 sm:p-6">
-            <div className="relative w-full max-w-2xl flex flex-col max-h-[90vh] rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
+            <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
                 <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_top_right,rgba(245,158,11,0.16),transparent_36%)] rounded-t-[2rem]" />
                 
-                <div className="relative flex flex-col flex-1 overflow-y-auto p-5 sm:p-7">
+                <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto p-5 pr-[6px] sm:p-7 sm:pr-[6px]">
                     <div className="flex items-start justify-between gap-4">
                         <div>
                             <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -191,7 +233,7 @@ const OnboardingSetupModal = ({
                         </div>
                     </div>
 
-                    <div className="mt-5 relative w-full mb-2">
+                    <div className="relative mt-5 mb-2 w-full">
                         <AnimatePresence mode="wait">
                             {activeStep === 1 && (
                                 <motion.div
@@ -307,10 +349,15 @@ const OnboardingSetupModal = ({
                                                     type="tel" 
                                                     placeholder="e.g. 9876543210"
                                                     className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                    value={teamInviteData.mobile}
-                                                    onChange={(e) => setTeamInviteData({...teamInviteData, mobile: e.target.value})}
+                                                    value={teamInviteData.phone}
+                                                    onChange={(e) => setTeamInviteData({...teamInviteData, phone: e.target.value})}
                                                 />
                                             </div>
+                                            {inviteSuccess ? (
+                                                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+                                                    {inviteSuccess}
+                                                </div>
+                                            ) : null}
                                             <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
                                                 <BackButton onClick={() => setActiveStep(1)} />
                                                 <div className="flex items-center gap-2">
@@ -356,15 +403,40 @@ const OnboardingSetupModal = ({
                                                     />
                                                 </div>
                                                 <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Email Address</label>
+                                                    <input
+                                                        required
+                                                        type="email"
+                                                        placeholder="contact@acme.com"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
+                                                        value={clientData.email}
+                                                        onChange={(e) => setClientData({...clientData, email: e.target.value})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Entity Type</label>
+                                                    <select
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
+                                                        value={clientData.entity_type}
+                                                        onChange={(e) => setClientData({...clientData, entity_type: e.target.value})}
+                                                    >
+                                                        <option value="prop">Proprietorship</option>
+                                                        <option value="partnership">Partnership</option>
+                                                        <option value="llp">LLP</option>
+                                                        <option value="pvt_ltd">Pvt Ltd</option>
+                                                        <option value="opc">OPC</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
+                                                <div>
                                                     <label className="mb-1.5 block text-xs font-semibold text-slate-700">Filing Type</label>
                                                     <select 
                                                         className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
                                                         value={clientData.filing_type}
                                                         onChange={(e) => setClientData({...clientData, filing_type: e.target.value})}
                                                     >
-                                                        <option>GST & IT</option>
-                                                        <option>GST Only</option>
-                                                        <option>IT Only</option>
+                                                        <option value="monthly">Monthly</option>
+                                                        <option value="qrmp">QRMP</option>
                                                     </select>
                                                 </div>
                                                 <div>
@@ -379,13 +451,13 @@ const OnboardingSetupModal = ({
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Secondary Mobile</label>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">WhatsApp Mobile</label>
                                                     <input 
-                                                        type="tel" 
-                                                        placeholder="Optional"
+                                                        type="tel"
+                                                        placeholder="Defaults to primary mobile"
                                                         className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={clientData.secondary_mobile}
-                                                        onChange={(e) => setClientData({...clientData, secondary_mobile: e.target.value})}
+                                                        value={clientData.whatsapp_mobile}
+                                                        onChange={(e) => setClientData({...clientData, whatsapp_mobile: e.target.value})}
                                                     />
                                                 </div>
                                                 <div>
@@ -400,13 +472,24 @@ const OnboardingSetupModal = ({
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">GST Number</label>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">GSTIN</label>
                                                     <input 
                                                         type="text" 
                                                         placeholder="Optional"
                                                         className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent uppercase"
-                                                        value={clientData.gst_number}
-                                                        onChange={(e) => setClientData({...clientData, gst_number: e.target.value.toUpperCase()})}
+                                                        value={clientData.gstin}
+                                                        onChange={(e) => setClientData({...clientData, gstin: e.target.value.toUpperCase()})}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">State</label>
+                                                    <input
+                                                        required
+                                                        type="text"
+                                                        placeholder="e.g. Maharashtra"
+                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
+                                                        value={clientData.state}
+                                                        onChange={(e) => setClientData({...clientData, state: e.target.value})}
                                                     />
                                                 </div>
                                             </div>
@@ -414,7 +497,8 @@ const OnboardingSetupModal = ({
                                                 <BackButton onClick={() => setActiveStep(2)} />
                                                 <PrimaryButton 
                                                     isSubmit 
-                                                    label="Finish Setup" 
+                                                    label="Finish Setup"
+                                                    loading={isFinishing}
                                                 />
                                             </div>
                                         </form>

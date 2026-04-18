@@ -30,24 +30,20 @@ const CTASection = () => {
                     Bring deadlines, documents, and team execution into one premium control room built for modern CA firms.
                 </p>
 
-                <motion.div
-                    animate={{ scale: [1, 1.03, 1] }}
-                    transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
-                    className="mt-10 inline-block"
-                >
+                <div className="mt-10 inline-block">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Link
                             to="/signup?role=ca"
-                            className="relative inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-fuchsia-500 px-8 py-4 text-base font-semibold text-white shadow-[0_20px_60px_-20px_rgba(99,102,241,0.95)] transition-all duration-300"
+                            className="cta-primary-glow relative inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-fuchsia-500 px-8 py-4 text-base font-semibold text-white shadow-[0_20px_60px_-20px_rgba(99,102,241,0.95)] transition-all duration-300"
                         >
                             <span className="absolute -inset-2 rounded-[1.4rem] bg-gradient-to-r from-blue-500/30 via-indigo-500/35 to-fuchsia-500/30 blur-xl" />
                             <span className="relative z-10 flex items-center gap-2">
-                                Launch Your Free Workspace
+                                Start Free Workspace
                                 <ArrowRight className="h-5 w-5" />
                             </span>
                         </Link>
                     </motion.div>
-                </motion.div>
+                </div>
 
                 <p className="mt-5 text-sm font-medium uppercase tracking-[0.18em] text-slate-400">
                     No setup friction. Start clean. Scale with confidence.

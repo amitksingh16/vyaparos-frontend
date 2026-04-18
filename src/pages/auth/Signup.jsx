@@ -1,13 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/firebase';
-
-import { User, Mail, ArrowRight, Shield, Check, Calendar, Users, Lock, Phone, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, ArrowRight, CheckCircle2, Calendar, Users, Lock, Phone, Eye, EyeOff, BellRing } from 'lucide-react';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
+import AuthSplitLayout from '../../components/auth/AuthSplitLayout';
+
+const signupHighlights = [
+    {
+        icon: Users,
+        title: 'Built for CA firms',
+        description: 'Create a workspace designed around client portfolios, staff coordination, and recurring compliance.',
+    },
+    {
+        icon: Calendar,
+        title: 'Deadline-ready from day one',
+        description: 'Structured onboarding helps you go from signup to active compliance tracking without friction.',
+    },
+    {
+        icon: BellRing,
+        title: 'Less chasing, more control',
+        description: 'Automate reminders and bring every important next step into one premium dashboard.',
+    },
+];
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -20,12 +38,21 @@ const Signup = () => {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
 
     const { register } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.body.classList.add('auth-body-lock');
+        document.documentElement.classList.add('auth-html-lock');
+
+        return () => {
+            document.body.classList.remove('auth-body-lock');
+            document.documentElement.classList.remove('auth-html-lock');
+        };
+    }, []);
 
     const handleChange = (e) => {
         let value = e.target.value;
@@ -40,7 +67,7 @@ const Signup = () => {
 
     const handleSignup = async (e) => {
         e.preventDefault();
-        
+
         if (!isFormValid) {
             if (isPasswordMismatch) {
                 return setToast({ message: 'Passwords do not match', type: 'error' });
@@ -66,17 +93,16 @@ const Signup = () => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
             const token = await userCredential.user.getIdToken();
-            console.log("TOKEN:", token);
-            
+
             await register(formData.email, formData.name, formData.role, formData.phone, token);
-            
+
             setToast({ message: 'Account Created! Redirecting...', type: 'success' });
             setTimeout(() => navigate('/onboarding/ca'), 1000);
         } catch (error) {
             console.error('Firebase Auth Error:', error.code, error.message);
-            
+
             let errorMsg = error.response?.data?.message || (error.code?.startsWith('auth/') ? error.message.replace('Firebase: ', '') : 'Error creating account.');
-            
+
             if (error.code === 'auth/email-already-in-use') {
                 errorMsg = 'This email is already in use. Try logging in.';
             } else if (error.code === 'auth/weak-password') {
@@ -90,159 +116,123 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen lg:flex font-sans bg-slate-50">
+        <div className="min-h-screen overflow-hidden">
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
+            <AuthSplitLayout
+                panelBadge="Premium SaaS Onboarding"
+                panelTitle="Launch your CA workspace without the clutter."
+                panelDescription="Start with a polished dashboard experience that feels aligned with the landing page and ready for real compliance operations."
+                panelHighlights={signupHighlights}
+                formEyebrow="Free setup"
+                formTitle="Create Your Workspace"
+                formDescription="Join VyaparOS with a cleaner full-screen signup flow built for modern firms and overflow-free desktop layouts."
+                footer={(
+                    <p className="text-center text-sm text-slate-600">
+                        Already have an account?{' '}
+                        <Link to="/login" className="font-semibold text-blue-700 transition-colors hover:text-fuchsia-600">
+                            Log in here
+                        </Link>
+                    </p>
+                )}
+            >
+                <form className="space-y-4" onSubmit={handleSignup}>
+                    <Input
+                        id="name"
+                        label={<span>Full Name <span className="text-fuchsia-500">*</span></span>}
+                        placeholder="Amit Singh"
+                        icon={<User className="h-5 w-5 text-slate-400" />}
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                    />
 
-            {/* Left Side (Illustration) */}
-            <div className="hidden lg:flex lg:w-5/12 relative bg-[#0A2C4B] text-white p-12 overflow-hidden sticky top-0 h-screen">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#0A2C4B] via-[#08223d] to-[#1E3A8A]"></div>
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
-                <div className="relative z-10 w-full h-full flex flex-col justify-between">
-                    <div className="flex items-center gap-2">
-                        <Shield className="w-8 h-8 text-[#D98205]" />
-                        <span className="text-2xl font-bold font-display tracking-tight">VyaparOS</span>
+                    <Input
+                        id="email"
+                        label={<span>Email Address <span className="text-fuchsia-500">*</span></span>}
+                        placeholder="amit@example.com"
+                        type="email"
+                        icon={<Mail className="h-5 w-5 text-slate-400" />}
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                    />
+
+                    <Input
+                        id="phone"
+                        label={<span>Phone Number <span className="text-fuchsia-500">*</span></span>}
+                        placeholder="9876543210"
+                        icon={<Phone className="h-5 w-5 text-slate-400" />}
+                        value={formData.phone}
+                        onChange={handleChange}
+                        maxLength={10}
+                        required
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                    />
+
+                    <Input
+                        id="password"
+                        label={<span>Password <span className="text-fuchsia-500">*</span></span>}
+                        placeholder="Min 6 characters"
+                        type={showPassword ? 'text' : 'password'}
+                        icon={<Lock className="h-5 w-5 text-slate-400" />}
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                        rightIcon={
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        }
+                    />
+
+                    <Input
+                        id="confirmPassword"
+                        label={<span>Confirm Password <span className="text-fuchsia-500">*</span></span>}
+                        placeholder="Re-enter password"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        icon={<Lock className="h-5 w-5 text-slate-400" />}
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                        error={isPasswordMismatch ? 'Passwords do not match' : ''}
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                        rightIcon={
+                            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
+                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        }
+                    />
+
+                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-4 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.12)]">
+                        <input id="terms" type="checkbox" required className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 transition-colors focus:ring-blue-500" />
+                        <label htmlFor="terms" className="cursor-pointer select-none text-xs leading-6 text-slate-500">
+                            I agree to the <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Terms</Link> and <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Privacy Policy</Link>.
+                        </label>
                     </div>
 
-                    <div className="my-auto pr-8">
-                        <h2 className="text-4xl font-bold mb-4 leading-tight">
-                            Start Your CA Compliance Dashboard
-                        </h2>
-                        <p className="text-lg text-blue-200 mb-10">
-                            Structured monitoring for disciplined CA firms.
-                        </p>
-
-                        <div className="space-y-8">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 shrink-0 rounded-xl bg-[#D98205]/10 flex items-center justify-center border border-[#D98205]/20 shadow-inner">
-                                    <Users className="w-6 h-6 text-[#D98205]" />
-                                </div>
-                                <span className="text-lg font-medium text-blue-50 leading-snug">Built for Chartered Accountants</span>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 shrink-0 rounded-xl bg-[#D98205]/10 flex items-center justify-center border border-[#D98205]/20 shadow-inner">
-                                    <Calendar className="w-6 h-6 text-[#D98205]" />
-                                </div>
-                                <span className="text-lg font-medium text-blue-50 leading-snug">Eliminate manual follow-ups</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Right Side (Form) */}
-            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 py-8 min-h-screen">
-                <div className="w-full max-w-md bg-white p-6 sm:p-7 rounded-[16px] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col relative w-full h-auto">
-                    <div className="text-center mb-5">
-                        <h1 className="text-2xl font-extrabold text-[#05172A] mb-1 font-display tracking-tight">
-                            Create Your Free Account
-                        </h1>
-                        <p className="text-sm text-slate-500">
-                            Built for Chartered Accountants managing multiple clients
-                        </p>
+                    <div className="flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50/80 px-3 py-2 text-sm font-medium text-emerald-700">
+                        <CheckCircle2 className="h-4 w-4" />
+                        Full-screen layout stays locked while the form remains accessible.
                     </div>
 
-                    <form className="space-y-4 flex-1 flex flex-col" onSubmit={handleSignup}>
-                        <Input
-                            id="name"
-                            label={<span>Full Name <span className="text-[#D98205]">*</span></span>}
-                            placeholder="Amit Singh"
-                            icon={<User className="h-5 w-5" />}
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-
-                        <Input
-                            id="email"
-                            label={<span>Email Address <span className="text-[#D98205]">*</span></span>}
-                            placeholder="amit@example.com"
-                            type="email"
-                            icon={<Mail className="h-5 w-5" />}
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-
-                        <Input
-                            id="phone"
-                            label={<span>Phone Number <span className="text-[#D98205]">*</span></span>}
-                            placeholder="9876543210"
-                            icon={<Phone className="h-5 w-5 text-slate-400" />}
-                            value={formData.phone}
-                            onChange={handleChange}
-                            maxLength={10}
-                            required
-                        />
-
-                        <Input
-                            id="password"
-                            label={<span>Password <span className="text-[#D98205]">*</span></span>}
-                            placeholder="Min 6 characters"
-                            type={showPassword ? 'text' : 'password'}
-                            icon={<Lock className="h-5 w-5" />}
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            rightIcon={
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="hover:text-slate-700 transition-colors focus:outline-none flex items-center justify-center">
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                </button>
-                            }
-                        />
-
-                        <div>
-                            <Input
-                                id="confirmPassword"
-                                label={<span>Confirm Password <span className="text-[#D98205]">*</span></span>}
-                                placeholder="Re-enter password"
-                                type={showConfirmPassword ? 'text' : 'password'}
-                                icon={<Lock className="h-5 w-5" />}
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required
-                                error={isPasswordMismatch ? 'Passwords do not match' : ''}
-                                className={isPasswordMismatch ? 'mb-0' : ''}
-                                rightIcon={
-                                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="hover:text-slate-700 transition-colors focus:outline-none flex items-center justify-center">
-                                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    </button>
-                                }
-                            />
-                        </div>
-
-                        <div className="flex items-start gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100 mt-1">
-                            <input id="terms" type="checkbox" required className="w-3.5 h-3.5 mt-0.5 rounded border-slate-300 text-[#0A2C4B] focus:ring-[#0A2C4B] transition-colors cursor-pointer" />
-                            <label htmlFor="terms" className="text-[11px] text-slate-500 leading-tight cursor-pointer select-none">
-                                I agree to the <Link to="#" className="text-[#0A2C4B] hover:text-[#1E3A8A] font-medium transition-colors">Terms</Link> and <Link to="#" className="text-[#0A2C4B] hover:text-[#1E3A8A] font-medium transition-colors">Privacy Policy</Link>
-                            </label>
-                        </div>
-
-                        <div className="pt-2">
-                            <Button 
-                                id="signup-button" 
-                                type="submit" 
-                                disabled={!isFormValid || loading}
-                                isLoading={loading} 
-                                variant="unstyled" 
-                                className={`w-full text-white py-2.5 rounded-xl transition-all shadow-md flex justify-center items-center ${isFormValid ? 'bg-[#D98205] hover:bg-[#B46A04] shadow-[#D98205]/20' : 'bg-slate-300 cursor-not-allowed shadow-none'}`} 
-                                fullWidth 
-                                rightIcon={<ArrowRight className="h-4 w-4" />}
-                            >
-                                Create CA Dashboard
-                            </Button>
-                        </div>
-
-                        <div className="mt-4">
-                            <p className="text-center text-sm text-slate-600 border-t border-slate-100 pt-4">
-                                Already have an account?{' '}
-                                <Link to="/login" className="font-semibold text-[#0A2C4B] hover:text-[#1E3A8A] transition-colors">
-                                    Log in here
-                                </Link>
-                            </p>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                    <div className="pt-1">
+                        <Button
+                            id="signup-button"
+                            type="submit"
+                            disabled={!isFormValid || loading}
+                            isLoading={loading}
+                            fullWidth
+                            className={`w-full rounded-2xl py-3.5 text-base text-white shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:-translate-y-0.5 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
+                            rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
+                        >
+                            {loading ? 'Creating Workspace...' : 'Create CA Dashboard'}
+                        </Button>
+                    </div>
+                </form>
+            </AuthSplitLayout>
         </div>
     );
 };

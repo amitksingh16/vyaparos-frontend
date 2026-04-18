@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [loading, setLoading] = useState(true);
+    const [onboardingComplete, setOnboardingComplete] = useState(false);
 
     // ✅ AXIOS INTERCEPTORS
     useEffect(() => {
@@ -51,6 +52,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         setToken(null);
         setUser(null);
+        setOnboardingComplete(false);
     };
 
     const fetchUser = async () => {
@@ -61,10 +63,13 @@ export const AuthProvider = ({ children }) => {
                 console.log('AuthContext: Fetching user profile...');
                 const res = await axios.get('/auth/me');
                 setUser(res.data);
+                setOnboardingComplete(Boolean(res.data?.isOnboardingComplete ?? res.data?.setup_completed));
             } catch (error) {
                 console.error('Profile fetch failed', error.response?.data || error.message);
                 logout('Invalid Session');
             }
+        } else {
+            setOnboardingComplete(false);
         }
         setLoading(false);
     };
@@ -85,6 +90,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', firebaseToken);
             setToken(firebaseToken);
             setUser(authUser);
+            setOnboardingComplete(Boolean(authUser?.isOnboardingComplete ?? authUser?.setup_completed));
             return res;
         } catch (error) {
             console.error('Login API Error', error.response?.data);
@@ -104,6 +110,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', firebaseToken);
             setToken(firebaseToken);
             setUser(authUser);
+            setOnboardingComplete(Boolean(authUser?.isOnboardingComplete ?? authUser?.setup_completed));
             return res;
         } catch (error) {
             console.error('Registration API Error', error.response?.data);
@@ -112,7 +119,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, register, logout, fetchUser }}>
+        <AuthContext.Provider value={{ user, token, loading, onboardingComplete, setOnboardingComplete, login, register, logout, fetchUser }}>
             {children}
         </AuthContext.Provider>
     );

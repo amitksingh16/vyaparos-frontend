@@ -41,9 +41,9 @@ const Home = () => {
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Link
                                 to="/signup?role=ca"
-                                className="inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-300/50 transition-colors hover:bg-slate-800"
+                                className="cta-primary-glow inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_60px_-18px_rgba(79,70,229,0.85)] transition-all duration-300"
                             >
-                                Get Started
+                                Start Free Workspace
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
                         </motion.div>
