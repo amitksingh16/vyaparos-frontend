@@ -80,7 +80,7 @@ const HeroSection = () => {
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Link
                                 to="/signup?role=ca"
-                                className="cta-primary-glow group relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 px-7 py-4 text-base font-semibold text-white shadow-[0_18px_60px_-18px_rgba(79,70,229,0.85)] transition-all duration-300"
+                                className="cta-primary group relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 px-7 py-4 text-base font-semibold text-white shadow-[0_18px_60px_-18px_rgba(79,70,229,0.85)] transition-all duration-300"
                             >
                                 <span className="absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                                 <span className="relative z-10 flex items-center gap-2">

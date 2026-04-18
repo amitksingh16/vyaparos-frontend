@@ -34,14 +34,14 @@ const Home = () => {
                     <div className="flex items-center gap-3 sm:gap-4">
                         <Link
                             to="/login"
-                            className="hidden rounded-2xl px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-950 sm:inline-flex"
+                            className="hidden rounded-lg border border-white/20 bg-transparent px-4 py-2 text-sm font-semibold text-slate-600 transition-all duration-300 hover:bg-white/8 hover:text-slate-950 sm:inline-flex"
                         >
                             Sign In
                         </Link>
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Link
                                 to="/signup?role=ca"
-                                className="cta-primary-glow inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_60px_-18px_rgba(79,70,229,0.85)] transition-all duration-300"
+                                className="cta-secondary inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-fuchsia-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_60px_-18px_rgba(79,70,229,0.85)] transition-all duration-300"
                             >
                                 Start Free Workspace
                                 <ArrowRight className="h-4 w-4" />

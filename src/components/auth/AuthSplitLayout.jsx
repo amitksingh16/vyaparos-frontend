@@ -15,18 +15,18 @@ const AuthSplitLayout = ({
     footer,
 }) => {
     return (
-        <div className="relative min-h-screen overflow-hidden font-sans">
+        <div className="relative min-h-[100dvh] overflow-hidden font-sans">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.2),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.24),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)]" />
             <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40" />
             <div className="absolute left-[-8rem] top-[-4rem] h-72 w-72 rounded-full bg-blue-400/18 blur-3xl" />
             <div className="absolute right-[-5rem] bottom-[-4rem] h-80 w-80 rounded-full bg-fuchsia-400/16 blur-3xl" />
 
-            <div className="relative flex h-screen min-h-screen overflow-hidden">
+            <div className="relative flex h-[100dvh] min-h-[100dvh] overflow-hidden">
                 <motion.section
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    className="relative hidden h-full w-1/2 overflow-hidden border-r border-white/30 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.22),_transparent_28%),radial-gradient(circle_at_78%_20%,_rgba(168,85,247,0.18),_transparent_24%),linear-gradient(160deg,_#08152b_0%,_#0f172a_35%,_#172554_100%)] px-10 py-12 text-white lg:flex xl:px-14"
+                    className="relative hidden h-full w-1/2 overflow-hidden border-r border-white/30 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.22),_transparent_28%),radial-gradient(circle_at_78%_20%,_rgba(168,85,247,0.18),_transparent_24%),linear-gradient(160deg,_#08152b_0%,_#0f172a_35%,_#172554_100%)] px-10 py-10 text-white lg:flex xl:px-14"
                 >
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:48px_48px] opacity-35" />
                     <div className="absolute inset-0 overflow-hidden">
@@ -47,7 +47,7 @@ const AuthSplitLayout = ({
                         />
                     </div>
 
-                    <div className="relative z-10 flex h-full w-full flex-col">
+                    <div className="relative z-10 flex h-full w-full flex-col justify-center overflow-hidden py-6">
                         <motion.div variants={staggerItem} className="flex items-center gap-3">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
                                 <Shield className="h-6 w-6 text-amber-300" />
@@ -60,7 +60,7 @@ const AuthSplitLayout = ({
                             </div>
                         </motion.div>
 
-                        <div className="my-auto max-w-xl">
+                        <div className="max-w-[90%] overflow-hidden pt-10">
                             <motion.div
                                 variants={staggerItem}
                                 className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-slate-200 backdrop-blur-xl"
@@ -72,7 +72,7 @@ const AuthSplitLayout = ({
                             <motion.h1 variants={staggerItem} className="text-5xl font-black leading-[1.02] tracking-[-0.05em] text-white xl:text-6xl">
                                 {panelTitle}
                             </motion.h1>
-                            <motion.p variants={staggerItem} className="mt-6 max-w-lg text-lg leading-8 text-slate-300">
+                            <motion.p variants={staggerItem} className="mt-6 max-w-[90%] text-lg leading-8 text-slate-300">
                                 {panelDescription}
                             </motion.p>
 
@@ -105,8 +105,8 @@ const AuthSplitLayout = ({
                     transition={{ duration: 0.55, ease: 'easeOut' }}
                     className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-4 sm:px-6 lg:w-1/2 lg:px-10 lg:py-8"
                 >
-                    <div className="w-full max-w-xl">
-                        <div className="max-h-[90vh] overflow-y-auto pr-1.5">
+                    <div className="w-full max-w-xl overflow-hidden">
+                        <div className="max-h-[90dvh] overflow-y-auto pr-1.5">
                             <div className="rounded-[2rem] border border-white/65 bg-white/70 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.12)] backdrop-blur-xl sm:p-8">
                                 <div className="mb-8 flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-3 lg:hidden">
@@ -141,11 +141,6 @@ const AuthSplitLayout = ({
                                         {footer}
                                     </div>
                                 ) : null}
-
-                                <div className="mt-6 flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50/80 px-3 py-2 text-sm font-medium text-emerald-700">
-                                    <Sparkles className="h-4 w-4" />
-                                    Only this form area scrolls when space gets tight.
-                                </div>
 
                                 <div className="mt-4 lg:hidden">
                                     <Link

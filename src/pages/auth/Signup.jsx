@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/firebase';
-import { User, Mail, ArrowRight, CheckCircle2, Calendar, Users, Lock, Phone, Eye, EyeOff, BellRing } from 'lucide-react';
+import { User, Mail, ArrowRight, Calendar, Users, Lock, Phone, Eye, EyeOff, BellRing } from 'lucide-react';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
@@ -116,7 +116,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen overflow-hidden">
+        <div className="min-h-[100dvh] overflow-hidden">
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
             <AuthSplitLayout
                 panelBadge="Premium SaaS Onboarding"
@@ -211,11 +211,6 @@ const Signup = () => {
                         <label htmlFor="terms" className="cursor-pointer select-none text-xs leading-6 text-slate-500">
                             I agree to the <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Terms</Link> and <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Privacy Policy</Link>.
                         </label>
-                    </div>
-
-                    <div className="flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50/80 px-3 py-2 text-sm font-medium text-emerald-700">
-                        <CheckCircle2 className="h-4 w-4" />
-                        Full-screen layout stays locked while the form remains accessible.
                     </div>
 
                     <div className="pt-1">

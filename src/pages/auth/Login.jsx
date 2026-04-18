@@ -107,7 +107,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen overflow-hidden">
+        <div className="min-h-[100dvh] overflow-hidden">
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
             <AuthSplitLayout
                 panelBadge="Premium Compliance Workspace"

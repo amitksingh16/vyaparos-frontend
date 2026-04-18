@@ -34,7 +34,7 @@ const CTASection = () => {
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Link
                             to="/signup?role=ca"
-                            className="cta-primary-glow relative inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-fuchsia-500 px-8 py-4 text-base font-semibold text-white shadow-[0_20px_60px_-20px_rgba(99,102,241,0.95)] transition-all duration-300"
+                            className="cta-primary relative inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 via-indigo-500 to-fuchsia-500 px-8 py-4 text-base font-semibold text-white shadow-[0_20px_60px_-20px_rgba(99,102,241,0.95)] transition-all duration-300"
                         >
                             <span className="absolute -inset-2 rounded-[1.4rem] bg-gradient-to-r from-blue-500/30 via-indigo-500/35 to-fuchsia-500/30 blur-xl" />
                             <span className="relative z-10 flex items-center gap-2">
