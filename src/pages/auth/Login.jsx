@@ -126,7 +126,7 @@ const Login = () => {
                     </p>
                 )}
             >
-                <form className="space-y-5" onSubmit={handleLogin}>
+                <form className="space-y-4 [@media_(max-height:950px)]:space-y-3.5" onSubmit={handleLogin}>
                     <Input
                         id="email"
                         label={<span>Email Address <span className="text-fuchsia-500">*</span></span>}
@@ -137,7 +137,7 @@ const Login = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         autoFocus
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:950px)]:py-3"
                     />
 
                     <Input
@@ -149,7 +149,7 @@ const Login = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:950px)]:py-3"
                         rightIcon={
                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -157,7 +157,7 @@ const Login = () => {
                         }
                     />
 
-                    <div className="flex items-center justify-between gap-4 text-sm">
+                    <div className="flex items-center justify-between gap-4 text-sm [@media_(max-height:950px)]:text-[13px]">
                         <p className="rounded-full border border-emerald-100 bg-emerald-50/80 px-3 py-1.5 font-medium text-emerald-700">
                             Encrypted session security enabled
                         </p>
@@ -170,7 +170,7 @@ const Login = () => {
                         </button>
                     </div>
 
-                    <div className="pt-2">
+                    <div className="pt-1">
                         <Button
                             id="login-button"
                             type="submit"
