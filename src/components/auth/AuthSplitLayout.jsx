@@ -15,18 +15,17 @@ const AuthSplitLayout = ({
     footer,
 }) => {
     return (
-        <div className="relative h-full overflow-hidden font-sans">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.2),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.24),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)]" />
+        <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.2),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.24),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)] font-sans">
             <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40" />
-            <div className="absolute left-[-8rem] top-[-4rem] h-72 w-72 rounded-full bg-blue-400/14 blur-3xl" />
-            <div className="absolute right-[-10rem] bottom-[-8rem] h-96 w-96 rounded-full bg-fuchsia-400/10 blur-3xl" />
+            <div className="absolute left-[-8rem] top-[-4rem] h-72 w-72 rounded-full bg-blue-400/12 blur-3xl" />
+            <div className="absolute right-[-14rem] bottom-[-10rem] h-96 w-96 rounded-full bg-fuchsia-400/8 blur-3xl" />
 
             <div className="relative flex h-full overflow-hidden">
                 <motion.section
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    className="relative hidden h-full w-1/2 overflow-hidden border-r border-white/30 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.22),_transparent_28%),radial-gradient(circle_at_78%_20%,_rgba(168,85,247,0.18),_transparent_24%),linear-gradient(160deg,_#08152b_0%,_#0f172a_35%,_#172554_100%)] px-8 py-8 text-white lg:flex lg:flex-col lg:justify-center xl:px-12 [@media_(max-height:1100px)]:px-7 [@media_(max-height:1100px)]:py-6"
+                    className="relative hidden h-full w-1/2 overflow-hidden border-r border-white/30 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.22),_transparent_28%),radial-gradient(circle_at_78%_20%,_rgba(168,85,247,0.18),_transparent_24%),linear-gradient(160deg,_#08152b_0%,_#0f172a_35%,_#172554_100%)] px-12 py-8 text-white lg:flex lg:flex-col lg:justify-center [@media_(max-height:1100px)]:py-6"
                 >
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:48px_48px] opacity-35" />
                     <div className="absolute inset-0 overflow-hidden">
@@ -47,7 +46,7 @@ const AuthSplitLayout = ({
                         />
                     </div>
 
-                    <div className="relative z-10 flex h-full w-full flex-col justify-center overflow-hidden py-4 [@media_(max-height:1100px)]:py-2">
+                    <div className="relative z-10 flex h-full w-full flex-col justify-center overflow-hidden py-8 [@media_(max-height:1100px)]:py-6">
                         <div className="w-full max-w-lg">
                             <motion.div variants={staggerItem} className="flex items-center gap-3">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
@@ -105,10 +104,10 @@ const AuthSplitLayout = ({
                     initial={{ opacity: 0, y: 28 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55, ease: 'easeOut' }}
-                    className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-3 sm:px-6 lg:w-1/2 lg:justify-end lg:px-8 lg:py-6 [@media_(max-height:1100px)]:py-4"
+                    className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-3 sm:px-6 lg:w-1/2 lg:px-12 lg:py-6 [@media_(max-height:1100px)]:py-4"
                 >
-                    <div className="w-full max-w-[38rem] overflow-hidden lg:ml-auto">
-                        <div className="rounded-[2rem] border border-white/70 bg-white/82 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.08)] backdrop-blur-md sm:p-6 [@media_(max-height:1100px)]:p-5">
+                    <div className="mx-auto w-full max-w-md">
+                        <div className="overflow-hidden rounded-2xl border border-white/70 bg-white/80 p-6 py-8 shadow-xl backdrop-blur-xl [@media_(max-height:1100px)]:p-5 [@media_(max-height:1100px)]:py-6">
                             <div className="mb-5 flex items-center justify-between gap-4 [@media_(max-height:1100px)]:mb-4">
                                 <div className="flex items-center gap-3 lg:hidden">
                                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] text-white shadow-lg shadow-blue-200/70">
