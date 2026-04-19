@@ -107,7 +107,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-[100dvh] overflow-hidden">
+        <div className="h-screen flex overflow-hidden">
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
             <AuthSplitLayout
                 panelBadge="Premium Compliance Workspace"
@@ -177,7 +177,7 @@ const Login = () => {
                             isLoading={loading}
                             disabled={loading}
                             fullWidth
-                            className="w-full rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] py-3.5 text-base text-white shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] hover:-translate-y-0.5 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]"
+                            className="w-full rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] py-3.5 text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]"
                             leftIcon={<Sparkles className="h-4 w-4" />}
                             rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
                         >
