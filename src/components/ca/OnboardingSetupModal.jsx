@@ -1,9 +1,9 @@
-import React, { useState, useEffect, createElement } from 'react';
+import React, { useEffect, useState, createElement } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { ChevronRight, ChevronLeft, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, ChevronLeft, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const StepCard = ({
     stepNumber,
@@ -13,10 +13,10 @@ const StepCard = ({
     children,
 }) => {
     return (
-        <div className="flex flex-col rounded-3xl border border-[#0A2C4B]/20 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(239,246,255,0.9))] shadow-[0_24px_48px_-32px_rgba(10,44,75,0.45)] p-5 transition-all duration-300 w-full">
+        <div className="flex w-full flex-col rounded-3xl border border-[#0A2C4B]/20 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(239,246,255,0.9))] p-5 shadow-[0_24px_48px_-32px_rgba(10,44,75,0.45)] transition-all duration-300">
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                    <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-[#0A2C4B] text-white shadow-md flex-shrink-0">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0A2C4B] text-white shadow-md sm:h-12 sm:w-12">
                         {createElement(icon, { className: 'h-5 w-5' })}
                     </div>
                     <div>
@@ -28,7 +28,7 @@ const StepCard = ({
                     </div>
                 </div>
             </div>
-            <div className="mt-4 flex-grow flex flex-col">
+            <div className="mt-4 flex flex-grow flex-col">
                 {children}
             </div>
         </div>
@@ -37,13 +37,13 @@ const StepCard = ({
 
 const PrimaryButton = ({ label, onClick, disabled, loading, isSubmit = false }) => (
     <button
-        type={isSubmit ? "submit" : "button"}
+        type={isSubmit ? 'submit' : 'button'}
         onClick={!isSubmit ? onClick : undefined}
         disabled={disabled || loading}
         className="inline-flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0A2C4B,#0F5C4A)] px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-[#0A2C4B]/15 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[0_18px_40px_-18px_rgba(10,44,75,0.65)] disabled:cursor-not-allowed disabled:opacity-70"
     >
         {loading ? 'Processing...' : label}
-        {!loading && <ChevronRight className="h-4 w-4" />}
+        {!loading ? <ChevronRight className="h-4 w-4" /> : null}
     </button>
 );
 
@@ -79,7 +79,7 @@ const OnboardingSetupModal = ({
     const navigate = useNavigate();
     const { fetchUser, setOnboardingComplete } = useAuth();
 
-    const [activeStep, setActiveStep] = useState(currentStep || 1);
+    const [step, setStep] = useState(currentStep || 1);
     const [firmData, setFirmData] = useState({ name: '', size: '', portfolio: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [teamInviteData, setTeamInviteData] = useState({ name: '', email: '', phone: '', role: 'ca_staff' });
@@ -112,51 +112,23 @@ const OnboardingSetupModal = ({
     }, [isOpen]);
 
     useEffect(() => {
-        if (currentStep && currentStep !== activeStep) {
-            setActiveStep(currentStep);
+        if (currentStep && currentStep !== step) {
+            setStep(currentStep);
         }
-    }, [activeStep, currentStep]);
+    }, [currentStep, step]);
 
     if (!isOpen) return null;
 
-    const activePercent = Math.round((activeStep / 3) * 100);
-
-    const handleFirmSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        try {
-            await axios.post('/ca/setup', firmData);
-            if (onSetupFirm) onSetupFirm(firmData);
-            setActiveStep(2);
-        } catch (error) {
-            console.error('Failed to setup firm', error);
-            // Move to next step anyway for local demo UX if API fails in local
-            setActiveStep(2);
-        } finally {
-            setIsSubmitting(false);
-        }
+    const handleNextStep = () => {
+        setStep((prev) => Math.min(prev + 1, 3));
     };
 
-    const handleInviteSubmit = async (e) => {
-        e.preventDefault();
-        setIsInviting(true);
-        setInviteSuccess('');
-        try {
-            await axios.post('/team/invite', teamInviteData);
-            if (onInviteTeam) {
-                await onInviteTeam(teamInviteData);
-            }
-            setInviteSuccess('Invitation sent successfully.');
-            setActiveStep(3);
-        } catch (error) {
-            console.error('Failed to invite team', error);
-        } finally {
-            setIsInviting(false);
-        }
+    const handleSkip = () => {
+        if (onClose) onClose();
+        navigate('/dashboard');
     };
 
-    const handleClientSubmit = async (e) => {
-        e.preventDefault();
+    const handleFinish = async () => {
         setIsFinishing(true);
         try {
             const payload = {
@@ -192,325 +164,405 @@ const OnboardingSetupModal = ({
         }
     };
 
+    const activePercent = Math.round((step / 3) * 100);
+
+    const handleFirmSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            await axios.post('/ca/setup', firmData);
+            if (onSetupFirm) {
+                onSetupFirm(firmData);
+            }
+            handleNextStep();
+        } catch (error) {
+            console.error('Failed to setup firm', error);
+            handleNextStep();
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleInviteSubmit = async (e) => {
+        e.preventDefault();
+        setIsInviting(true);
+        setInviteSuccess('');
+        try {
+            await axios.post('/team/invite', teamInviteData);
+            if (onInviteTeam) {
+                await onInviteTeam(teamInviteData);
+            }
+            setInviteSuccess('Invitation sent successfully.');
+            handleNextStep();
+        } catch (error) {
+            console.error('Failed to invite team', error);
+        } finally {
+            setIsInviting(false);
+        }
+    };
+
+    const handleClientSubmit = async (e) => {
+        e.preventDefault();
+        await handleFinish();
+    };
+
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 sm:p-6">
-            <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-white/70 bg-white/95 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.55)]">
-                <div className="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_top_right,rgba(245,158,11,0.16),transparent_36%)] rounded-t-[2rem]" />
-                
-                <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto p-5 pr-[6px] sm:p-7 sm:pr-[6px]">
-                    <div className="flex items-start justify-between gap-4">
-                        <div>
-                            <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                                <Sparkles className="h-3 w-3 text-amber-500" />
-                                Guided Setup
+        <div className="fixed inset-0 z-50">
+            <div className="absolute inset-0 bg-white/30 backdrop-blur-lg" />
+
+            <div className="relative flex h-full items-center justify-center px-4 py-4 sm:px-6">
+                <div className="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-2xl bg-white/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out">
+                    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pr-[6px]">
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                                    <Sparkles className="h-3 w-3 text-amber-500" />
+                                    Guided Setup
+                                </div>
+                                <h2 className="mt-2 text-2xl font-bold tracking-[-0.02em] text-slate-950">
+                                    Welcome to VyaparOS <span className="inline-block">{'👋'}</span>
+                                </h2>
+                                <p className="mt-1 text-sm text-slate-500">
+                                    Let&apos;s set up your workspace in 3 quick steps
+                                </p>
                             </div>
-                            <h2 className="mt-2 text-2xl font-bold tracking-[-0.02em] text-slate-950">
-                                Welcome to VyaparOS <span className="inline-block">👋</span>
-                            </h2>
-                            <p className="mt-1 text-sm text-slate-500">
-                                Let&apos;s set up your workspace in 3 quick steps
-                            </p>
+
+                            <button
+                                type="button"
+                                onClick={handleSkip}
+                                className="rounded-full px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-800"
+                            >
+                                I&apos;ll do this later
+                            </button>
                         </div>
 
-                        <button
-                            onClick={onClose}
-                            className="rounded-full px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-800"
-                        >
-                            I&apos;ll do this later
-                        </button>
-                    </div>
-
-                    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/90 px-4 py-3 max-w-xl mx-auto w-full">
-                        <div className="flex items-center justify-between gap-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                            <span>Setup Progress</span>
-                            <span>{activePercent}% COMPLETED</span>
+                        <div className="mx-auto mt-4 w-full max-w-xl rounded-xl border border-slate-200 bg-slate-50/90 px-4 py-3">
+                            <div className="flex items-center justify-between gap-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                                <span>Setup Progress</span>
+                                <span>{activePercent}% COMPLETED</span>
+                            </div>
+                            <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
+                                <div
+                                    className="h-full rounded-full bg-[linear-gradient(90deg,#0A2C4B,#0F5C4A)] transition-all duration-300 ease-in-out"
+                                    style={{ width: `${activePercent}%` }}
+                                />
+                            </div>
                         </div>
-                        <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
-                            <div
-                                className="h-full rounded-full bg-[linear-gradient(90deg,#0A2C4B,#0F5C4A)] transition-all duration-300 ease-in-out"
-                                style={{ width: `${activePercent}%` }}
-                            />
+
+                        <div className="relative mb-2 mt-5 w-full">
+                            <AnimatePresence mode="wait">
+                                {step === 1 && <FirmSetup key="step1" data={firmData} setData={setFirmData} onSubmit={handleFirmSubmit} loading={isSubmitting} />}
+                                {step === 2 && (
+                                    <InviteTeam
+                                        key="step2"
+                                        data={teamInviteData}
+                                        setData={setTeamInviteData}
+                                        inviteSuccess={inviteSuccess}
+                                        onSubmit={handleInviteSubmit}
+                                        onBack={() => setStep(1)}
+                                        onSkip={handleNextStep}
+                                        loading={isInviting}
+                                    />
+                                )}
+                                {step === 3 && (
+                                    <AddClient
+                                        key="step3"
+                                        data={clientData}
+                                        setData={setClientData}
+                                        onSubmit={handleClientSubmit}
+                                        onBack={() => setStep(2)}
+                                        loading={isFinishing}
+                                    />
+                                )}
+                            </AnimatePresence>
                         </div>
-                    </div>
-
-                    <div className="relative mt-5 mb-2 w-full">
-                        <AnimatePresence mode="wait">
-                            {activeStep === 1 && (
-                                <motion.div
-                                    key="step1"
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="w-full"
-                                >
-                                    <StepCard
-                                        stepNumber={1}
-                                        title="Setup your firm"
-                                        description="Add your firm details to personalize your workspace"
-                                        icon={Building2}
-                                    >
-                                        <form onSubmit={handleFirmSubmit} className="flex flex-col gap-4 mt-2">
-                                            <div>
-                                                <label className="mb-1.5 block text-xs font-semibold text-slate-700">Firm Name / Practice Name</label>
-                                                <input 
-                                                    required 
-                                                    type="text" 
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                    value={firmData.name}
-                                                    onChange={(e) => setFirmData({...firmData, name: e.target.value})}
-                                                    placeholder="e.g. Sharma & Associates"
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Client Est.</label>
-                                                    <select 
-                                                        required
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={firmData.size}
-                                                        onChange={(e) => setFirmData({...firmData, size: e.target.value})}
-                                                    >
-                                                        <option value="">Select size...</option>
-                                                        <option value="1-50">1-50</option>
-                                                        <option value="51-200">51-200</option>
-                                                        <option value="200+">200+</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Portfolio</label>
-                                                    <select 
-                                                        required
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={firmData.portfolio}
-                                                        onChange={(e) => setFirmData({...firmData, portfolio: e.target.value})}
-                                                    >
-                                                        <option value="">Select composition...</option>
-                                                        <option value="Mixed">Mixed</option>
-                                                        <option value="Only GST">Only GST</option>
-                                                        <option value="Only IT Returns">Only IT</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div className="mt-4 flex items-center justify-end border-t border-slate-100 pt-4">
-                                                <PrimaryButton 
-                                                    isSubmit 
-                                                    label="Save Firm Details" 
-                                                    loading={isSubmitting} 
-                                                />
-                                            </div>
-                                        </form>
-                                    </StepCard>
-                                </motion.div>
-                            )}
-                            
-                            {activeStep === 2 && (
-                                <motion.div
-                                    key="step2"
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="w-full"
-                                >
-                                    <StepCard
-                                        stepNumber={2}
-                                        title="Invite your team"
-                                        description="Add your staff so they can manage clients and track filings."
-                                        icon={UserPlus}
-                                    >
-                                        <form onSubmit={handleInviteSubmit} className="flex flex-col gap-4 mt-2">
-                                            <div>
-                                                <label className="mb-1.5 block text-xs font-semibold text-slate-700">Staff Name</label>
-                                                <input 
-                                                    required 
-                                                    type="text" 
-                                                    placeholder="e.g. Rahul Sharma"
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                    value={teamInviteData.name}
-                                                    onChange={(e) => setTeamInviteData({...teamInviteData, name: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="mb-1.5 block text-xs font-semibold text-slate-700">Staff Email</label>
-                                                <input 
-                                                    required 
-                                                    type="email" 
-                                                    placeholder="rahul@example.com"
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                    value={teamInviteData.email}
-                                                    onChange={(e) => setTeamInviteData({...teamInviteData, email: e.target.value})}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="mb-1.5 block text-xs font-semibold text-slate-700">Mobile Number</label>
-                                                <input 
-                                                    required 
-                                                    type="tel" 
-                                                    placeholder="e.g. 9876543210"
-                                                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                    value={teamInviteData.phone}
-                                                    onChange={(e) => setTeamInviteData({...teamInviteData, phone: e.target.value})}
-                                                />
-                                            </div>
-                                            {inviteSuccess ? (
-                                                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
-                                                    {inviteSuccess}
-                                                </div>
-                                            ) : null}
-                                            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-                                                <BackButton onClick={() => setActiveStep(1)} />
-                                                <div className="flex items-center gap-2">
-                                                    <SkipButton onClick={() => setActiveStep(3)} />
-                                                    <PrimaryButton 
-                                                        isSubmit 
-                                                        label="Send Invites & Next" 
-                                                        loading={isInviting} 
-                                                    />
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </StepCard>
-                                </motion.div>
-                            )}
-
-                            {activeStep === 3 && (
-                                <motion.div
-                                    key="step3"
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="w-full"
-                                >
-                                    <StepCard
-                                        stepNumber={3}
-                                        title="Add your first client"
-                                        description="Start tracking compliance for your clients."
-                                        icon={Users}
-                                    >
-                                        <form onSubmit={handleClientSubmit} className="flex flex-col gap-4 mt-2">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Business Name</label>
-                                                    <input 
-                                                        required 
-                                                        type="text" 
-                                                        placeholder="e.g. Acme Corp"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={clientData.business_name}
-                                                        onChange={(e) => setClientData({...clientData, business_name: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Email Address</label>
-                                                    <input
-                                                        required
-                                                        type="email"
-                                                        placeholder="contact@acme.com"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={clientData.email}
-                                                        onChange={(e) => setClientData({...clientData, email: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Entity Type</label>
-                                                    <select
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={clientData.entity_type}
-                                                        onChange={(e) => setClientData({...clientData, entity_type: e.target.value})}
-                                                    >
-                                                        <option value="prop">Proprietorship</option>
-                                                        <option value="partnership">Partnership</option>
-                                                        <option value="llp">LLP</option>
-                                                        <option value="pvt_ltd">Pvt Ltd</option>
-                                                        <option value="opc">OPC</option>
-                                                        <option value="other">Other</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Filing Type</label>
-                                                    <select 
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={clientData.filing_type}
-                                                        onChange={(e) => setClientData({...clientData, filing_type: e.target.value})}
-                                                    >
-                                                        <option value="monthly">Monthly</option>
-                                                        <option value="qrmp">QRMP</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Primary Mobile (WhatsApp)</label>
-                                                    <input 
-                                                        required 
-                                                        type="tel" 
-                                                        placeholder="e.g. 9876543210"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={clientData.primary_mobile}
-                                                        onChange={(e) => setClientData({...clientData, primary_mobile: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">WhatsApp Mobile</label>
-                                                    <input 
-                                                        type="tel"
-                                                        placeholder="Defaults to primary mobile"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={clientData.whatsapp_mobile}
-                                                        onChange={(e) => setClientData({...clientData, whatsapp_mobile: e.target.value})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">PAN Number</label>
-                                                    <input 
-                                                        required 
-                                                        type="text" 
-                                                        placeholder="ABCDE1234F"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent uppercase"
-                                                        value={clientData.pan_number}
-                                                        onChange={(e) => setClientData({...clientData, pan_number: e.target.value.toUpperCase()})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">GSTIN</label>
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="Optional"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent uppercase"
-                                                        value={clientData.gstin}
-                                                        onChange={(e) => setClientData({...clientData, gstin: e.target.value.toUpperCase()})}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">State</label>
-                                                    <input
-                                                        required
-                                                        type="text"
-                                                        placeholder="e.g. Maharashtra"
-                                                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0A2C4B] focus:border-transparent"
-                                                        value={clientData.state}
-                                                        onChange={(e) => setClientData({...clientData, state: e.target.value})}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-                                                <BackButton onClick={() => setActiveStep(2)} />
-                                                <PrimaryButton 
-                                                    isSubmit 
-                                                    label="Finish Setup"
-                                                    loading={isFinishing}
-                                                />
-                                            </div>
-                                        </form>
-                                    </StepCard>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
                     </div>
                 </div>
             </div>
         </div>
     );
 };
+
+const FirmSetup = ({ data, setData, onSubmit, loading }) => (
+    <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.2 }}
+        className="w-full"
+    >
+        <StepCard
+            stepNumber={1}
+            title="Setup your firm"
+            description="Add your firm details to personalize your workspace"
+            icon={Building2}
+        >
+            <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-4">
+                <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Firm Name / Practice Name</label>
+                    <input
+                        required
+                        type="text"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                        value={data.name}
+                        onChange={(e) => setData({ ...data, name: e.target.value })}
+                        placeholder="e.g. Sharma & Associates"
+                    />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Client Est.</label>
+                        <select
+                            required
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.size}
+                            onChange={(e) => setData({ ...data, size: e.target.value })}
+                        >
+                            <option value="">Select size...</option>
+                            <option value="1-50">1-50</option>
+                            <option value="51-200">51-200</option>
+                            <option value="200+">200+</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Portfolio</label>
+                        <select
+                            required
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.portfolio}
+                            onChange={(e) => setData({ ...data, portfolio: e.target.value })}
+                        >
+                            <option value="">Select composition...</option>
+                            <option value="Mixed">Mixed</option>
+                            <option value="Only GST">Only GST</option>
+                            <option value="Only IT Returns">Only IT</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="mt-4 flex items-center justify-end border-t border-slate-100 pt-4">
+                    <PrimaryButton
+                        isSubmit
+                        label="Save Firm Details"
+                        loading={loading}
+                    />
+                </div>
+            </form>
+        </StepCard>
+    </motion.div>
+);
+
+const InviteTeam = ({
+    data,
+    setData,
+    inviteSuccess,
+    onSubmit,
+    onBack,
+    onSkip,
+    loading,
+}) => (
+    <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.2 }}
+        className="w-full"
+    >
+        <StepCard
+            stepNumber={2}
+            title="Invite your team"
+            description="Add your staff so they can manage clients and track filings."
+            icon={UserPlus}
+        >
+            <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-4">
+                <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Staff Name</label>
+                    <input
+                        required
+                        type="text"
+                        placeholder="e.g. Rahul Sharma"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                        value={data.name}
+                        onChange={(e) => setData({ ...data, name: e.target.value })}
+                    />
+                </div>
+                <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Staff Email</label>
+                    <input
+                        required
+                        type="email"
+                        placeholder="rahul@example.com"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                        value={data.email}
+                        onChange={(e) => setData({ ...data, email: e.target.value })}
+                    />
+                </div>
+                <div>
+                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Mobile Number</label>
+                    <input
+                        required
+                        type="tel"
+                        placeholder="e.g. 9876543210"
+                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                        value={data.phone}
+                        onChange={(e) => setData({ ...data, phone: e.target.value })}
+                    />
+                </div>
+                {inviteSuccess ? (
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+                        {inviteSuccess}
+                    </div>
+                ) : null}
+                <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+                    <BackButton onClick={onBack} />
+                    <div className="flex items-center gap-2">
+                        <SkipButton onClick={onSkip} />
+                        <PrimaryButton
+                            isSubmit
+                            label="Send Invites & Next"
+                            loading={loading}
+                        />
+                    </div>
+                </div>
+            </form>
+        </StepCard>
+    </motion.div>
+);
+
+const AddClient = ({
+    data,
+    setData,
+    onSubmit,
+    onBack,
+    loading,
+}) => (
+    <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.2 }}
+        className="w-full"
+    >
+        <StepCard
+            stepNumber={3}
+            title="Add your first client"
+            description="Start tracking compliance for your clients."
+            icon={Users}
+        >
+            <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Business Name</label>
+                        <input
+                            required
+                            type="text"
+                            placeholder="e.g. Acme Corp"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.business_name}
+                            onChange={(e) => setData({ ...data, business_name: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Email Address</label>
+                        <input
+                            required
+                            type="email"
+                            placeholder="contact@acme.com"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.email}
+                            onChange={(e) => setData({ ...data, email: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Entity Type</label>
+                        <select
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.entity_type}
+                            onChange={(e) => setData({ ...data, entity_type: e.target.value })}
+                        >
+                            <option value="prop">Proprietorship</option>
+                            <option value="partnership">Partnership</option>
+                            <option value="llp">LLP</option>
+                            <option value="pvt_ltd">Pvt Ltd</option>
+                            <option value="opc">OPC</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Filing Type</label>
+                        <select
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.filing_type}
+                            onChange={(e) => setData({ ...data, filing_type: e.target.value })}
+                        >
+                            <option value="monthly">Monthly</option>
+                            <option value="qrmp">QRMP</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Primary Mobile (WhatsApp)</label>
+                        <input
+                            required
+                            type="tel"
+                            placeholder="e.g. 9876543210"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.primary_mobile}
+                            onChange={(e) => setData({ ...data, primary_mobile: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">WhatsApp Mobile</label>
+                        <input
+                            type="tel"
+                            placeholder="Defaults to primary mobile"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.whatsapp_mobile}
+                            onChange={(e) => setData({ ...data, whatsapp_mobile: e.target.value })}
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">PAN Number</label>
+                        <input
+                            required
+                            type="text"
+                            placeholder="ABCDE1234F"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium uppercase focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.pan_number}
+                            onChange={(e) => setData({ ...data, pan_number: e.target.value.toUpperCase() })}
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">GSTIN</label>
+                        <input
+                            type="text"
+                            placeholder="Optional"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium uppercase focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.gstin}
+                            onChange={(e) => setData({ ...data, gstin: e.target.value.toUpperCase() })}
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">State</label>
+                        <input
+                            required
+                            type="text"
+                            placeholder="e.g. Maharashtra"
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
+                            value={data.state}
+                            onChange={(e) => setData({ ...data, state: e.target.value })}
+                        />
+                    </div>
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+                    <BackButton onClick={onBack} />
+                    <PrimaryButton
+                        isSubmit
+                        label="Finish Setup"
+                        loading={loading}
+                    />
+                </div>
+            </form>
+        </StepCard>
+    </motion.div>
+);
 
 export default OnboardingSetupModal;
