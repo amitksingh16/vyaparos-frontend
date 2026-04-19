@@ -18,15 +18,15 @@ const AuthSplitLayout = ({
         <div className="relative h-full overflow-hidden font-sans">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.2),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.24),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)]" />
             <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40" />
-            <div className="absolute left-[-8rem] top-[-4rem] h-72 w-72 rounded-full bg-blue-400/18 blur-3xl" />
-            <div className="absolute right-[-5rem] bottom-[-4rem] h-80 w-80 rounded-full bg-fuchsia-400/16 blur-3xl" />
+            <div className="absolute left-[-8rem] top-[-4rem] h-72 w-72 rounded-full bg-blue-400/14 blur-3xl" />
+            <div className="absolute right-[-10rem] bottom-[-8rem] h-96 w-96 rounded-full bg-fuchsia-400/10 blur-3xl" />
 
             <div className="relative flex h-full overflow-hidden">
                 <motion.section
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    className="relative hidden h-full w-1/2 overflow-hidden border-r border-white/30 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.22),_transparent_28%),radial-gradient(circle_at_78%_20%,_rgba(168,85,247,0.18),_transparent_24%),linear-gradient(160deg,_#08152b_0%,_#0f172a_35%,_#172554_100%)] px-8 py-8 text-white lg:flex lg:flex-col lg:justify-center xl:px-12 [@media_(max-height:950px)]:px-7 [@media_(max-height:950px)]:py-6"
+                    className="relative hidden h-full w-1/2 overflow-hidden border-r border-white/30 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.22),_transparent_28%),radial-gradient(circle_at_78%_20%,_rgba(168,85,247,0.18),_transparent_24%),linear-gradient(160deg,_#08152b_0%,_#0f172a_35%,_#172554_100%)] px-8 py-8 text-white lg:flex lg:flex-col lg:justify-center xl:px-12 [@media_(max-height:1100px)]:px-7 [@media_(max-height:1100px)]:py-6"
                 >
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:48px_48px] opacity-35" />
                     <div className="absolute inset-0 overflow-hidden">
@@ -47,7 +47,7 @@ const AuthSplitLayout = ({
                         />
                     </div>
 
-                    <div className="relative z-10 flex h-full w-full flex-col justify-center overflow-hidden py-4 [@media_(max-height:950px)]:py-2">
+                    <div className="relative z-10 flex h-full w-full flex-col justify-center overflow-hidden py-4 [@media_(max-height:1100px)]:py-2">
                         <div className="w-full max-w-lg">
                             <motion.div variants={staggerItem} className="flex items-center gap-3">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
@@ -61,36 +61,36 @@ const AuthSplitLayout = ({
                                 </div>
                             </motion.div>
 
-                            <div className="overflow-hidden pt-8 [@media_(max-height:950px)]:pt-6">
+                            <div className="overflow-hidden pt-8 [@media_(max-height:1100px)]:pt-6">
                                 <motion.div
                                     variants={staggerItem}
-                                    className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-slate-200 backdrop-blur-xl [@media_(max-height:950px)]:mb-4"
+                                    className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-slate-200 backdrop-blur-xl [@media_(max-height:1100px)]:mb-4"
                                 >
                                     <Sparkles className="h-3.5 w-3.5 text-blue-300" />
                                     {panelBadge}
                                 </motion.div>
 
-                                <motion.h1 variants={staggerItem} className="text-5xl font-black leading-[0.98] tracking-[-0.05em] text-white xl:text-6xl [@media_(max-height:950px)]:text-4xl [@media_(max-height:850px)]:text-[3.15rem]">
+                                <motion.h1 variants={staggerItem} className="text-5xl font-black leading-[0.98] tracking-[-0.05em] text-white xl:text-6xl [@media_(max-height:1100px)]:text-[3.25rem] [@media_(max-height:950px)]:text-4xl [@media_(max-height:850px)]:text-[3rem]">
                                     {panelTitle}
                                 </motion.h1>
-                                <motion.p variants={staggerItem} className="mt-5 max-w-[92%] text-lg leading-8 text-slate-300 [@media_(max-height:950px)]:mt-4 [@media_(max-height:950px)]:text-[15px] [@media_(max-height:950px)]:leading-6">
+                                <motion.p variants={staggerItem} className="mt-5 max-w-[92%] text-lg leading-8 text-slate-300 [@media_(max-height:1100px)]:mt-4 [@media_(max-height:1100px)]:text-[15px] [@media_(max-height:1100px)]:leading-6">
                                     {panelDescription}
                                 </motion.p>
 
-                                <motion.div variants={staggerItem} className="mt-8 space-y-3 [@media_(max-height:950px)]:mt-6 [@media_(max-height:950px)]:space-y-2.5">
+                                <motion.div variants={staggerItem} className="mt-8 space-y-3 [@media_(max-height:1100px)]:mt-6 [@media_(max-height:1100px)]:space-y-2.5">
                                     {panelHighlights.map(({ icon: Icon, title, description }) => (
                                         <motion.div
                                             key={title}
                                             whileHover={{ x: 4 }}
-                                            className="rounded-[1.6rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl [@media_(max-height:950px)]:px-4 [@media_(max-height:950px)]:py-2.5"
+                                            className="rounded-[1.6rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl [@media_(max-height:1100px)]:px-4 [@media_(max-height:1100px)]:py-2.5"
                                         >
                                             <div className="flex items-start gap-4">
                                                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10">
                                                     <Icon className="h-5 w-5 text-blue-200" />
                                                 </div>
                                                 <div>
-                                                    <div className="text-base font-semibold text-white [@media_(max-height:950px)]:text-[15px]">{title}</div>
-                                                    <div className="mt-1 text-sm leading-6 text-slate-300 [@media_(max-height:950px)]:leading-5">{description}</div>
+                                                    <div className="text-base font-semibold text-white [@media_(max-height:1100px)]:text-[15px]">{title}</div>
+                                                    <div className="mt-1 text-sm leading-6 text-slate-300 [@media_(max-height:1100px)]:leading-5">{description}</div>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -105,11 +105,11 @@ const AuthSplitLayout = ({
                     initial={{ opacity: 0, y: 28 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55, ease: 'easeOut' }}
-                    className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-3 sm:px-6 lg:w-1/2 lg:px-8 lg:py-6 [@media_(max-height:950px)]:py-4"
+                    className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-3 sm:px-6 lg:w-1/2 lg:justify-end lg:px-8 lg:py-6 [@media_(max-height:1100px)]:py-4"
                 >
-                    <div className="w-full max-w-lg overflow-hidden">
-                        <div className="rounded-[2rem] border border-white/65 bg-white/70 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.12)] backdrop-blur-xl sm:p-6 [@media_(max-height:950px)]:p-5">
-                            <div className="mb-6 flex items-center justify-between gap-4 [@media_(max-height:950px)]:mb-5">
+                    <div className="w-full max-w-[38rem] overflow-hidden lg:ml-auto">
+                        <div className="rounded-[2rem] border border-white/70 bg-white/82 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.08)] backdrop-blur-md sm:p-6 [@media_(max-height:1100px)]:p-5">
+                            <div className="mb-5 flex items-center justify-between gap-4 [@media_(max-height:1100px)]:mb-4">
                                 <div className="flex items-center gap-3 lg:hidden">
                                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] text-white shadow-lg shadow-blue-200/70">
                                         <Shield className="h-5 w-5" />
@@ -126,11 +126,11 @@ const AuthSplitLayout = ({
                                 </div>
                             </div>
 
-                            <div className="mb-6 [@media_(max-height:950px)]:mb-5">
-                                <h2 className="text-4xl font-black tracking-[-0.05em] text-slate-950 sm:text-[2.65rem] [@media_(max-height:950px)]:text-[2.35rem]">
+                            <div className="mb-5 [@media_(max-height:1100px)]:mb-4">
+                                <h2 className="text-4xl font-black tracking-[-0.05em] text-slate-950 sm:text-[2.65rem] [@media_(max-height:1100px)]:text-[2.25rem]">
                                     {formTitle}
                                 </h2>
-                                <p className="mt-2 max-w-lg text-base leading-7 text-slate-600 [@media_(max-height:950px)]:text-[15px] [@media_(max-height:950px)]:leading-6">
+                                <p className="mt-2 max-w-xl text-base leading-7 text-slate-600 [@media_(max-height:1100px)]:text-[15px] [@media_(max-height:1100px)]:leading-6">
                                     {formDescription}
                                 </p>
                             </div>
@@ -138,7 +138,7 @@ const AuthSplitLayout = ({
                             {children}
 
                             {footer ? (
-                                <div className="mt-6 border-t border-slate-200/70 pt-5 [@media_(max-height:950px)]:mt-5 [@media_(max-height:950px)]:pt-4">
+                                <div className="mt-4 border-t border-slate-200/70 pt-4 [@media_(max-height:1100px)]:mt-3 [@media_(max-height:1100px)]:pt-3">
                                     {footer}
                                 </div>
                             ) : null}

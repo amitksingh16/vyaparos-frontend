@@ -135,7 +135,7 @@ const Signup = () => {
                     </p>
                 )}
             >
-                <form className="space-y-3.5 [@media_(max-height:950px)]:space-y-3" onSubmit={handleSignup}>
+                <form className="space-y-3 [@media_(max-height:1100px)]:space-y-2.5" onSubmit={handleSignup}>
                     <Input
                         id="name"
                         label={<span>Full Name <span className="text-fuchsia-500">*</span></span>}
@@ -144,7 +144,7 @@ const Signup = () => {
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:950px)]:py-3"
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                     />
 
                     <Input
@@ -156,7 +156,7 @@ const Signup = () => {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:950px)]:py-3"
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                     />
 
                     <Input
@@ -168,7 +168,7 @@ const Signup = () => {
                         onChange={handleChange}
                         maxLength={10}
                         required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:950px)]:py-3"
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                     />
 
                     <Input
@@ -180,7 +180,7 @@ const Signup = () => {
                         value={formData.password}
                         onChange={handleChange}
                         required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:950px)]:py-3"
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                         rightIcon={
                             <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -198,7 +198,7 @@ const Signup = () => {
                         onChange={handleChange}
                         required
                         error={isPasswordMismatch ? 'Passwords do not match' : ''}
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3.5 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:950px)]:py-3"
+                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                         rightIcon={
                             <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -206,21 +206,21 @@ const Signup = () => {
                         }
                     />
 
-                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-4 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.12)] [@media_(max-height:950px)]:px-3.5 [@media_(max-height:950px)]:py-2.5">
+                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-4 py-2.5 shadow-[0_10px_30px_rgba(148,163,184,0.12)] [@media_(max-height:1100px)]:px-3.5 [@media_(max-height:1100px)]:py-2">
                         <input id="terms" type="checkbox" required className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 transition-colors focus:ring-blue-500" />
                         <label htmlFor="terms" className="cursor-pointer select-none text-xs leading-6 text-slate-500">
                             I agree to the <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Terms</Link> and <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Privacy Policy</Link>.
                         </label>
                     </div>
 
-                    <div className="pt-1">
+                    <div className="pt-0.5">
                         <Button
                             id="signup-button"
                             type="submit"
                             disabled={!isFormValid || loading}
                             isLoading={loading}
                             fullWidth
-                            className={`w-full rounded-2xl py-3.5 text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
+                            className={`w-full rounded-2xl py-3 text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] [@media_(max-height:1100px)]:py-2.5 ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
                             rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
                         >
                             {loading ? 'Creating Workspace...' : 'Create CA Dashboard'}
