@@ -8,6 +8,7 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
 import AuthSplitLayout from '../../components/auth/AuthSplitLayout';
+import Loader from '../../components/common/Loader';
 
 const signupHighlights = [
     {
@@ -118,6 +119,7 @@ const Signup = () => {
     return (
         <div className="h-screen flex overflow-hidden">
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
+            {loading ? <Loader type="fullscreen" text="Setting up your workspace..." /> : null}
             <AuthSplitLayout
                 panelBadge="Premium SaaS Onboarding"
                 panelTitle="Launch your CA workspace without the clutter."

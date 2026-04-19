@@ -8,6 +8,7 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
 import AuthSplitLayout from '../../components/auth/AuthSplitLayout';
+import Loader from '../../components/common/Loader';
 
 const loginHighlights = [
     {
@@ -109,6 +110,7 @@ const Login = () => {
     return (
         <div className="h-screen flex overflow-hidden">
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
+            {loading ? <Loader type="fullscreen" text="Loading your workspace..." /> : null}
             <AuthSplitLayout
                 panelBadge="Premium Compliance Workspace"
                 panelTitle="Step back into your firm's digital control room."
