@@ -3,11 +3,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/firebase';
-import { User, Mail, ArrowRight, Calendar, Users, Lock, Phone, Eye, EyeOff, BellRing } from 'lucide-react';
+import { User, Mail, ArrowRight, Calendar, Users, Lock, Phone, Eye, EyeOff, BellRing, Shield } from 'lucide-react';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
-import AuthSplitLayout from '../../components/auth/AuthSplitLayout';
 import Loader from '../../components/common/Loader';
 
 const signupHighlights = [
@@ -117,119 +116,179 @@ const Signup = () => {
     };
 
     return (
-        <div className="h-screen flex overflow-hidden">
+        <div className="min-h-screen w-full flex bg-gradient-to-br from-[#0B1D3A] via-[#0F2A5C] to-[#1A3A7C]">
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
             {loading ? <Loader type="fullscreen" text="Setting up your workspace..." /> : null}
-            <AuthSplitLayout
-                panelBadge="Premium SaaS Onboarding"
-                panelTitle="Launch your CA workspace without the clutter."
-                panelDescription="Start with a polished dashboard experience that feels aligned with the landing page and ready for real compliance operations."
-                panelHighlights={signupHighlights}
-                formEyebrow="Free setup"
-                formTitle="Create Your Workspace"
-                formDescription="Join VyaparOS with a cleaner full-screen signup flow built for modern firms and overflow-free desktop layouts."
-                footer={(
-                    <p className="text-center text-sm text-slate-600">
-                        Already have an account?{' '}
-                        <Link to="/login" className="font-semibold text-blue-700 transition-colors hover:text-fuchsia-600">
-                            Log in here
-                        </Link>
-                    </p>
-                )}
-            >
-                <form className="space-y-3 [@media_(max-height:1100px)]:space-y-2.5" onSubmit={handleSignup}>
-                    <Input
-                        id="name"
-                        label={<span>Full Name <span className="text-fuchsia-500">*</span></span>}
-                        placeholder="Amit Singh"
-                        icon={<User className="h-5 w-5 text-slate-400" />}
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
-                    />
-
-                    <Input
-                        id="email"
-                        label={<span>Email Address <span className="text-fuchsia-500">*</span></span>}
-                        placeholder="amit@example.com"
-                        type="email"
-                        icon={<Mail className="h-5 w-5 text-slate-400" />}
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
-                    />
-
-                    <Input
-                        id="phone"
-                        label={<span>Phone Number <span className="text-fuchsia-500">*</span></span>}
-                        placeholder="9876543210"
-                        icon={<Phone className="h-5 w-5 text-slate-400" />}
-                        value={formData.phone}
-                        onChange={handleChange}
-                        maxLength={10}
-                        required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
-                    />
-
-                    <Input
-                        id="password"
-                        label={<span>Password <span className="text-fuchsia-500">*</span></span>}
-                        placeholder="Min 6 characters"
-                        type={showPassword ? 'text' : 'password'}
-                        icon={<Lock className="h-5 w-5 text-slate-400" />}
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
-                        rightIcon={
-                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
-                        }
-                    />
-
-                    <Input
-                        id="confirmPassword"
-                        label={<span>Confirm Password <span className="text-fuchsia-500">*</span></span>}
-                        placeholder="Re-enter password"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        icon={<Lock className="h-5 w-5 text-slate-400" />}
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        required
-                        error={isPasswordMismatch ? 'Passwords do not match' : ''}
-                        inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
-                        rightIcon={
-                            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
-                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
-                        }
-                    />
-
-                    <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-4 py-2.5 shadow-[0_10px_30px_rgba(148,163,184,0.12)] [@media_(max-height:1100px)]:px-3.5 [@media_(max-height:1100px)]:py-2">
-                        <input id="terms" type="checkbox" required className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 transition-colors focus:ring-blue-500" />
-                        <label htmlFor="terms" className="cursor-pointer select-none text-xs leading-6 text-slate-500">
-                            I agree to the <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Terms</Link> and <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Privacy Policy</Link>.
-                        </label>
+            
+            <div className="flex w-full">
+                {/* LEFT PANEL */}
+                <div className="w-1/2 flex flex-col justify-center px-20 relative">
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute w-2 h-2 bg-purple-400 rounded-full top-20 left-20 animate-pulse"></div>
+                        <div className="absolute w-3 h-3 bg-blue-400 rounded-full top-40 left-40 animate-bounce"></div>
+                        <div className="absolute w-2 h-2 bg-pink-400 rounded-full top-60 left-24 animate-ping"></div>
                     </div>
 
-                    <div className="pt-0.5">
-                        <Button
-                            id="signup-button"
-                            type="submit"
-                            disabled={!isFormValid || loading}
-                            isLoading={loading}
-                            fullWidth
-                            className={`w-full rounded-2xl py-3 text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] [@media_(max-height:1100px)]:py-2.5 ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
-                            rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
-                        >
-                            {loading ? 'Creating Workspace...' : 'Create CA Dashboard'}
-                        </Button>
+                    <div className="relative z-10 w-full max-w-lg">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
+                                <Shield className="h-6 w-6 text-amber-300" />
+                            </div>
+                            <div>
+                                <div className="font-display text-2xl font-bold tracking-tight text-white">VyaparOS</div>
+                                <div className="text-[11px] font-semibold uppercase tracking-[0.26em] text-slate-400">
+                                    Compliance OS
+                                </div>
+                            </div>
+                        </div>
+
+                        <h1 className="text-5xl font-black leading-[0.98] tracking-[-0.05em] text-white xl:text-6xl mb-5">
+                            Launch your CA workspace without the clutter.
+                        </h1>
+                        <p className="mt-5 max-w-[92%] text-lg leading-8 text-slate-300 mb-8">
+                            Start with a polished dashboard experience that feels aligned with the landing page and ready for real compliance operations.
+                        </p>
+
+                        <div className="space-y-3">
+                            {signupHighlights.map(({ icon: Icon, title, description }) => (
+                                <div
+                                    key={title}
+                                    className="rounded-[1.6rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl"
+                                >
+                                    <div className="flex items-start gap-4">
+                                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10">
+                                            <Icon className="h-5 w-5 text-blue-200" />
+                                        </div>
+                                        <div>
+                                            <div className="text-base font-semibold text-white">{title}</div>
+                                            <div className="mt-1 text-sm leading-6 text-slate-300">{description}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </form>
-            </AuthSplitLayout>
+                </div>
+
+                {/* RIGHT FORM */}
+                <div className="w-1/2 flex flex-col justify-center items-center px-16 pb-4">
+                    <div className="w-full max-w-md bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 space-y-4 hover:shadow-2xl transition-all duration-300">
+                        <div className="mb-5">
+                            <div className="inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 mb-4">
+                                Free setup
+                            </div>
+                            <h2 className="text-4xl font-black tracking-[-0.05em] text-gray-800 sm:text-[2.65rem] [@media_(max-height:1100px)]:text-[2.25rem]">
+                                Create Your Workspace
+                            </h2>
+                            <p className="mt-2 text-base leading-7 text-slate-600">
+                                Join VyaparOS with a cleaner full-screen signup flow built for modern firms and overflow-free desktop layouts.
+                            </p>
+                        </div>
+
+                        <form className="space-y-3 [@media_(max-height:1100px)]:space-y-2.5" onSubmit={handleSignup}>
+                            <Input
+                                id="name"
+                                label={<span>Full Name <span className="text-fuchsia-500">*</span></span>}
+                                placeholder="Amit Singh"
+                                icon={<User className="h-5 w-5 text-slate-400" />}
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                                inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                            />
+
+                            <Input
+                                id="email"
+                                label={<span>Email Address <span className="text-fuchsia-500">*</span></span>}
+                                placeholder="amit@example.com"
+                                type="email"
+                                icon={<Mail className="h-5 w-5 text-slate-400" />}
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                            />
+
+                            <Input
+                                id="phone"
+                                label={<span>Phone Number <span className="text-fuchsia-500">*</span></span>}
+                                placeholder="9876543210"
+                                icon={<Phone className="h-5 w-5 text-slate-400" />}
+                                value={formData.phone}
+                                onChange={handleChange}
+                                maxLength={10}
+                                required
+                                inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                            />
+
+                            <Input
+                                id="password"
+                                label={<span>Password <span className="text-fuchsia-500">*</span></span>}
+                                placeholder="Min 6 characters"
+                                type={showPassword ? 'text' : 'password'}
+                                icon={<Lock className="h-5 w-5 text-slate-400" />}
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                rightIcon={
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                }
+                            />
+
+                            <Input
+                                id="confirmPassword"
+                                label={<span>Confirm Password <span className="text-fuchsia-500">*</span></span>}
+                                placeholder="Re-enter password"
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                icon={<Lock className="h-5 w-5 text-slate-400" />}
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                required
+                                error={isPasswordMismatch ? 'Passwords do not match' : ''}
+                                inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                rightIcon={
+                                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
+                                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                }
+                            />
+
+                            <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-4 py-2.5 shadow-[0_10px_30px_rgba(148,163,184,0.12)] [@media_(max-height:1100px)]:px-3.5 [@media_(max-height:1100px)]:py-2">
+                                <input id="terms" type="checkbox" required className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 transition-colors focus:ring-blue-500" />
+                                <label htmlFor="terms" className="cursor-pointer select-none text-xs leading-6 text-slate-500">
+                                    I agree to the <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Terms</Link> and <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Privacy Policy</Link>.
+                                </label>
+                            </div>
+
+                            <div className="pt-0.5">
+                                <Button
+                                    id="signup-button"
+                                    type="submit"
+                                    disabled={!isFormValid || loading}
+                                    isLoading={loading}
+                                    fullWidth
+                                    className={`w-full rounded-2xl py-3 text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] [@media_(max-height:1100px)]:py-2.5 ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
+                                    rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
+                                >
+                                    {loading ? 'Creating Workspace...' : 'Create CA Dashboard'}
+                                </Button>
+                            </div>
+                        </form>
+
+                        <div className="mt-4 border-t border-slate-200/70 pt-4 text-center">
+                            <p className="text-sm text-slate-600">
+                                Already have an account?{' '}
+                                <Link to="/login" className="font-semibold text-blue-700 transition-colors hover:text-fuchsia-600">
+                                    Log in here
+                                </Link>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
