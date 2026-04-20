@@ -116,32 +116,29 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex overflow-y-auto bg-gradient-to-br from-[#0B1D3A] via-[#0F2A5C] to-[#1A3A7C] relative">
-            <style>
-                {`
-                @keyframes float-drift {
-                    0%, 100% { transform: translate(0, 0); opacity: 0.3; }
-                    50% { transform: translate(25px, -25px); opacity: 0.8; }
-                }
-                .animate-float-drift {
-                    animation: float-drift 12s ease-in-out infinite;
-                }
-                .animation-delay-2000 { animation-delay: 2s; }
-                .animation-delay-4000 { animation-delay: 4s; }
-                .animation-delay-6000 { animation-delay: 6s; }
-                .animation-delay-8000 { animation-delay: 8s; }
-                `}
-            </style>
-            
-            {/* Background Orbs */}
-            <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute w-[12px] h-[12px] bg-purple-500/30 rounded-full blur-xl top-[10%] left-[10%] animate-float-drift"></div>
-                <div className="absolute w-[15px] h-[15px] bg-blue-400/20 rounded-full blur-xl top-[20%] right-[20%] animate-float-drift animation-delay-2000"></div>
-                <div className="absolute w-[8px] h-[8px] bg-purple-500/30 rounded-full blur-xl top-[50%] left-[5%] animate-float-drift animation-delay-4000"></div>
-                <div className="absolute w-[14px] h-[14px] bg-blue-400/20 rounded-full blur-xl bottom-[15%] right-[10%] animate-float-drift animation-delay-6000"></div>
-                <div className="absolute w-[10px] h-[10px] bg-purple-500/30 rounded-full blur-xl top-[70%] left-[30%] animate-float-drift animation-delay-2000"></div>
-                <div className="absolute w-[12px] h-[12px] bg-blue-400/20 rounded-full blur-xl bottom-[25%] left-[50%] animate-float-drift animation-delay-8000"></div>
-                <div className="absolute w-[15px] h-[15px] bg-purple-500/30 rounded-full blur-xl top-[40%] right-[30%] animate-float-drift"></div>
+        <div className="min-h-screen w-full flex items-center justify-center overflow-y-auto bg-[#0a192f] p-4 sm:p-8 relative">
+            {/* Floating Background Orbs */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                {[
+                    { top: '10%', left: '20%', size: '100px', delay: '0s', color: 'bg-blue-500/20' },
+                    { top: '60%', left: '10%', size: '150px', delay: '2s', color: 'bg-purple-500/20' },
+                    { top: '30%', left: '80%', size: '120px', delay: '4s', color: 'bg-blue-400/20' },
+                    { top: '80%', left: '70%', size: '90px', delay: '1s', color: 'bg-indigo-500/20' },
+                ].map((orb, i) => (
+                    <div
+                        key={i}
+                        className={`absolute rounded-full blur-3xl animate-pulse ${orb.color}`}
+                        style={{
+                            top: orb.top,
+                            left: orb.left,
+                            width: orb.size,
+                            height: orb.size,
+                            animationDuration: '8s',
+                            animationDelay: orb.delay,
+                            transform: 'translate(-50%, -50%)'
+                        }}
+                    />
+                ))}
             </div>
 
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
@@ -149,7 +146,7 @@ const Signup = () => {
             
             <div className="flex w-full relative z-10">
                 {/* LEFT PANEL */}
-                <div className="w-1/2 flex flex-col justify-center px-20 py-10 relative">
+                <div className="w-1/2 flex flex-col justify-center px-20 py-6 relative">
                     <div className="relative z-10 w-full max-w-lg">
                         <div className="flex items-center gap-3 mb-8">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
@@ -170,7 +167,7 @@ const Signup = () => {
                             Start with a polished dashboard experience that feels aligned with the landing page and ready for real compliance operations.
                         </p>
 
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-3">
                             {signupHighlights.map(({ icon: Icon, title, description }) => (
                                 <div
                                     key={title}
@@ -192,7 +189,7 @@ const Signup = () => {
                 </div>
 
                 {/* RIGHT FORM */}
-                <div className="w-1/2 flex flex-col justify-center items-center px-16 py-10">
+                <div className="w-1/2 flex flex-col justify-center items-center px-16 py-6">
                     <div className="w-full max-w-md bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 space-y-4 hover:shadow-2xl transition-all duration-300">
                         <div className="mb-5">
                             <div className="inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 mb-4">
