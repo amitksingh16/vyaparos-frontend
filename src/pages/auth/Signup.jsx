@@ -130,17 +130,17 @@ const Signup = () => {
             </style>
 
             {/* FLOATING BACKGROUND ORBS */}
-            <div className="fixed inset-0 pointer-events-none z-0">
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
                 {[
-                    { top: '15%', left: '15%', size: '180px', delay: '0s', color: 'bg-blue-600/30' },
-                    { top: '65%', left: '10%', size: '250px', delay: '-5s', color: 'bg-purple-600/20' },
-                    { top: '35%', left: '80%', size: '200px', delay: '-2s', color: 'bg-blue-500/20' },
-                    { top: '85%', left: '75%', size: '150px', delay: '-7s', color: 'bg-indigo-500/30' },
-                    { top: '40%', left: '45%', size: '300px', delay: '-10s', color: 'bg-fuchsia-600/10' },
+                    { top: '10%', left: '15%', size: '300px', delay: '0s', color: 'bg-blue-500/70' },
+                    { top: '65%', left: '5%', size: '350px', delay: '-5s', color: 'bg-purple-500/60' },
+                    { top: '30%', left: '80%', size: '320px', delay: '-2s', color: 'bg-cyan-500/60' },
+                    { top: '85%', left: '70%', size: '280px', delay: '-7s', color: 'bg-indigo-500/70' },
+                    { top: '40%', left: '50%', size: '400px', delay: '-10s', color: 'bg-fuchsia-500/50' },
                 ].map((orb, i) => (
                     <div
                         key={i}
-                        className={`absolute rounded-full blur-[80px] animate-ambient-float ${orb.color}`}
+                        className={`absolute rounded-full blur-3xl animate-ambient-float mix-blend-screen ${orb.color}`}
                         style={{
                             top: orb.top,
                             left: orb.left,
