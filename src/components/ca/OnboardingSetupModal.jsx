@@ -2,7 +2,7 @@ import React, { useEffect, useState, createElement } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Sparkles, UserPlus, Users, Building2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Sparkles, UserPlus, Users, Building2, Smartphone, CreditCard, Hash } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const StepCard = ({
@@ -80,7 +80,7 @@ const OnboardingSetupModal = ({
     const { fetchUser, setOnboardingComplete } = useAuth();
 
     const [step, setStep] = useState(currentStep || 1);
-    const [firmData, setFirmData] = useState({ firm_name: '', total_clients: '', specialization: '', pan_number: '', gstin: '', mobile_number: '' });
+    const [formData, setFormData] = useState({ firm_name: '', total_clients: '', specialization: '', pan_number: '', gstin: '', mobile_number: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [teamInviteData, setTeamInviteData] = useState({ name: '', email: '', phone: '', role: 'ca_staff' });
     const [isInviting, setIsInviting] = useState(false);
@@ -166,26 +166,27 @@ const OnboardingSetupModal = ({
 
     const activePercent = Math.round((step / 3) * 100);
 
-    const handleFirmSubmit = async (e) => {
+    const handleSaveFirmDetails = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
             const payload = {
-                firm_name: firmData.firm_name,
-                total_clients: firmData.total_clients,
-                specialization: firmData.specialization,
-                pan_number: firmData.pan_number ? firmData.pan_number.toUpperCase() : '',
-                gstin: firmData.gstin ? firmData.gstin.toUpperCase() : '',
-                mobile_number: firmData.mobile_number
+                firm_name: formData.firm_name,
+                total_clients: formData.total_clients,
+                specialization: formData.specialization,
+                pan_number: formData.pan_number ? formData.pan_number.toUpperCase() : '',
+                gstin: formData.gstin ? formData.gstin.toUpperCase() : '',
+                mobile_number: formData.mobile_number
             };
             await axios.post('/ca/setup', payload);
             if (onSetupFirm) {
                 onSetupFirm(payload);
             }
+            // Trigger state change only on successful POST
             handleNextStep();
         } catch (error) {
             console.error('Failed to setup firm', error);
-            handleNextStep();
+            // Removed handleNextStep() to prevent proceeding on 400 Bad Request
         } finally {
             setIsSubmitting(false);
         }
@@ -259,7 +260,7 @@ const OnboardingSetupModal = ({
 
                         <div className="relative mb-2 mt-5 w-full">
                             <AnimatePresence mode="wait">
-                                {step === 1 && <FirmSetup key="step1" data={firmData} setData={setFirmData} onSubmit={handleFirmSubmit} loading={isSubmitting} />}
+                                {step === 1 && <FirmSetup key="step1" data={formData} setData={setFormData} onSubmit={handleSaveFirmDetails} loading={isSubmitting} />}
                                 {step === 2 && (
                                     <InviteTeam
                                         key="step2"
@@ -291,7 +292,7 @@ const OnboardingSetupModal = ({
     );
 };
 
-const neonInputStyle = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-300";
+const neonInputStyle = "w-full rounded-xl border border-white/20 bg-white/5 pl-10 pr-4 py-2.5 text-sm font-medium text-white placeholder-slate-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:shadow-[0_0_15px_rgba(217,70,239,0.5)] transition-all duration-300";
 
 const FirmSetup = ({ data, setData, onSubmit, loading }) => (
     <motion.div
@@ -299,17 +300,24 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.2 }}
-        className="w-full"
+        className="w-full flex flex-col rounded-3xl border border-[#0a192f]/50 bg-[#0a192f]/95 backdrop-blur-xl p-6 shadow-[0_20px_50px_rgba(10,25,47,0.5)]"
     >
-        <StepCard
-            stepNumber={1}
-            title="Setup your firm"
-            description="Add your firm details to personalize your workspace"
-            icon={Building2}
-        >
-            <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-4">
-                <div>
-                    <label className="mb-1.5 block text-xs font-semibold text-slate-700">Firm Name / Practice Name</label>
+        <div className="flex items-start gap-4 mb-6">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20">
+                <Building2 className="h-6 w-6" />
+            </div>
+            <div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-cyan-400">Step 1</div>
+                <h3 className="text-xl font-bold text-white mt-1">Setup your firm</h3>
+                <p className="mt-1 text-sm text-slate-300">Add your firm details to personalize your workspace</p>
+            </div>
+        </div>
+
+        <form onSubmit={onSubmit} className="flex flex-col gap-5">
+            <div>
+                <label className="mb-2 block text-xs font-semibold text-slate-300">Firm Name / Practice Name</label>
+                <div className="relative">
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                     <input
                         required
                         type="text"
@@ -319,12 +327,15 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                         placeholder="e.g. Sharma & Associates"
                     />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Client Est.</label>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="mb-2 block text-xs font-semibold text-slate-300">Client Est.</label>
+                    <div className="relative">
+                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <select
                             required
-                            className={neonInputStyle}
+                            className={`${neonInputStyle} appearance-none [&>option]:bg-[#0a192f] [&>option]:text-white`}
                             value={data.total_clients}
                             onChange={(e) => setData({ ...data, total_clients: e.target.value })}
                         >
@@ -334,11 +345,14 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                             <option value="200+">200+</option>
                         </select>
                     </div>
-                    <div>
-                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Portfolio</label>
+                </div>
+                <div>
+                    <label className="mb-2 block text-xs font-semibold text-slate-300">Portfolio</label>
+                    <div className="relative">
+                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <select
                             required
-                            className={neonInputStyle}
+                            className={`${neonInputStyle} appearance-none [&>option]:bg-[#0a192f] [&>option]:text-white`}
                             value={data.specialization}
                             onChange={(e) => setData({ ...data, specialization: e.target.value })}
                         >
@@ -349,9 +363,12 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                         </select>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Mobile Number</label>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label className="mb-2 block text-xs font-semibold text-slate-300">Mobile Number</label>
+                    <div className="relative">
+                        <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input
                             required
                             type="tel"
@@ -361,8 +378,11 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                             placeholder="10-digit mobile"
                         />
                     </div>
-                    <div>
-                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Firm PAN</label>
+                </div>
+                <div>
+                    <label className="mb-2 block text-xs font-semibold text-slate-300">Firm PAN</label>
+                    <div className="relative">
+                        <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input
                             required
                             type="text"
@@ -372,8 +392,11 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                             placeholder="ABCDE1234F"
                         />
                     </div>
-                    <div>
-                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">GSTIN</label>
+                </div>
+                <div>
+                    <label className="mb-2 block text-xs font-semibold text-slate-300">GSTIN</label>
+                    <div className="relative">
+                        <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input
                             required
                             type="text"
@@ -384,15 +407,15 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                         />
                     </div>
                 </div>
-                <div className="mt-4 flex items-center justify-end border-t border-slate-100 pt-4">
-                    <PrimaryButton
-                        isSubmit
-                        label="Save Firm Details"
-                        loading={loading}
-                    />
-                </div>
-            </form>
-        </StepCard>
+            </div>
+            <div className="mt-4 flex items-center justify-end border-t border-white/10 pt-5">
+                <PrimaryButton
+                    isSubmit
+                    label="Save Firm Details"
+                    loading={loading}
+                />
+            </div>
+        </form>
     </motion.div>
 );
 
