@@ -80,7 +80,7 @@ const OnboardingSetupModal = ({
     const { fetchUser, setOnboardingComplete } = useAuth();
 
     const [step, setStep] = useState(currentStep || 1);
-    const [firmData, setFirmData] = useState({ name: '', size: '', portfolio: '' });
+    const [firmData, setFirmData] = useState({ firm_name: '', total_clients: '', specialization: '', pan_number: '', gstin: '', mobile_number: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [teamInviteData, setTeamInviteData] = useState({ name: '', email: '', phone: '', role: 'ca_staff' });
     const [isInviting, setIsInviting] = useState(false);
@@ -170,9 +170,17 @@ const OnboardingSetupModal = ({
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await axios.post('/ca/setup', firmData);
+            const payload = {
+                firm_name: firmData.firm_name,
+                total_clients: firmData.total_clients,
+                specialization: firmData.specialization,
+                pan_number: firmData.pan_number ? firmData.pan_number.toUpperCase() : '',
+                gstin: firmData.gstin ? firmData.gstin.toUpperCase() : '',
+                mobile_number: firmData.mobile_number
+            };
+            await axios.post('/ca/setup', payload);
             if (onSetupFirm) {
-                onSetupFirm(firmData);
+                onSetupFirm(payload);
             }
             handleNextStep();
         } catch (error) {
@@ -283,6 +291,8 @@ const OnboardingSetupModal = ({
     );
 };
 
+const neonInputStyle = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-300";
+
 const FirmSetup = ({ data, setData, onSubmit, loading }) => (
     <motion.div
         initial={{ opacity: 0, x: 20 }}
@@ -303,9 +313,9 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                     <input
                         required
                         type="text"
-                        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
-                        value={data.name}
-                        onChange={(e) => setData({ ...data, name: e.target.value })}
+                        className={neonInputStyle}
+                        value={data.firm_name}
+                        onChange={(e) => setData({ ...data, firm_name: e.target.value })}
                         placeholder="e.g. Sharma & Associates"
                     />
                 </div>
@@ -314,9 +324,9 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                         <label className="mb-1.5 block text-xs font-semibold text-slate-700">Client Est.</label>
                         <select
                             required
-                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
-                            value={data.size}
-                            onChange={(e) => setData({ ...data, size: e.target.value })}
+                            className={neonInputStyle}
+                            value={data.total_clients}
+                            onChange={(e) => setData({ ...data, total_clients: e.target.value })}
                         >
                             <option value="">Select size...</option>
                             <option value="1-50">1-50</option>
@@ -328,15 +338,50 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                         <label className="mb-1.5 block text-xs font-semibold text-slate-700">Portfolio</label>
                         <select
                             required
-                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#0A2C4B]"
-                            value={data.portfolio}
-                            onChange={(e) => setData({ ...data, portfolio: e.target.value })}
+                            className={neonInputStyle}
+                            value={data.specialization}
+                            onChange={(e) => setData({ ...data, specialization: e.target.value })}
                         >
                             <option value="">Select composition...</option>
                             <option value="Mixed">Mixed</option>
                             <option value="Only GST">Only GST</option>
                             <option value="Only IT Returns">Only IT</option>
                         </select>
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Mobile Number</label>
+                        <input
+                            required
+                            type="tel"
+                            className={neonInputStyle}
+                            value={data.mobile_number}
+                            onChange={(e) => setData({ ...data, mobile_number: e.target.value })}
+                            placeholder="10-digit mobile"
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">Firm PAN</label>
+                        <input
+                            required
+                            type="text"
+                            className={`${neonInputStyle} uppercase`}
+                            value={data.pan_number}
+                            onChange={(e) => setData({ ...data, pan_number: e.target.value.toUpperCase() })}
+                            placeholder="ABCDE1234F"
+                        />
+                    </div>
+                    <div>
+                        <label className="mb-1.5 block text-xs font-semibold text-slate-700">GSTIN</label>
+                        <input
+                            required
+                            type="text"
+                            className={`${neonInputStyle} uppercase`}
+                            value={data.gstin}
+                            onChange={(e) => setData({ ...data, gstin: e.target.value.toUpperCase() })}
+                            placeholder="15-digit GST number"
+                        />
                     </div>
                 </div>
                 <div className="mt-4 flex items-center justify-end border-t border-slate-100 pt-4">
