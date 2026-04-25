@@ -112,7 +112,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen w-full bg-[#0a192f] relative flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+        <div className="min-h-screen w-full bg-[#0a192f] relative flex flex-col items-center justify-center py-10 px-4 sm:px-6">
 
             {/* INJECTED CUSTOM CSS FOR FLOATING ORBS & SCROLLBAR */}
             <style>
@@ -217,65 +217,65 @@ const Signup = () => {
 
                     {/* RIGHT FORM */}
                     <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-0 sm:px-8 lg:px-16 py-6">
-                        <div className="w-full max-w-md h-auto max-h-[95vh] overflow-y-auto custom-scrollbar bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 space-y-4 hover:shadow-2xl transition-all duration-300">
+                        <div className="w-full max-w-md h-auto bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-5 sm:p-8 lg:p-10 hover:shadow-2xl transition-all duration-300">
                             <div className="mb-5">
                                 <div className="inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 mb-4">
                                     Free setup
                                 </div>
-                                <h2 className="text-4xl font-black tracking-[-0.05em] text-gray-800 sm:text-[2.65rem] [@media_(max-height:1100px)]:text-[2.25rem]">
+                                <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-[-0.05em] text-gray-800">
                                     Create Your Workspace
                                 </h2>
-                                <p className="mt-2 text-base leading-7 text-slate-600">
+                                <p className="mt-2 text-xs sm:text-sm text-slate-600">
                                     Join VyaparOS with a cleaner full-screen signup flow built for modern firms and overflow-free desktop layouts.
                                 </p>
                             </div>
 
-                            <form className="space-y-3 [@media_(max-height:1100px)]:space-y-2.5" onSubmit={handleSignup}>
+                            <form className="flex flex-col gap-y-3 sm:gap-y-5" onSubmit={handleSignup}>
                                 <Input
                                     id="name"
-                                    label={<span>Full Name <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm sm:text-base">Full Name <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="Amit Singh"
                                     icon={<User className="h-5 w-5 text-slate-400" />}
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
                                 />
 
                                 <Input
                                     id="email"
-                                    label={<span>Email Address <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm sm:text-base">Email Address <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="amit@example.com"
                                     type="email"
                                     icon={<Mail className="h-5 w-5 text-slate-400" />}
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
                                 />
 
                                 <Input
                                     id="phone"
-                                    label={<span>Phone Number <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm sm:text-base">Phone Number <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="9876543210"
                                     icon={<Phone className="h-5 w-5 text-slate-400" />}
                                     value={formData.phone}
                                     onChange={handleChange}
                                     maxLength={10}
                                     required
-                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
                                 />
 
                                 <Input
                                     id="password"
-                                    label={<span>Password <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm sm:text-base">Password <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="Min 6 characters"
                                     type={showPassword ? 'text' : 'password'}
                                     icon={<Lock className="h-5 w-5 text-slate-400" />}
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -285,7 +285,7 @@ const Signup = () => {
 
                                 <Input
                                     id="confirmPassword"
-                                    label={<span>Confirm Password <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm sm:text-base">Confirm Password <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="Re-enter password"
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     icon={<Lock className="h-5 w-5 text-slate-400" />}
@@ -293,7 +293,7 @@ const Signup = () => {
                                     onChange={handleChange}
                                     required
                                     error={isPasswordMismatch ? 'Passwords do not match' : ''}
-                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -308,14 +308,14 @@ const Signup = () => {
                                     </label>
                                 </div>
 
-                                <div className="pt-0.5">
+                                <div className="mt-4 sm:mt-6">
                                     <Button
                                         id="signup-button"
                                         type="submit"
                                         disabled={!isFormValid || loading}
                                         isLoading={loading}
                                         fullWidth
-                                        className={`w-full rounded-2xl py-3 text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] [@media_(max-height:1100px)]:py-2.5 ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
+                                        className={`w-full h-10 sm:h-12 rounded-2xl text-sm sm:text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
                                         rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
                                     >
                                         {loading ? 'Creating Workspace...' : 'Create CA Dashboard'}

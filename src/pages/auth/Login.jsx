@@ -102,7 +102,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen w-full bg-[#0a192f] relative flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden p-4">
+        <div className="min-h-screen w-full bg-[#0a192f] relative flex flex-col items-center justify-center py-10 px-4 sm:px-6">
 
             {/* Custom CSS for Floating Neon Orbs */}
             <style>
@@ -194,23 +194,23 @@ const Login = () => {
 
                     {/* RIGHT FORM */}
                     <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-0 sm:px-8 lg:px-16 py-6">
-                        <div className="w-[90%] sm:max-w-[400px] my-8 bg-white/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6 space-y-6 hover:shadow-2xl transition-all duration-300 shrink-0">
+                        <div className="w-[90%] sm:max-w-[400px] my-8 bg-white/90 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-5 sm:p-8 lg:p-10 hover:shadow-2xl transition-all duration-300 shrink-0">
                             <div className="mb-5">
                                 <div className="inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 mb-4">
                                     Secure Access
                                 </div>
-                                <h2 className="text-4xl font-black tracking-[-0.05em] text-gray-800 sm:text-[2.65rem] [@media_(max-height:1100px)]:text-[2.25rem]">
+                                <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-[-0.05em] text-gray-800">
                                     Welcome Back
                                 </h2>
-                                <p className="mt-2 text-base leading-7 text-slate-600">
+                                <p className="mt-2 text-xs sm:text-sm text-slate-600">
                                     Secure login to your premium compliance dashboard with fast access to filings, team actions, and client timelines.
                                 </p>
                             </div>
 
-                            <form className="space-y-6" onSubmit={handleLogin}>
+                            <form className="flex flex-col gap-y-3 sm:gap-y-5" onSubmit={handleLogin}>
                                 <Input
                                     id="email"
-                                    label={<span>Email Address <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm sm:text-base">Email Address <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="you@example.com"
                                     type="email"
                                     icon={<Mail className="h-5 w-5 text-slate-400" />}
@@ -218,19 +218,19 @@ const Login = () => {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     autoFocus
-                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
                                 />
 
                                 <Input
                                     id="password"
-                                    label={<span>Password <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm sm:text-base">Password <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="Enter your password"
                                     type={showPassword ? 'text' : 'password'}
                                     icon={<Lock className="h-5 w-5 text-slate-400" />}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500"
+                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -251,14 +251,14 @@ const Login = () => {
                                     </button>
                                 </div>
 
-                                <div className="pt-0.5">
+                                <div className="mt-4 sm:mt-6">
                                     <Button
                                         id="login-button"
                                         type="submit"
                                         isLoading={loading}
                                         disabled={loading}
                                         fullWidth
-                                        className="w-full rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] py-3 text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]"
+                                        className="w-full h-10 sm:h-12 rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] text-sm sm:text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]"
                                         leftIcon={<Sparkles className="h-4 w-4" />}
                                         rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
                                     >
