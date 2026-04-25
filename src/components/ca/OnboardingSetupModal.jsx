@@ -13,7 +13,7 @@ const StepCard = ({
     children,
 }) => {
     return (
-        <div className="flex w-full flex-col rounded-3xl border border-[#0A2C4B]/20 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(239,246,255,0.9))] p-5 shadow-[0_24px_48px_-32px_rgba(10,44,75,0.45)] transition-all duration-300">
+        <div className="flex w-full flex-col rounded-3xl border border-[#0A2C4B]/20 bg-[linear-gradient(180deg,rgba(255,255,255,1),rgba(239,246,255,0.9))] px-5 py-6 sm:px-8 shadow-[0_24px_48px_-32px_rgba(10,44,75,0.45)] transition-all duration-300">
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0A2C4B] text-white shadow-md sm:h-12 sm:w-12">
@@ -167,7 +167,7 @@ const OnboardingSetupModal = ({
     const activePercent = Math.round((step / 3) * 100);
 
     const handleSaveFirmDetails = async (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
         setIsSubmitting(true);
         try {
             const payload = {
@@ -178,14 +178,19 @@ const OnboardingSetupModal = ({
                 gstin: formData.gstin ? formData.gstin.toUpperCase() : '',
                 mobile_number: user?.phone || user?.mobile_number || ''
             };
-            await axios.post('/ca/setup', payload);
-            if (onSetupFirm) {
-                onSetupFirm(payload);
+            console.log("Payload being sent:", payload);
+            const response = await axios.post('/ca/setup', payload);
+            if (response.status === 200 || response.status === 201) {
+                if (onSetupFirm) {
+                    onSetupFirm(payload);
+                }
+                // Trigger state change only on successful POST
+                handleNextStep();
             }
-            // Trigger state change only on successful POST
-            handleNextStep();
         } catch (error) {
             console.error('Failed to setup firm', error);
+            const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to save firm details';
+            alert(`Error: ${errorMessage}`);
             // Removed handleNextStep() to prevent proceeding on 400 Bad Request
         } finally {
             setIsSubmitting(false);
@@ -220,45 +225,47 @@ const OnboardingSetupModal = ({
             <div className="fixed inset-0 bg-white/30 backdrop-blur-lg" />
 
             <div className="relative flex min-h-full items-center justify-center px-4 py-10 sm:px-6">
-                <div className="w-full max-w-3xl rounded-2xl bg-white/80 p-5 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out">
-                    <div className="flex flex-col">
-                        <div className="flex items-start justify-between gap-4">
-                            <div>
-                                <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
-                                    <Sparkles className="h-3 w-3 text-amber-500" />
-                                    Guided Setup
+                <div className="w-full max-w-4xl rounded-2xl bg-white/80 p-5 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:gap-10">
+                        <div className="flex w-full flex-col lg:w-1/2">
+                            <div className="flex items-start justify-between gap-4 lg:flex-col lg:justify-start">
+                                <div>
+                                    <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                                        <Sparkles className="h-3 w-3 text-amber-500" />
+                                        Guided Setup
+                                    </div>
+                                    <h2 className="mt-2 text-xl sm:text-2xl lg:text-3xl font-bold tracking-[-0.02em] text-slate-950">
+                                        Welcome to VyaparOS <span className="inline-block">{'👋'}</span>
+                                    </h2>
+                                    <p className="mt-1 text-xs sm:text-sm text-slate-500">
+                                        Let&apos;s set up your workspace in 3 quick steps
+                                    </p>
                                 </div>
-                                <h2 className="mt-2 text-xl sm:text-2xl lg:text-3xl font-bold tracking-[-0.02em] text-slate-950">
-                                    Welcome to VyaparOS <span className="inline-block">{'👋'}</span>
-                                </h2>
-                                <p className="mt-1 text-xs sm:text-sm text-slate-500">
-                                    Let&apos;s set up your workspace in 3 quick steps
-                                </p>
+
+                                <button
+                                    type="button"
+                                    onClick={handleSkip}
+                                    className="rounded-full px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-800 lg:mt-4 lg:px-0"
+                                >
+                                    I&apos;ll do this later
+                                </button>
                             </div>
 
-                            <button
-                                type="button"
-                                onClick={handleSkip}
-                                className="rounded-full px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-800"
-                            >
-                                I&apos;ll do this later
-                            </button>
-                        </div>
-
-                        <div className="mx-auto mt-4 w-full max-w-xl rounded-xl border border-slate-200 bg-slate-50/90 px-4 py-3">
-                            <div className="flex items-center justify-between gap-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-                                <span>Setup Progress</span>
-                                <span>{activePercent}% COMPLETED</span>
-                            </div>
-                            <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
-                                <div
-                                    className="h-full rounded-full bg-[linear-gradient(90deg,#0A2C4B,#0F5C4A)] transition-all duration-300 ease-in-out"
-                                    style={{ width: `${activePercent}%` }}
-                                />
+                            <div className="mt-4 w-full max-w-xl rounded-xl border border-slate-200 bg-slate-50/90 px-4 py-3 lg:mt-8">
+                                <div className="flex items-center justify-between gap-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                                    <span>Setup Progress</span>
+                                    <span>{activePercent}% COMPLETED</span>
+                                </div>
+                                <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
+                                    <div
+                                        className="h-full rounded-full bg-[linear-gradient(90deg,#0A2C4B,#0F5C4A)] transition-all duration-300 ease-in-out"
+                                        style={{ width: `${activePercent}%` }}
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div className="relative mb-2 mt-5 w-full">
+                        <div className="relative mb-2 mt-5 w-full lg:mt-0 lg:w-1/2">
                             <AnimatePresence mode="wait">
                                 {step === 1 && <FirmSetup key="step1" data={formData} setData={setFormData} onSubmit={handleSaveFirmDetails} loading={isSubmitting} />}
                                 {step === 2 && (
@@ -300,7 +307,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.2 }}
-        className="w-full flex flex-col rounded-3xl border border-[#0a192f]/50 bg-[#0a192f]/95 backdrop-blur-xl p-5 sm:p-8 lg:p-10 shadow-[0_20px_50px_rgba(10,25,47,0.5)]"
+        className="w-full flex flex-col rounded-3xl border border-[#0a192f]/50 bg-[#0a192f]/95 backdrop-blur-xl px-5 py-6 sm:px-8 shadow-[0_20px_50px_rgba(10,25,47,0.5)]"
     >
         <div className="flex items-start gap-4 mb-6">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20">
@@ -313,7 +320,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
             </div>
         </div>
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-y-3 sm:gap-y-5">
+        <form onSubmit={onSubmit} className="flex flex-col gap-y-3 sm:gap-y-4">
             <div>
                 <label className="mb-2 block text-sm sm:text-base font-semibold text-slate-300">Firm Name / Practice Name</label>
                 <div className="relative">
@@ -396,8 +403,8 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
             </div>
             <div className="mt-4 sm:mt-6 flex items-center justify-end border-t border-white/10 pt-5">
                 <PrimaryButton
-                    isSubmit
                     label="Save Firm Details"
+                    onClick={onSubmit}
                     loading={loading}
                 />
             </div>
@@ -427,7 +434,7 @@ const InviteTeam = ({
             description="Add your staff so they can manage clients and track filings."
             icon={UserPlus}
         >
-            <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-y-3 sm:gap-y-5">
+            <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-y-3 sm:gap-y-4">
                 <div>
                     <label className="mb-1.5 block text-sm sm:text-base font-semibold text-slate-700">Staff Name</label>
                     <input
@@ -502,7 +509,7 @@ const AddClient = ({
             description="Start tracking compliance for your clients."
             icon={Users}
         >
-            <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-y-3 sm:gap-y-5">
+            <form onSubmit={onSubmit} className="mt-2 flex flex-col gap-y-3 sm:gap-y-4">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
                         <label className="mb-1.5 block text-sm sm:text-base font-semibold text-slate-700">Business Name</label>
