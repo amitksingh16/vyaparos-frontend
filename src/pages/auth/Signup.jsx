@@ -112,7 +112,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen w-full bg-[#0a192f] relative flex flex-col items-center justify-center py-10 px-4 sm:px-6">
+        <div className="min-h-screen w-full bg-[#0a192f] relative flex flex-col items-center justify-center py-8 lg:py-10 px-4 sm:px-6">
 
             {/* INJECTED CUSTOM CSS FOR FLOATING ORBS & SCROLLBAR */}
             <style>
@@ -170,31 +170,31 @@ const Signup = () => {
 
             {/* MAIN CONTENT WRAPPER - Fixed Layout for proper scrolling */}
             <div className="w-full flex justify-center relative z-10">
-                <div className="flex flex-col lg:flex-row w-full max-w-[1400px] mx-auto">
+                <div className="flex flex-col lg:flex-row w-full max-w-[1400px] mx-auto gap-y-6 lg:gap-y-0">
 
                     {/* LEFT PANEL */}
-                    <div className="hidden lg:flex w-1/2 flex-col justify-center px-12 lg:px-20 py-6">
-                        <div className="relative z-10 w-full max-w-lg">
-                            <div className="flex items-center gap-3 mb-8">
-                                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
-                                    <Shield className="h-6 w-6 text-amber-300" />
+                    <div className="flex w-full lg:w-1/2 flex-col items-center lg:items-start justify-center px-4 lg:px-20 py-2 lg:py-6">
+                        <div className="relative z-10 w-full max-w-lg flex flex-col items-center lg:items-start">
+                            <div className="flex flex-col lg:flex-row items-center gap-3 mb-4 lg:mb-8 text-center lg:text-left">
+                                <div className="flex h-16 w-16 lg:h-24 lg:w-24 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
+                                    <Shield className="h-8 w-8 lg:h-10 lg:w-10 text-amber-300" />
                                 </div>
                                 <div>
-                                    <div className="font-display text-2xl font-bold tracking-tight text-white">VyaparOS</div>
-                                    <div className="text-[11px] font-semibold uppercase tracking-[0.26em] text-slate-400">
+                                    <div className="font-display text-xl lg:text-2xl font-bold tracking-tight text-white mt-2 lg:mt-0">VyaparOS</div>
+                                    <div className="text-xs lg:text-[11px] font-semibold uppercase tracking-[0.26em] text-slate-400">
                                         Compliance OS
                                     </div>
                                 </div>
                             </div>
 
-                            <h1 className="text-5xl font-black leading-[0.98] tracking-[-0.05em] text-white xl:text-6xl mb-5">
+                            <h1 className="text-2xl lg:text-5xl font-black leading-[1.2] lg:leading-[0.98] tracking-[-0.05em] text-white xl:text-6xl mb-3 lg:mb-5 text-center lg:text-left">
                                 Launch your CA workspace without the clutter.
                             </h1>
-                            <p className="mt-5 max-w-[92%] text-lg leading-8 text-slate-300 mb-8">
+                            <p className="mt-2 lg:mt-5 max-w-[95%] lg:max-w-[92%] text-sm lg:text-lg leading-relaxed lg:leading-8 text-slate-300 mb-6 lg:mb-8 text-center lg:text-left">
                                 Start with a polished dashboard experience that feels aligned with the landing page and ready for real compliance operations.
                             </p>
 
-                            <div className="flex flex-col gap-3">
+                            <div className="hidden lg:flex flex-col gap-3">
                                 {signupHighlights.map(({ icon: Icon, title, description }) => (
                                     <div
                                         key={title}
