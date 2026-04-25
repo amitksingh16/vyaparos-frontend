@@ -176,7 +176,7 @@ const OnboardingSetupModal = ({
                 specialization: formData.specialization,
                 pan_number: formData.pan_number ? formData.pan_number.toUpperCase() : '',
                 gstin: formData.gstin ? formData.gstin.toUpperCase() : '',
-                mobile_number: user?.phone || user?.mobile_number || ''
+                mobile_number: user?.phone || user?.mobile_number || localStorage.getItem('mobile_number') || ''
             };
             console.log("Payload being sent:", payload);
             const response = await axios.post('/ca/setup', payload);
@@ -184,8 +184,7 @@ const OnboardingSetupModal = ({
                 if (onSetupFirm) {
                     onSetupFirm(payload);
                 }
-                // Trigger state change only on successful POST
-                handleNextStep();
+                setStep(2);
             }
         } catch (error) {
             console.error('Failed to setup firm', error);
@@ -227,23 +226,23 @@ const OnboardingSetupModal = ({
             <div className="relative flex min-h-full items-center justify-center px-4 py-10 sm:px-6">
                 <div className="w-full max-w-7xl rounded-3xl bg-white/80 p-3 sm:p-4 lg:p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out">
                     <div className="flex flex-col lg:flex-row lg:items-stretch lg:gap-8">
-                        <div className="relative flex w-full flex-col lg:w-1/2 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#020617] via-[#1e1b4b] to-[#020617] rounded-[2rem] p-6 sm:p-8 overflow-hidden shadow-2xl">
+                        <div className="relative flex w-full flex-col lg:w-1/2 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#020617] to-[#0f172a] rounded-[2rem] p-6 sm:p-8 overflow-hidden shadow-2xl">
                             {/* Glow Effects */}
                             <div className="absolute -top-20 -left-20 h-64 w-64 rounded-full bg-indigo-600/40 blur-[80px] pointer-events-none"></div>
                             <div className="absolute bottom-10 -right-10 h-48 w-48 rounded-full bg-cyan-600/30 blur-[60px] pointer-events-none"></div>
                             <div className="absolute top-1/4 left-1/4 h-56 w-56 rounded-full bg-fuchsia-600/20 blur-[90px] pointer-events-none"></div>
 
                             <div className="relative z-10 flex flex-col h-full justify-between">
-                                <div className="flex flex-col items-start gap-4 relative">
+                                <div className="flex flex-col items-center justify-center text-center gap-4 relative h-full flex-grow">
                                     <div className="absolute -top-4 -left-4 h-24 w-24 rounded-full bg-blue-500/50 blur-[50px] pointer-events-none"></div>
-                                    <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-300 backdrop-blur-md">
+                                    <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-300 backdrop-blur-md z-10">
                                         <Sparkles className="h-3.5 w-3.5 text-amber-400" />
                                         Guided Setup
                                     </div>
-                                    <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight">
+                                    <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight z-10">
                                         Welcome to VyaparOS <span className="inline-block origin-bottom-right hover:animate-pulse">{'👋'}</span>
                                     </h2>
-                                    <p className="mt-2 text-sm text-slate-400 leading-relaxed">
+                                    <p className="mt-2 text-sm text-white/80 leading-relaxed z-10">
                                         Let&apos;s set up your workspace in 3 quick steps
                                     </p>
                                 </div>
@@ -314,7 +313,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.2 }}
-        className="w-full flex flex-col rounded-3xl border border-[#0a192f]/50 bg-[#0a192f]/95 backdrop-blur-xl px-5 py-6 sm:px-8 shadow-[0_20px_50px_rgba(10,25,47,0.5)]"
+        className="w-full max-w-2xl mx-auto flex flex-col rounded-3xl border border-[#0a192f]/50 bg-[#0a192f]/95 backdrop-blur-xl px-5 py-6 sm:px-8 shadow-[0_20px_50px_rgba(10,25,47,0.5)]"
     >
         <div className="flex items-start gap-4 mb-6">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20">
@@ -327,7 +326,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
             </div>
         </div>
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-y-3 sm:gap-y-4">
+        <form onSubmit={onSubmit} className="flex flex-col gap-y-4">
             <div>
                 <label className="mb-2 block text-sm sm:text-base font-semibold text-slate-300">Firm Name / Practice Name</label>
                 <div className="relative">
@@ -342,7 +341,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                     />
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
                     <label className="mb-2 block text-sm sm:text-base font-semibold text-slate-300">Client Est.</label>
                     <div className="relative">
@@ -378,7 +377,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div>
                     <label className="mb-2 block text-sm sm:text-base font-semibold text-slate-300">Firm PAN</label>
                     <div className="relative">
