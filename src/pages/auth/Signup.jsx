@@ -112,9 +112,9 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen w-full bg-[#0a192f] relative overflow-y-auto overflow-x-hidden">
+        <div className="min-h-screen w-full bg-[#0a192f] relative flex items-center justify-center p-4 sm:p-6 overflow-hidden">
 
-            {/* INJECTED CUSTOM CSS FOR FLOATING ORBS */}
+            {/* INJECTED CUSTOM CSS FOR FLOATING ORBS & SCROLLBAR */}
             <style>
                 {`
                 @keyframes float-orbs {
@@ -126,11 +126,24 @@ const Signup = () => {
                 .animate-ambient-float {
                     animation: float-orbs 15s infinite ease-in-out;
                 }
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(147, 51, 234, 0.5);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(147, 51, 234, 0.8);
+                }
                 `}
             </style>
 
             {/* FLOATING BACKGROUND ORBS */}
-            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
                 {[
                     { top: '10%', left: '15%', size: '300px', delay: '0s', color: 'bg-blue-500/70' },
                     { top: '65%', left: '5%', size: '350px', delay: '-5s', color: 'bg-purple-500/60' },
@@ -156,11 +169,11 @@ const Signup = () => {
             {loading ? <Loader type="fullscreen" text="Setting up your workspace..." /> : null}
 
             {/* MAIN CONTENT WRAPPER - Fixed Layout for proper scrolling */}
-            <div className="min-h-screen flex flex-col justify-center py-12 relative z-10">
-                <div className="flex w-full max-w-[1400px] mx-auto">
+            <div className="w-full flex justify-center relative z-10">
+                <div className="flex flex-col lg:flex-row w-full max-w-[1400px] mx-auto">
 
                     {/* LEFT PANEL */}
-                    <div className="w-1/2 flex flex-col justify-center px-12 lg:px-20 py-6">
+                    <div className="hidden lg:flex w-1/2 flex-col justify-center px-12 lg:px-20 py-6">
                         <div className="relative z-10 w-full max-w-lg">
                             <div className="flex items-center gap-3 mb-8">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
@@ -203,8 +216,8 @@ const Signup = () => {
                     </div>
 
                     {/* RIGHT FORM */}
-                    <div className="w-1/2 flex flex-col justify-center items-center px-8 lg:px-16 py-6">
-                        <div className="w-full max-w-md bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 space-y-4 hover:shadow-2xl transition-all duration-300">
+                    <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-0 sm:px-8 lg:px-16 py-6">
+                        <div className="w-full max-w-md h-auto max-h-[95vh] overflow-y-auto custom-scrollbar bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 space-y-4 hover:shadow-2xl transition-all duration-300">
                             <div className="mb-5">
                                 <div className="inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 mb-4">
                                     Free setup
@@ -226,7 +239,7 @@ const Signup = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                                 />
 
                                 <Input
@@ -238,7 +251,7 @@ const Signup = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                                 />
 
                                 <Input
@@ -250,7 +263,7 @@ const Signup = () => {
                                     onChange={handleChange}
                                     maxLength={10}
                                     required
-                                    inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                                 />
 
                                 <Input
@@ -262,7 +275,7 @@ const Signup = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -280,7 +293,7 @@ const Signup = () => {
                                     onChange={handleChange}
                                     required
                                     error={isPasswordMismatch ? 'Passwords do not match' : ''}
-                                    inputClassName="rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
+                                    inputClassName="w-full rounded-2xl border-white/70 bg-white/85 py-3 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 [@media_(max-height:1100px)]:py-2.5"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
