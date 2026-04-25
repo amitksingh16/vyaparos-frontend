@@ -166,34 +166,41 @@ const OnboardingSetupModal = ({
 
     const activePercent = Math.round((step / 3) * 100);
 
-    const handleSaveFirmDetails = async (e) => {
+    const handleSaveFirmDetails = (e) => {
         if (e && e.preventDefault) e.preventDefault();
         setIsSubmitting(true);
-        try {
-            const payload = {
-                firm_name: formData.firm_name,
-                total_clients: formData.total_clients,
-                specialization: formData.specialization,
-                pan_number: formData.pan_number ? formData.pan_number.toUpperCase() : '',
-                gstin: formData.gstin ? formData.gstin.toUpperCase() : '',
-                mobile_number: user?.phone || user?.mobile_number || localStorage.getItem('mobile_number') || ''
-            };
-            console.log("Payload being sent:", payload);
-            const response = await axios.post('/ca/setup', payload);
-            if (response.status === 200 || response.status === 201) {
-                if (onSetupFirm) {
-                    onSetupFirm(payload);
+        
+        const userMobile = user?.phone || user?.mobile_number || localStorage.getItem('mobile_number') || '';
+        
+        const payload = {
+            firm_name: formData.firm_name,
+            total_clients: formData.total_clients,
+            specialization: formData.specialization,
+            pan_number: formData.pan_number ? formData.pan_number.toUpperCase() : '',
+            gstin: formData.gstin ? formData.gstin.toUpperCase() : '',
+            mobile_number: userMobile
+        };
+        
+        console.log("FINAL PAYLOAD:", { ...formData, mobile_number: userMobile });
+        
+        axios.post('/ca/setup', payload)
+            .then(response => {
+                if (response.status === 200 || response.status === 201) {
+                    if (onSetupFirm) {
+                        onSetupFirm(payload);
+                    }
+                    setStep(2);
                 }
-                setStep(2);
-            }
-        } catch (error) {
-            console.error('Failed to setup firm', error);
-            const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to save firm details';
-            alert(`Error: ${errorMessage}`);
-            // Removed handleNextStep() to prevent proceeding on 400 Bad Request
-        } finally {
-            setIsSubmitting(false);
-        }
+            })
+            .catch(error => {
+                console.error("BACKEND REJECTION:", error.response?.data);
+                console.error('Failed to setup firm', error);
+                const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to save firm details';
+                alert(`Error: ${errorMessage}`);
+            })
+            .finally(() => {
+                setIsSubmitting(false);
+            });
     };
 
     const handleInviteSubmit = async (e) => {
@@ -220,13 +227,13 @@ const OnboardingSetupModal = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-50 overflow-y-auto lg:overflow-hidden">
             <div className="fixed inset-0 bg-white/30 backdrop-blur-lg" />
 
-            <div className="relative flex min-h-full items-center justify-center px-4 py-10 sm:px-6">
-                <div className="w-full max-w-7xl rounded-3xl bg-white/80 p-3 sm:p-4 lg:p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out">
-                    <div className="flex flex-col lg:flex-row lg:items-stretch lg:gap-8">
-                        <div className="relative flex w-full flex-col lg:w-1/2 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#020617] to-[#0f172a] rounded-[2rem] p-6 sm:p-8 overflow-hidden shadow-2xl">
+            <div className="relative flex min-h-full lg:h-screen items-center justify-center lg:p-0 px-4 py-10 sm:px-6">
+                <div className="w-full lg:h-full lg:rounded-none rounded-3xl bg-white/80 lg:p-0 p-3 sm:p-4 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out">
+                    <div className="flex flex-col lg:flex-row lg:h-screen lg:overflow-hidden w-full">
+                        <div className="relative flex w-full flex-col lg:w-1/2 h-full justify-center bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#020617] to-[#0f172a] lg:rounded-none rounded-[2rem] p-6 sm:p-12 overflow-hidden shadow-2xl">
                             {/* Glow Effects */}
                             <div className="absolute -top-20 -left-20 h-64 w-64 rounded-full bg-indigo-600/40 blur-[80px] pointer-events-none"></div>
                             <div className="absolute bottom-10 -right-10 h-48 w-48 rounded-full bg-cyan-600/30 blur-[60px] pointer-events-none"></div>
@@ -262,41 +269,43 @@ const OnboardingSetupModal = ({
                             </div>
                         </div>
 
-                        <div className="relative mt-4 lg:mt-0 flex w-full flex-col lg:w-1/2">
-                            <div className="mb-4 flex justify-end px-2">
-                                <button
-                                    type="button"
-                                    onClick={handleSkip}
-                                    className="rounded-full bg-white/50 px-4 py-2 text-xs font-semibold text-slate-600 transition-colors duration-200 hover:bg-slate-200 hover:text-slate-900 shadow-sm"
-                                >
-                                    I&apos;ll do this later
-                                </button>
+                        <div className="relative mt-4 lg:mt-0 flex w-full flex-col lg:w-1/2 h-full items-center justify-center overflow-y-auto py-8">
+                            <div className="w-full max-w-2xl px-4 lg:px-8 flex flex-col">
+                                <div className="mb-4 flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={handleSkip}
+                                        className="rounded-full bg-white/50 px-4 py-2 text-xs font-semibold text-slate-600 transition-colors duration-200 hover:bg-slate-200 hover:text-slate-900 shadow-sm"
+                                    >
+                                        I&apos;ll do this later
+                                    </button>
+                                </div>
+                                <AnimatePresence mode="wait">
+                                    {step === 1 && <FirmSetup key="step1" data={formData} setData={setFormData} onSubmit={handleSaveFirmDetails} loading={isSubmitting} />}
+                                    {step === 2 && (
+                                        <InviteTeam
+                                            key="step2"
+                                            data={teamInviteData}
+                                            setData={setTeamInviteData}
+                                            inviteSuccess={inviteSuccess}
+                                            onSubmit={handleInviteSubmit}
+                                            onBack={() => setStep(1)}
+                                            onSkip={handleNextStep}
+                                            loading={isInviting}
+                                        />
+                                    )}
+                                    {step === 3 && (
+                                        <AddClient
+                                            key="step3"
+                                            data={clientData}
+                                            setData={setClientData}
+                                            onSubmit={handleClientSubmit}
+                                            onBack={() => setStep(2)}
+                                            loading={isFinishing}
+                                        />
+                                    )}
+                                </AnimatePresence>
                             </div>
-                            <AnimatePresence mode="wait">
-                                {step === 1 && <FirmSetup key="step1" data={formData} setData={setFormData} onSubmit={handleSaveFirmDetails} loading={isSubmitting} />}
-                                {step === 2 && (
-                                    <InviteTeam
-                                        key="step2"
-                                        data={teamInviteData}
-                                        setData={setTeamInviteData}
-                                        inviteSuccess={inviteSuccess}
-                                        onSubmit={handleInviteSubmit}
-                                        onBack={() => setStep(1)}
-                                        onSkip={handleNextStep}
-                                        loading={isInviting}
-                                    />
-                                )}
-                                {step === 3 && (
-                                    <AddClient
-                                        key="step3"
-                                        data={clientData}
-                                        setData={setClientData}
-                                        onSubmit={handleClientSubmit}
-                                        onBack={() => setStep(2)}
-                                        loading={isFinishing}
-                                    />
-                                )}
-                            </AnimatePresence>
                         </div>
                     </div>
                 </div>
