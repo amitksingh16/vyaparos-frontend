@@ -77,10 +77,10 @@ const OnboardingSetupModal = ({
     onClose,
 }) => {
     const navigate = useNavigate();
-    const { fetchUser, setOnboardingComplete } = useAuth();
+    const { user, fetchUser, setOnboardingComplete } = useAuth();
 
     const [step, setStep] = useState(currentStep || 1);
-    const [formData, setFormData] = useState({ firm_name: '', total_clients: '', specialization: '', pan_number: '', gstin: '', mobile_number: '' });
+    const [formData, setFormData] = useState({ firm_name: '', total_clients: '', specialization: '', pan_number: '', gstin: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [teamInviteData, setTeamInviteData] = useState({ name: '', email: '', phone: '', role: 'ca_staff' });
     const [isInviting, setIsInviting] = useState(false);
@@ -176,7 +176,7 @@ const OnboardingSetupModal = ({
                 specialization: formData.specialization,
                 pan_number: formData.pan_number ? formData.pan_number.toUpperCase() : '',
                 gstin: formData.gstin ? formData.gstin.toUpperCase() : '',
-                mobile_number: formData.mobile_number
+                mobile_number: user?.phone || user?.mobile_number || ''
             };
             await axios.post('/ca/setup', payload);
             if (onSetupFirm) {
@@ -292,7 +292,7 @@ const OnboardingSetupModal = ({
     );
 };
 
-const neonInputStyle = "w-full rounded-xl border border-white/20 bg-white/5 pl-10 pr-4 py-2.5 text-sm font-medium text-white placeholder-slate-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:shadow-[0_0_15px_rgba(217,70,239,0.5)] transition-all duration-300";
+const neonInputStyle = "w-full rounded-2xl border border-white/20 bg-white/5 pl-10 pr-4 py-3 text-sm font-medium text-white placeholder-slate-400 backdrop-blur-md shadow-[0_8px_30px_rgba(255,255,255,0.05)] hover:border-white/40 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:shadow-[0_0_15px_rgba(217,70,239,0.5)] transition-all duration-300";
 
 const FirmSetup = ({ data, setData, onSubmit, loading }) => (
     <motion.div
@@ -300,7 +300,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.2 }}
-        className="w-full flex flex-col rounded-3xl border border-[#0a192f]/50 bg-[#0a192f]/95 backdrop-blur-xl p-6 shadow-[0_20px_50px_rgba(10,25,47,0.5)]"
+        className="w-full flex flex-col min-h-fit max-h-[90vh] overflow-y-auto rounded-3xl border border-[#0a192f]/50 bg-[#0a192f]/95 backdrop-blur-xl p-6 shadow-[0_20px_50px_rgba(10,25,47,0.5)]"
     >
         <div className="flex items-start gap-4 mb-6">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/20">
@@ -364,21 +364,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label className="mb-2 block text-xs font-semibold text-slate-300">Mobile Number</label>
-                    <div className="relative">
-                        <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input
-                            required
-                            type="tel"
-                            className={neonInputStyle}
-                            value={data.mobile_number}
-                            onChange={(e) => setData({ ...data, mobile_number: e.target.value })}
-                            placeholder="10-digit mobile"
-                        />
-                    </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="mb-2 block text-xs font-semibold text-slate-300">Firm PAN</label>
                     <div className="relative">
