@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Building2, Users, Briefcase, CreditCard, Hash, ArrowRight, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+void motion;
+
 const BusinessProfile = () => {
     const navigate = useNavigate();
     const { user, fetchUser } = useAuth();
@@ -52,16 +54,13 @@ const BusinessProfile = () => {
     };
 
     return (
-        // Deep Space Background matching CTASection
-        <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(135deg,_#0f172a_0%,_#172554_45%,_#312e81_100%)] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+        <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.18),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.2),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
 
-            {/* Background Grid Pattern */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.07)_1px,transparent_1px)] bg-[size:60px_60px] opacity-25" />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40" />
 
-            {/* Neon Accent Glows from Hero/CTA Section */}
-            <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-blue-500/25 blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-fuchsia-500/20 blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
+            <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-blue-400/20 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-fuchsia-400/15 blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-indigo-400/18 blur-3xl pointer-events-none" />
 
             {/* Main Center Container */}
             <motion.div
@@ -73,30 +72,29 @@ const BusinessProfile = () => {
 
                 {/* Branding & Header */}
                 <div className="text-center space-y-4">
-                    <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-blue-100 backdrop-blur-xl">
-                        <Sparkles className="h-3.5 w-3.5" />
+                    <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-600 shadow-lg shadow-blue-100/60 backdrop-blur-xl">
+                        <Sparkles className="h-3.5 w-3.5 text-blue-600" />
                         VyaparOS Workspace Setup
                     </div>
-                    <h2 className="text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
+                    <h2 className="text-4xl font-black tracking-[-0.04em] text-slate-950 sm:text-5xl">
                         Let's set up your firm.
                     </h2>
-                    <p className="mx-auto max-w-2xl text-lg leading-8 text-slate-300">
+                    <p className="mx-auto max-w-2xl text-lg leading-8 text-slate-600">
                         Create your premium control room to bring deadlines and execution into one place.
                     </p>
                 </div>
 
-                {/* Premium Frosted Glass Card matching Hero Dashboard */}
-                <div className="rounded-[2rem] border border-white/20 bg-white/10 p-3 shadow-[0_30px_90px_-30px_rgba(0,0,0,0.5)] backdrop-blur-2xl">
-                    <div className="overflow-hidden rounded-[1.55rem] border border-white/10 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.15),_transparent_35%),linear-gradient(180deg,_rgba(15,23,42,0.96),_rgba(2,6,23,1))]">
+                <div className="rounded-[2rem] border border-white/70 bg-white/70 p-3 shadow-xl shadow-blue-100/40 backdrop-blur-xl">
+                    <div className="overflow-hidden rounded-[1.55rem] border border-white/70 bg-white/70 backdrop-blur-xl">
 
                         {/* Fake Mac Window Header */}
-                        <div className="flex items-center justify-between border-b border-white/10 bg-slate-900/95 px-5 py-4 text-slate-300">
+                        <div className="flex items-center justify-between border-b border-slate-200/70 bg-white/80 px-5 py-4 text-slate-500">
                             <div className="flex items-center gap-2">
                                 <span className="h-3 w-3 rounded-full bg-rose-400" />
                                 <span className="h-3 w-3 rounded-full bg-amber-400" />
                                 <span className="h-3 w-3 rounded-full bg-emerald-400" />
                             </div>
-                            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                            <div className="rounded-full border border-slate-200 bg-white/75 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 shadow-sm backdrop-blur">
                                 Step 1 of 3: Practice Details
                             </div>
                         </div>
@@ -105,9 +103,9 @@ const BusinessProfile = () => {
 
                             {/* 1. Firm Name */}
                             <div>
-                                <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-400 mb-3">Firm Name / Practice Name</label>
+                                <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 mb-3">Firm Name / Practice Name</label>
                                 <div className="relative">
-                                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+                                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                                     <input
                                         type="text"
                                         name="firm_name"
@@ -115,7 +113,7 @@ const BusinessProfile = () => {
                                         onChange={handleChange}
                                         placeholder="e.g. Sharma & Associates"
                                         required
-                                        className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-xl text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     />
                                 </div>
                             </div>
@@ -123,17 +121,17 @@ const BusinessProfile = () => {
                             {/* 2-Column Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-400 mb-3">Client Estimate</label>
+                                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 mb-3">Client Estimate</label>
                                     <div className="relative">
-                                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 pointer-events-none" />
+                                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
                                         <select
                                             name="total_clients"
                                             value={formData.total_clients}
                                             onChange={handleChange}
                                             required
-                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/10 bg-[#0f172a] text-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200/80 bg-white/80 text-slate-900 shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
                                         >
-                                            <option value="" className="text-slate-500">Select size...</option>
+                                            <option value="">Select size...</option>
                                             <option value="1-50">1 - 50 Clients</option>
                                             <option value="51-200">51 - 200 Clients</option>
                                             <option value="200+">200+ Clients</option>
@@ -142,17 +140,17 @@ const BusinessProfile = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-400 mb-3">Portfolio Focus</label>
+                                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 mb-3">Portfolio Focus</label>
                                     <div className="relative">
-                                        <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5 pointer-events-none" />
+                                        <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
                                         <select
                                             name="specialization"
                                             value={formData.specialization}
                                             onChange={handleChange}
                                             required
-                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/10 bg-[#0f172a] text-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200/80 bg-white/80 text-slate-900 shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
                                         >
-                                            <option value="" className="text-slate-500">Select composition...</option>
+                                            <option value="">Select composition...</option>
                                             <option value="Taxation">Taxation Heavy</option>
                                             <option value="Audit">Audit Heavy</option>
                                             <option value="Mixed">Mixed Portfolio</option>
@@ -164,9 +162,9 @@ const BusinessProfile = () => {
                             {/* 2-Column Grid for Tax Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-400 mb-3">Firm PAN</label>
+                                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 mb-3">Firm PAN</label>
                                     <div className="relative">
-                                        <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+                                        <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                                         <input
                                             type="text"
                                             name="pan_number"
@@ -175,15 +173,15 @@ const BusinessProfile = () => {
                                             placeholder="ABCDE1234F"
                                             maxLength="10"
                                             required
-                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all uppercase"
+                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-xl text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all uppercase"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-400 mb-3">GSTIN (Optional)</label>
+                                    <label className="block text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 mb-3">GSTIN (Optional)</label>
                                     <div className="relative">
-                                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+                                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                                         <input
                                             type="text"
                                             name="gstin"
@@ -191,7 +189,7 @@ const BusinessProfile = () => {
                                             onChange={handleChange}
                                             placeholder="15-DIGIT GST NUMBER"
                                             maxLength="15"
-                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all uppercase"
+                                            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-xl text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all uppercase"
                                         />
                                     </div>
                                 </div>
