@@ -13,7 +13,7 @@ const PrimaryButton = ({ label, onClick, disabled, loading, isSubmit = false }) 
         type={isSubmit ? 'submit' : 'button'}
         onClick={!isSubmit ? onClick : undefined}
         disabled={disabled || loading}
-        className="inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-[linear-gradient(135deg,#0ea5e9,#8b5cf6)] px-8 text-base font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-cyan-500/40 disabled:cursor-not-allowed disabled:opacity-70"
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#0ea5e9,#8b5cf6)] px-6 text-sm font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-cyan-500/40 disabled:cursor-not-allowed disabled:opacity-70"
     >
         {loading ? 'Processing...' : label}
         {!loading ? <ChevronRight className="h-5 w-5" /> : null}
@@ -41,10 +41,10 @@ const SkipButton = ({ onClick }) => (
     </button>
 );
 
-const glassInputStyle = "w-full h-12 rounded-xl border border-slate-200/80 bg-white/80 px-4 text-base font-medium text-slate-900 placeholder-slate-400 shadow-sm backdrop-blur-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300";
+const glassInputStyle = "w-full h-10 rounded-xl border border-slate-200/80 bg-white/80 px-3 text-sm font-medium text-slate-900 placeholder-slate-400 shadow-sm backdrop-blur-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300";
 
 const FormLabel = ({ children }) => (
-    <label className="mb-2 block text-sm font-semibold text-slate-700">{children}</label>
+    <label className="mb-1 block text-xs font-semibold text-slate-700">{children}</label>
 );
 
 const OnboardingSetupModal = ({
@@ -194,15 +194,15 @@ const OnboardingSetupModal = ({
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex min-h-screen items-center justify-center overflow-y-auto bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.18),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.2),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)] py-10 px-4">
+        <div className="fixed inset-0 z-[100] flex h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.18),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.2),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)] px-4">
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40" />
-            <div className="relative z-10 w-full max-w-4xl p-8 sm:p-12 mx-auto rounded-[2rem] border border-white/70 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/40 overflow-hidden">
+            <div className="relative z-10 mx-auto max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-xl shadow-blue-100/40 backdrop-blur-xl sm:px-10 sm:py-6">
                 <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-blue-400/20 blur-[100px] pointer-events-none"></div>
                 <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-fuchsia-400/15 blur-[100px] pointer-events-none"></div>
                 
                 <div className="relative z-10 flex flex-col w-full">
                     {/* Header */}
-                    <div className="text-center mb-8">
+                    <div className="text-center mb-4">
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-4 py-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-600 shadow-lg shadow-blue-100/60 backdrop-blur-xl mb-6">
                             <Sparkles className="h-4 w-4 text-blue-600" />
                             VyaparOS Setup
@@ -216,7 +216,7 @@ const OnboardingSetupModal = ({
                     </div>
 
                     {/* Progress Bar (Stepper) */}
-                    <div className="flex items-center justify-center gap-2 sm:gap-4 mb-10">
+                    <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4">
                         {[1, 2, 3].map((num) => (
                             <div key={num} className="flex items-center gap-2 sm:gap-4">
                                 <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-xl ${step >= num ? 'bg-blue-500/10 border-blue-200 text-blue-700' : 'bg-white/60 border-slate-200/80 text-slate-400'}`}>
@@ -274,9 +274,9 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
         transition={{ duration: 0.3 }}
         className="w-full"
     >
-        <form onSubmit={onSubmit} className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
                     <FormLabel>Firm Name / Practice Name</FormLabel>
                     <input
                         required
@@ -337,7 +337,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                     />
                 </div>
             </div>
-            <div className="mt-8 flex justify-end">
+            <div className="mt-4 flex justify-end">
                 <PrimaryButton
                     isSubmit
                     label="Continue to Next Step"
@@ -356,9 +356,9 @@ const InviteTeam = ({ data, setData, inviteSuccess, onSubmit, onBack, onSkip, lo
         transition={{ duration: 0.3 }}
         className="w-full"
     >
-        <form onSubmit={onSubmit} className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
                     <FormLabel>Staff Name</FormLabel>
                     <input
                         required
@@ -399,7 +399,7 @@ const InviteTeam = ({ data, setData, inviteSuccess, onSubmit, onBack, onSkip, lo
                 </div>
             )}
 
-            <div className="mt-8 flex items-center justify-between">
+            <div className="mt-4 flex items-center justify-between">
                 <BackButton onClick={onBack} />
                 <div className="flex items-center gap-4">
                     <SkipButton onClick={onSkip} />
@@ -422,8 +422,8 @@ const AddClient = ({ data, setData, onSubmit, onBack, loading }) => (
         transition={{ duration: 0.3 }}
         className="w-full"
     >
-        <form onSubmit={onSubmit} className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
                 <div>
                     <FormLabel>Business Name</FormLabel>
                     <input
@@ -514,7 +514,7 @@ const AddClient = ({ data, setData, onSubmit, onBack, loading }) => (
                         onChange={(e) => setData({ ...data, gstin: e.target.value.toUpperCase() })}
                     />
                 </div>
-                <div className="md:col-span-2">
+                <div className="col-span-2">
                     <FormLabel>State</FormLabel>
                     <input
                         required
@@ -527,7 +527,7 @@ const AddClient = ({ data, setData, onSubmit, onBack, loading }) => (
                 </div>
             </div>
             
-            <div className="mt-8 flex items-center justify-between">
+            <div className="mt-4 flex items-center justify-between">
                 <BackButton onClick={onBack} />
                 <PrimaryButton
                     isSubmit
