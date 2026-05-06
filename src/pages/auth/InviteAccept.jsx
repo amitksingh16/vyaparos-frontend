@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom'; // useParams ki jagah useSearchParams
 import axios from 'axios';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/firebase';
@@ -10,12 +10,13 @@ import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
 
 const InviteAccept = () => {
-    const { token } = useParams();
+    const [searchParams] = useSearchParams(); // Naya logic
+    const token = searchParams.get('token');  // URL se "?token=..." nikalega
     const navigate = useNavigate();
 
     const [inviteData, setInviteData] = useState(null);
     const [status, setStatus] = useState('loading'); // loading, active, expired, not_found
-    
+
     // Auth State
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -40,19 +41,19 @@ const InviteAccept = () => {
 
     const handleVerifyAndAccept = async (e) => {
         e.preventDefault();
-        
+
         if (!name || !email || !password) {
             return setToast({ message: 'Please fill all fields', type: 'error' });
         }
-        
+
         setLoading(true);
         try {
             // Create user in Firebase
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const idToken = await userCredential.user.getIdToken();
-            
+
             // Post to backend to consume invite
-            await axios.post(`/invitations/${token}/accept`, 
+            await axios.post(`/invitations/${token}/accept`,
                 { name, email },
                 { headers: { Authorization: `Bearer ${idToken}` } }
             );
@@ -60,7 +61,7 @@ const InviteAccept = () => {
             // Set global auth token
             localStorage.setItem('token', idToken);
             // axios.defaults.headers.common['Authorization'] is already set above
-            
+
             setToast({ message: 'Welcome aboard! Redirecting...', type: 'success' });
             setTimeout(() => {
                 navigate('/dashboard'); // Staff dashboard
@@ -69,20 +70,20 @@ const InviteAccept = () => {
         } catch (error) {
             console.error(error);
             let errorMsg = error.response?.data?.message || 'Error accepting invitation';
-            
+
             if (error.code === 'auth/email-already-in-use') {
                 errorMsg = 'This email is already registered. Please login, or contact your admin if you believe this is an error.';
             } else if (error.code === 'auth/weak-password') {
                 errorMsg = 'Password must be at least 6 characters.';
             }
-            
+
             setToast({ message: errorMsg, type: 'error' });
             setLoading(false);
         }
     };
 
     if (status === 'loading') return <div className="min-h-screen flex items-center justify-center">Loading Invite...</div>;
-    
+
     if (status !== 'active') {
         return (
             <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
@@ -111,7 +112,7 @@ const InviteAccept = () => {
                     </div>
 
                     <form className="space-y-5" onSubmit={handleVerifyAndAccept}>
-                        
+
                         <Input
                             label="Your Full Name"
                             placeholder="E.g., Rahul Sharma"

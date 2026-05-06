@@ -131,7 +131,7 @@ function App() {
                         <Route path="/support" element={<ProtectedRoute requireSetup={false}><Support /></ProtectedRoute>} />
 
                         <Route path="/staff-setup" element={<StaffSetup />} />
-                        <Route path="/invite/:token" element={<InviteAccept />} />
+                        <Route path="/invite" element={<InviteAccept />} />
                         <Route path="/setup-password" element={<SetupPassword />} />
                         <Route path="/" element={<Home />} />
                     </Routes>

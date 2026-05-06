@@ -140,11 +140,11 @@ const OnboardingSetupModal = ({
     const handleSaveFirmDetails = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
         setIsSubmitting(true);
-        
+
         try {
             const userMobile = user?.phone || user?.mobile_number || localStorage.getItem('mobile_number');
             // HARDWIRED FALLBACK: If user mobile is missing from context, send a dummy one just to pass validation
-            const safeMobile = userMobile || "9999999999"; 
+            const safeMobile = userMobile || "9999999999";
 
             const payload = {
                 ...formData,
@@ -156,7 +156,7 @@ const OnboardingSetupModal = ({
             const response = await axios.post('/ca/setup', payload); // URL from existing setup
 
             console.log("✅ SUCCESS RESPONSE:", response.data);
-            setStep(2); 
+            setStep(2);
             if (onSetupFirm) {
                 onSetupFirm(payload);
             }
@@ -174,15 +174,28 @@ const OnboardingSetupModal = ({
         setIsInviting(true);
         setInviteSuccess('');
         try {
-            await axios.post('/team/invite', teamInviteData);
+            // FIX 1: Using the correct endpoint '/ca/team' instead of '/team/invite'
+            // FIX 2: Added origin so backend can generate the correct setup link
+            await axios.post('/ca/team', {
+                ...teamInviteData,
+                origin: window.location.origin
+            });
+
             if (onInviteTeam) {
                 await onInviteTeam(teamInviteData);
             }
-            setInviteSuccess('Invitation sent successfully.');
-            handleNextStep();
+
+            setInviteSuccess('✅ Invitation sent successfully to console!');
+
+            // FIX 3: Added a 1-second delay so you can actually see the success message 
+            // before it automatically jumps to Step 3.
+            setTimeout(() => {
+                handleNextStep();
+            }, 1000);
+
         } catch (error) {
             console.error('Failed to invite team', error);
-            alert("Backend Error: " + JSON.stringify(error.response?.data || error.message));
+            alert("Backend Error: " + (error.response?.data?.message || error.message));
         } finally {
             setIsInviting(false);
         }
@@ -199,7 +212,7 @@ const OnboardingSetupModal = ({
             <div className="relative z-10 mx-auto max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-xl shadow-blue-100/40 backdrop-blur-xl sm:px-10 sm:py-6">
                 <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-blue-400/20 blur-[100px] pointer-events-none"></div>
                 <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-fuchsia-400/15 blur-[100px] pointer-events-none"></div>
-                
+
                 <div className="relative z-10 flex flex-col w-full">
                     {/* Header */}
                     <div className="text-center mb-4">
@@ -392,7 +405,7 @@ const InviteTeam = ({ data, setData, inviteSuccess, onSubmit, onBack, onSkip, lo
                     />
                 </div>
             </div>
-            
+
             {inviteSuccess && (
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-400">
                     {inviteSuccess}
@@ -526,7 +539,7 @@ const AddClient = ({ data, setData, onSubmit, onBack, loading }) => (
                     />
                 </div>
             </div>
-            
+
             <div className="mt-4 flex items-center justify-between">
                 <BackButton onClick={onBack} />
                 <PrimaryButton
