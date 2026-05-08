@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight, ChevronLeft, Search, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 void motion;
@@ -47,6 +47,196 @@ const FormLabel = ({ children }) => (
     <label className="mb-1 block text-xs font-semibold text-slate-700">{children}</label>
 );
 
+const INDIAN_STATES = [
+    'Andaman and Nicobar Islands',
+    'Andhra Pradesh',
+    'Arunachal Pradesh',
+    'Assam',
+    'Bihar',
+    'Chandigarh',
+    'Chhattisgarh',
+    'Dadra and Nagar Haveli and Daman and Diu',
+    'Delhi',
+    'Goa',
+    'Gujarat',
+    'Haryana',
+    'Himachal Pradesh',
+    'Jammu and Kashmir',
+    'Jharkhand',
+    'Karnataka',
+    'Kerala',
+    'Ladakh',
+    'Lakshadweep',
+    'Madhya Pradesh',
+    'Maharashtra',
+    'Manipur',
+    'Meghalaya',
+    'Mizoram',
+    'Nagaland',
+    'Odisha',
+    'Puducherry',
+    'Punjab',
+    'Rajasthan',
+    'Sikkim',
+    'Tamil Nadu',
+    'Telangana',
+    'Tripura',
+    'Uttar Pradesh',
+    'Uttarakhand',
+    'West Bengal',
+];
+
+const StateCombobox = ({ value, onChange, error }) => {
+    const containerRef = useRef(null);
+    const inputRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [query, setQuery] = useState('');
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const filteredStates = useMemo(() => {
+        const normalizedQuery = query.trim().toLowerCase();
+        if (!normalizedQuery) return INDIAN_STATES;
+        return INDIAN_STATES.filter((state) => state.toLowerCase().includes(normalizedQuery));
+    }, [query]);
+
+    useEffect(() => {
+        if (!isOpen) return undefined;
+
+        const handlePointerDown = (event) => {
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setIsOpen(false);
+                setQuery('');
+                setActiveIndex(0);
+            }
+        };
+
+        document.addEventListener('mousedown', handlePointerDown);
+        return () => document.removeEventListener('mousedown', handlePointerDown);
+    }, [isOpen]);
+
+    const selectState = (state) => {
+        onChange(state);
+        setQuery('');
+        setIsOpen(false);
+        setActiveIndex(0);
+        inputRef.current?.focus();
+    };
+
+    const openList = () => {
+        setIsOpen(true);
+        setQuery('');
+        setActiveIndex(0);
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            if (!isOpen) {
+                setIsOpen(true);
+                return;
+            }
+            setActiveIndex((index) => (filteredStates.length === 0 ? 0 : Math.min(index + 1, filteredStates.length - 1)));
+        }
+
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setActiveIndex((index) => Math.max(index - 1, 0));
+        }
+
+        if (event.key === 'Enter' && isOpen) {
+            event.preventDefault();
+            if (filteredStates[activeIndex]) {
+                selectState(filteredStates[activeIndex]);
+            }
+        }
+
+        if (event.key === 'Escape') {
+            setIsOpen(false);
+            setQuery('');
+        }
+    };
+
+    return (
+        <div ref={containerRef} className="relative">
+            <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                    ref={inputRef}
+                    role="combobox"
+                    aria-haspopup="listbox"
+                    aria-expanded={isOpen}
+                    aria-controls="state-options"
+                    aria-autocomplete="list"
+                    aria-activedescendant={isOpen && filteredStates[activeIndex] ? `state-option-${activeIndex}` : undefined}
+                    type="text"
+                    className={`${glassInputStyle} pl-10 pr-10 ${error ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500' : ''}`}
+                    placeholder="Select State"
+                    value={isOpen ? query : value}
+                    onChange={(event) => {
+                        setQuery(event.target.value);
+                        setActiveIndex(0);
+                        onChange('');
+                        setIsOpen(true);
+                    }}
+                    onFocus={openList}
+                    onClick={openList}
+                    onKeyDown={handleKeyDown}
+                />
+                <button
+                    type="button"
+                    aria-label="Toggle state list"
+                    className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => {
+                        setIsOpen((open) => !open);
+                        inputRef.current?.focus();
+                    }}
+                >
+                    <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+            </div>
+
+            {error && <p className="mt-1 text-xs font-medium text-rose-500">{error}</p>}
+
+            {isOpen && (
+                <div
+                    id="state-options"
+                    role="listbox"
+                    className="absolute z-30 mt-2 max-h-44 w-full overflow-y-auto rounded-xl border border-slate-200/90 bg-white/95 p-1 shadow-xl shadow-blue-100/60 backdrop-blur-xl"
+                >
+                    {filteredStates.length > 0 ? (
+                        filteredStates.map((state, index) => {
+                            const isActive = index === activeIndex;
+                            const isSelected = state === value;
+
+                            return (
+                                <button
+                                    key={state}
+                                    id={`state-option-${index}`}
+                                    type="button"
+                                    role="option"
+                                    aria-selected={isSelected}
+                                    className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${isActive ? 'bg-blue-50 text-blue-700' : 'text-slate-700 hover:bg-slate-50'} ${isSelected ? 'text-blue-700' : ''}`}
+                                    onMouseEnter={() => setActiveIndex(index)}
+                                    onMouseDown={(event) => {
+                                        event.preventDefault();
+                                        selectState(state);
+                                    }}
+                                >
+                                    <span>{state}</span>
+                                    {isSelected && <Check className="h-4 w-4 text-blue-600" />}
+                                </button>
+                            );
+                        })
+                    ) : (
+                        <div className="px-3 py-3 text-sm font-medium text-slate-500">No state found</div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const OnboardingSetupModal = ({
     isOpen,
     currentStep,
@@ -76,6 +266,7 @@ const OnboardingSetupModal = ({
         state: '',
     });
     const [isFinishing, setIsFinishing] = useState(false);
+    const [clientErrors, setClientErrors] = useState({});
 
     useEffect(() => {
         if (!isOpen) return undefined;
@@ -203,24 +394,29 @@ const OnboardingSetupModal = ({
 
     const handleClientSubmit = async (e) => {
         e.preventDefault();
+        if (!clientData.state) {
+            setClientErrors({ state: 'Please select a state.' });
+            return;
+        }
+        setClientErrors({});
         await handleFinish();
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.18),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.2),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)] px-4">
+        <div className="fixed inset-0 z-[100] flex min-h-screen items-start justify-center overflow-y-auto bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.18),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.2),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)] px-3 py-3 sm:items-center sm:px-4 sm:py-4 [min-height:100dvh]">
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40" />
-            <div className="relative z-10 mx-auto max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-xl shadow-blue-100/40 backdrop-blur-xl sm:px-10 sm:py-6">
+            <div className="relative z-10 mx-auto max-h-[calc(100vh-1.5rem)] w-full max-w-4xl overflow-y-auto overscroll-contain rounded-[1.5rem] border border-white/70 bg-white/70 p-4 shadow-xl shadow-blue-100/40 backdrop-blur-xl sm:max-h-[calc(100vh-2rem)] sm:rounded-[2rem] sm:p-5 md:px-8 md:py-5 [max-height:calc(100dvh-1.5rem)] sm:[max-height:calc(100dvh-2rem)]">
                 <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-blue-400/20 blur-[100px] pointer-events-none"></div>
                 <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-fuchsia-400/15 blur-[100px] pointer-events-none"></div>
 
                 <div className="relative z-10 flex flex-col w-full">
                     {/* Header */}
-                    <div className="text-center mb-4">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-4 py-1.5 text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-slate-600 shadow-lg shadow-blue-100/60 backdrop-blur-xl mb-6">
+                    <div className="text-center mb-3">
+                        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-600 shadow-lg shadow-blue-100/60 backdrop-blur-xl sm:text-xs">
                             <Sparkles className="h-4 w-4 text-blue-600" />
                             VyaparOS Setup
                         </div>
-                        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-950 mb-3">
+                        <h2 className="mb-2 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
                             Welcome to VyaparOS <span className="inline-block origin-bottom-right hover:animate-pulse">👋</span>
                         </h2>
                         <p className="text-sm sm:text-base text-slate-600">
@@ -229,7 +425,7 @@ const OnboardingSetupModal = ({
                     </div>
 
                     {/* Progress Bar (Stepper) */}
-                    <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4">
+                    <div className="mb-3 flex items-center justify-center gap-2 sm:gap-4">
                         {[1, 2, 3].map((num) => (
                             <div key={num} className="flex items-center gap-2 sm:gap-4">
                                 <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-xl ${step >= num ? 'bg-blue-500/10 border-blue-200 text-blue-700' : 'bg-white/60 border-slate-200/80 text-slate-400'}`}>
@@ -266,6 +462,8 @@ const OnboardingSetupModal = ({
                                     key="step3"
                                     data={clientData}
                                     setData={setClientData}
+                                    errors={clientErrors}
+                                    setErrors={setClientErrors}
                                     onSubmit={handleClientSubmit}
                                     onBack={() => setStep(2)}
                                     loading={isFinishing}
@@ -287,9 +485,9 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
         transition={{ duration: 0.3 }}
         className="w-full"
     >
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
+        <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                <div className="sm:col-span-2">
                     <FormLabel>Firm Name / Practice Name</FormLabel>
                     <input
                         required
@@ -350,7 +548,7 @@ const FirmSetup = ({ data, setData, onSubmit, loading }) => (
                     />
                 </div>
             </div>
-            <div className="mt-4 flex justify-end">
+            <div className="mt-3 flex justify-end">
                 <PrimaryButton
                     isSubmit
                     label="Continue to Next Step"
@@ -369,9 +567,9 @@ const InviteTeam = ({ data, setData, inviteSuccess, onSubmit, onBack, onSkip, lo
         transition={{ duration: 0.3 }}
         className="w-full"
     >
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
+        <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                <div className="sm:col-span-2">
                     <FormLabel>Staff Name</FormLabel>
                     <input
                         required
@@ -412,7 +610,7 @@ const InviteTeam = ({ data, setData, inviteSuccess, onSubmit, onBack, onSkip, lo
                 </div>
             )}
 
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-3 flex items-center justify-between">
                 <BackButton onClick={onBack} />
                 <div className="flex items-center gap-4">
                     <SkipButton onClick={onSkip} />
@@ -427,7 +625,7 @@ const InviteTeam = ({ data, setData, inviteSuccess, onSubmit, onBack, onSkip, lo
     </motion.div>
 );
 
-const AddClient = ({ data, setData, onSubmit, onBack, loading }) => (
+const AddClient = ({ data, setData, errors, setErrors, onSubmit, onBack, loading }) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -435,8 +633,8 @@ const AddClient = ({ data, setData, onSubmit, onBack, loading }) => (
         transition={{ duration: 0.3 }}
         className="w-full"
     >
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                 <div>
                     <FormLabel>Business Name</FormLabel>
                     <input
@@ -527,20 +725,20 @@ const AddClient = ({ data, setData, onSubmit, onBack, loading }) => (
                         onChange={(e) => setData({ ...data, gstin: e.target.value.toUpperCase() })}
                     />
                 </div>
-                <div className="col-span-2">
+                <div className="sm:col-span-2">
                     <FormLabel>State</FormLabel>
-                    <input
-                        required
-                        type="text"
-                        placeholder="e.g. Maharashtra"
-                        className={glassInputStyle}
+                    <StateCombobox
                         value={data.state}
-                        onChange={(e) => setData({ ...data, state: e.target.value })}
+                        error={errors.state}
+                        onChange={(state) => {
+                            setData({ ...data, state });
+                            setErrors((currentErrors) => ({ ...currentErrors, state: '' }));
+                        }}
                     />
                 </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between">
+            <div className="sticky bottom-0 z-20 -mx-1 mt-2 flex flex-col-reverse gap-2 border-t border-slate-200/70 bg-white/75 px-1 pt-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
                 <BackButton onClick={onBack} />
                 <PrimaryButton
                     isSubmit

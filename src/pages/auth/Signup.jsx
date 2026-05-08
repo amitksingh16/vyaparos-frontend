@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { createElement, useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -8,6 +8,7 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
 import Loader from '../../components/common/Loader';
+import AuthAmbientBackground from '../../components/auth/AuthAmbientBackground';
 
 const signupHighlights = [
     {
@@ -112,101 +113,51 @@ const Signup = () => {
     };
 
     return (
-        <div className="min-h-screen w-full bg-[#0a192f] relative flex flex-col items-center justify-center py-8 lg:py-10 px-4 sm:px-6">
-
-            {/* INJECTED CUSTOM CSS FOR FLOATING ORBS & SCROLLBAR */}
-            <style>
-                {`
-                @keyframes float-orbs {
-                    0% { transform: translate(0px, 0px) scale(1); opacity: 0.3; }
-                    33% { transform: translate(40px, -50px) scale(1.1); opacity: 0.6; }
-                    66% { transform: translate(-30px, 40px) scale(0.9); opacity: 0.4; }
-                    100% { transform: translate(0px, 0px) scale(1); opacity: 0.3; }
-                }
-                .animate-ambient-float {
-                    animation: float-orbs 15s infinite ease-in-out;
-                }
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 4px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(147, 51, 234, 0.5);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(147, 51, 234, 0.8);
-                }
-                `}
-            </style>
-
-            {/* FLOATING BACKGROUND ORBS */}
-            <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
-                {[
-                    { top: '10%', left: '15%', size: '300px', delay: '0s', color: 'bg-blue-500/70' },
-                    { top: '65%', left: '5%', size: '350px', delay: '-5s', color: 'bg-purple-500/60' },
-                    { top: '30%', left: '80%', size: '320px', delay: '-2s', color: 'bg-cyan-500/60' },
-                    { top: '85%', left: '70%', size: '280px', delay: '-7s', color: 'bg-indigo-500/70' },
-                    { top: '40%', left: '50%', size: '400px', delay: '-10s', color: 'bg-fuchsia-500/50' },
-                ].map((orb, i) => (
-                    <div
-                        key={i}
-                        className={`absolute rounded-full blur-3xl animate-ambient-float mix-blend-screen ${orb.color}`}
-                        style={{
-                            top: orb.top,
-                            left: orb.left,
-                            width: orb.size,
-                            height: orb.size,
-                            animationDelay: orb.delay,
-                        }}
-                    />
-                ))}
-            </div>
+        <div className="relative isolate flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden bg-[#0a192f] px-4 py-5 sm:px-6 lg:h-screen lg:overflow-hidden lg:py-4">
+            <AuthAmbientBackground />
 
             <Toast message={toast?.message} type={toast?.type} onClose={() => setToast(null)} />
             {loading ? <Loader type="fullscreen" text="Setting up your workspace..." /> : null}
 
             {/* MAIN CONTENT WRAPPER - Fixed Layout for proper scrolling */}
-            <div className="w-full flex justify-center relative z-10">
-                <div className="flex flex-col lg:flex-row w-full max-w-[1400px] mx-auto gap-y-6 lg:gap-y-0">
+            <div className="auth-page-enter relative z-10 flex w-full justify-center" style={{ animation: 'auth-soft-rise 650ms ease-out both' }}>
+                <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-y-5 lg:h-[calc(100vh-2rem)] lg:flex-row lg:gap-y-0">
 
                     {/* LEFT PANEL */}
-                    <div className="flex w-full lg:w-1/2 flex-col items-center lg:items-start justify-center px-4 lg:px-20 py-2 lg:py-6">
+                    <div className="flex w-full flex-col items-center justify-center px-4 py-2 lg:w-1/2 lg:items-start lg:px-16 lg:py-4 xl:px-20">
                         <div className="relative z-10 w-full max-w-lg flex flex-col items-center lg:items-start">
-                            <div className="flex flex-col lg:flex-row items-center gap-3 mb-4 lg:mb-8 text-center lg:text-left">
-                                <div className="flex h-16 w-16 lg:h-24 lg:w-24 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
+                            <div className="mb-4 flex flex-col items-center gap-3 text-center lg:mb-6 lg:flex-row lg:text-left">
+                                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl lg:h-20 lg:w-20 xl:h-24 xl:w-24">
                                     <Shield className="h-8 w-8 lg:h-10 lg:w-10 text-amber-300" />
                                 </div>
                                 <div>
-                                    <div className="font-display text-xl lg:text-2xl font-bold tracking-tight text-white mt-2 lg:mt-0">VyaparOS</div>
+                                    <div className="font-display text-xl font-bold tracking-normal text-white lg:mt-0 lg:text-2xl">VyaparOS</div>
                                     <div className="text-xs lg:text-[11px] font-semibold uppercase tracking-[0.26em] text-slate-400">
                                         Compliance OS
                                     </div>
                                 </div>
                             </div>
 
-                            <h1 className="text-2xl lg:text-5xl font-black leading-[1.2] lg:leading-[0.98] tracking-[-0.05em] text-white xl:text-6xl mb-3 lg:mb-5 text-center lg:text-left">
+                            <h1 className="mb-3 text-center text-2xl font-black leading-[1.16] tracking-normal text-white lg:mb-4 lg:text-left lg:text-4xl lg:leading-[1.02] xl:text-6xl">
                                 Launch your CA workspace without the clutter.
                             </h1>
-                            <p className="mt-2 lg:mt-5 max-w-[95%] lg:max-w-[92%] text-sm lg:text-lg leading-relaxed lg:leading-8 text-slate-300 mb-6 lg:mb-8 text-center lg:text-left">
+                            <p className="mb-5 mt-1 max-w-[95%] text-center text-sm leading-relaxed text-slate-300 lg:mb-6 lg:max-w-[92%] lg:text-left lg:text-base lg:leading-7 xl:text-lg xl:leading-8">
                                 Start with a polished dashboard experience that feels aligned with the landing page and ready for real compliance operations.
                             </p>
 
-                            <div className="hidden lg:flex flex-col gap-3">
-                                {signupHighlights.map(({ icon: Icon, title, description }) => (
+                            <div className="hidden flex-col gap-2.5 lg:flex">
+                                {signupHighlights.map((highlight) => (
                                     <div
-                                        key={title}
-                                        className="rounded-[1.6rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl"
+                                        key={highlight.title}
+                                        className="group rounded-[1.35rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/12"
                                     >
                                         <div className="flex items-start gap-4">
-                                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10">
-                                                <Icon className="h-5 w-5 text-blue-200" />
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10 transition-colors duration-300 group-hover:bg-white/15">
+                                                {createElement(highlight.icon, { className: 'h-5 w-5 text-blue-200' })}
                                             </div>
                                             <div>
-                                                <div className="text-base font-semibold text-white">{title}</div>
-                                                <div className="mt-1 text-sm leading-6 text-slate-300">{description}</div>
+                                                <div className="text-base font-semibold text-white">{highlight.title}</div>
+                                                <div className="mt-1 text-sm leading-6 text-slate-300">{highlight.description}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -216,66 +167,67 @@ const Signup = () => {
                     </div>
 
                     {/* RIGHT FORM */}
-                    <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-0 sm:px-8 lg:px-16 py-6">
-                        <div className="w-full max-w-md h-auto bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-5 sm:p-8 lg:p-10 hover:shadow-2xl transition-all duration-300">
-                            <div className="mb-5">
-                                <div className="inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 mb-4">
+                    <div className="flex w-full flex-col items-center justify-center px-0 py-2 sm:px-8 lg:w-1/2 lg:-translate-y-3 lg:px-12 lg:py-4 xl:px-16">
+                        <div className="auth-card-float relative h-auto w-full max-w-md overflow-hidden rounded-2xl border border-white/25 bg-white/90 p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_36px_90px_-42px_rgba(99,102,241,0.55)] sm:p-6 lg:p-6 xl:p-7" style={{ animation: 'auth-card-float 7s ease-in-out infinite' }}>
+                            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-fuchsia-400/18 blur-3xl" />
+                            <div className="relative mb-3">
+                                <div className="mb-2.5 inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
                                     Free setup
                                 </div>
-                                <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-[-0.05em] text-gray-800">
+                                <h2 className="text-xl font-black tracking-normal text-gray-800 sm:text-2xl lg:text-[1.55rem]">
                                     Create Your Workspace
                                 </h2>
-                                <p className="mt-2 text-xs sm:text-sm text-slate-600">
+                                <p className="mt-1.5 text-xs leading-5 text-slate-600 sm:text-sm">
                                     Join VyaparOS with a cleaner full-screen signup flow built for modern firms and overflow-free desktop layouts.
                                 </p>
                             </div>
 
-                            <form className="flex flex-col gap-y-3 sm:gap-y-5" onSubmit={handleSignup}>
+                            <form className="flex flex-col gap-y-2.5 sm:gap-y-3" onSubmit={handleSignup}>
                                 <Input
                                     id="name"
-                                    label={<span className="text-sm sm:text-base">Full Name <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm">Full Name <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="Amit Singh"
                                     icon={<User className="h-5 w-5 text-slate-400" />}
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
+                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                 />
 
                                 <Input
                                     id="email"
-                                    label={<span className="text-sm sm:text-base">Email Address <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm">Email Address <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="amit@example.com"
                                     type="email"
                                     icon={<Mail className="h-5 w-5 text-slate-400" />}
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
+                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                 />
 
                                 <Input
                                     id="phone"
-                                    label={<span className="text-sm sm:text-base">Phone Number <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm">Phone Number <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="9876543210"
                                     icon={<Phone className="h-5 w-5 text-slate-400" />}
                                     value={formData.phone}
                                     onChange={handleChange}
                                     maxLength={10}
                                     required
-                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
+                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                 />
 
                                 <Input
                                     id="password"
-                                    label={<span className="text-sm sm:text-base">Password <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm">Password <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="Min 6 characters"
                                     type={showPassword ? 'text' : 'password'}
                                     icon={<Lock className="h-5 w-5 text-slate-400" />}
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
+                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -285,7 +237,7 @@ const Signup = () => {
 
                                 <Input
                                     id="confirmPassword"
-                                    label={<span className="text-sm sm:text-base">Confirm Password <span className="text-fuchsia-500">*</span></span>}
+                                    label={<span className="text-sm">Confirm Password <span className="text-fuchsia-500">*</span></span>}
                                     placeholder="Re-enter password"
                                     type={showConfirmPassword ? 'text' : 'password'}
                                     icon={<Lock className="h-5 w-5 text-slate-400" />}
@@ -293,7 +245,7 @@ const Signup = () => {
                                     onChange={handleChange}
                                     required
                                     error={isPasswordMismatch ? 'Passwords do not match' : ''}
-                                    inputClassName="w-full h-10 sm:h-12 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm sm:text-base"
+                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -301,21 +253,22 @@ const Signup = () => {
                                     }
                                 />
 
-                                <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-4 py-2.5 shadow-[0_10px_30px_rgba(148,163,184,0.12)] [@media_(max-height:1100px)]:px-3.5 [@media_(max-height:1100px)]:py-2">
+                                <div className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-3.5 py-2 shadow-[0_10px_30px_rgba(148,163,184,0.12)]">
                                     <input id="terms" type="checkbox" required className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 transition-colors focus:ring-blue-500" />
                                     <label htmlFor="terms" className="cursor-pointer select-none text-xs leading-6 text-slate-500">
                                         I agree to the <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Terms</Link> and <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Privacy Policy</Link>.
                                     </label>
                                 </div>
 
-                                <div className="mt-4 sm:mt-6">
+                                <div className="relative mt-2 sm:mt-3">
+                                    <div className="pointer-events-none absolute -inset-2 rounded-[1.4rem] bg-gradient-to-r from-blue-500/25 via-indigo-500/25 to-fuchsia-500/25 opacity-80 blur-xl transition-opacity duration-300" />
                                     <Button
                                         id="signup-button"
                                         type="submit"
                                         disabled={!isFormValid || loading}
                                         isLoading={loading}
                                         fullWidth
-                                        className={`w-full h-10 sm:h-12 rounded-2xl text-sm sm:text-base text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
+                                        className={`relative z-10 w-full h-10 sm:h-11 rounded-2xl text-sm text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
                                         rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
                                     >
                                         {loading ? 'Creating Workspace...' : 'Create CA Dashboard'}
@@ -323,7 +276,7 @@ const Signup = () => {
                                 </div>
                             </form>
 
-                            <div className="mt-4 border-t border-slate-200/70 pt-4 text-center">
+                            <div className="mt-3 border-t border-slate-200/70 pt-3 text-center">
                                 <p className="text-sm text-slate-600">
                                     Already have an account?{' '}
                                     <Link to="/login" className="font-semibold text-blue-700 transition-colors hover:text-fuchsia-600">
