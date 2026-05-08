@@ -120,14 +120,14 @@ const Signup = () => {
             {loading ? <Loader type="fullscreen" text="Setting up your workspace..." /> : null}
 
             {/* MAIN CONTENT WRAPPER - Fixed Layout for proper scrolling */}
-            <div className="auth-page-enter relative z-10 flex w-full justify-center" style={{ animation: 'auth-soft-rise 650ms ease-out both' }}>
+            <div className="relative z-10 flex w-full justify-center">
                 <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-y-5 lg:h-[calc(100vh-2rem)] lg:flex-row lg:gap-y-0">
 
                     {/* LEFT PANEL */}
-                    <div className="flex w-full flex-col items-center justify-center px-4 py-2 lg:w-1/2 lg:items-start lg:px-16 lg:py-4 xl:px-20">
+                    <div className="flex w-full flex-col items-center justify-center px-4 py-2 lg:w-1/2 lg:items-start lg:px-14 lg:py-3 xl:px-20">
                         <div className="relative z-10 w-full max-w-lg flex flex-col items-center lg:items-start">
-                            <div className="mb-4 flex flex-col items-center gap-3 text-center lg:mb-6 lg:flex-row lg:text-left">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl lg:h-20 lg:w-20 xl:h-24 xl:w-24">
+                            <div className="mb-4 flex flex-col items-center gap-3 text-center lg:mb-5 lg:flex-row lg:text-left">
+                                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl lg:h-[4.5rem] lg:w-[4.5rem] xl:h-20 xl:w-20">
                                     <Shield className="h-8 w-8 lg:h-10 lg:w-10 text-amber-300" />
                                 </div>
                                 <div>
@@ -138,10 +138,10 @@ const Signup = () => {
                                 </div>
                             </div>
 
-                            <h1 className="mb-3 text-center text-2xl font-black leading-[1.16] tracking-normal text-white lg:mb-4 lg:text-left lg:text-4xl lg:leading-[1.02] xl:text-6xl">
+                            <h1 className="mb-3 text-center text-2xl font-black leading-[1.16] tracking-normal text-white lg:mb-3 lg:text-left lg:text-[2.35rem] lg:leading-[1.04] xl:text-5xl">
                                 Launch your CA workspace without the clutter.
                             </h1>
-                            <p className="mb-5 mt-1 max-w-[95%] text-center text-sm leading-relaxed text-slate-300 lg:mb-6 lg:max-w-[92%] lg:text-left lg:text-base lg:leading-7 xl:text-lg xl:leading-8">
+                            <p className="mb-5 mt-1 max-w-[95%] text-center text-sm leading-relaxed text-slate-300 lg:mb-5 lg:max-w-[92%] lg:text-left lg:text-base lg:leading-7">
                                 Start with a polished dashboard experience that feels aligned with the landing page and ready for real compliance operations.
                             </p>
 
@@ -149,7 +149,7 @@ const Signup = () => {
                                 {signupHighlights.map((highlight) => (
                                     <div
                                         key={highlight.title}
-                                        className="group rounded-[1.35rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/12"
+                                        className="group rounded-[1.35rem] border border-white/12 bg-white/8 px-4 py-2.5 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl transition-colors duration-300 hover:border-white/20 hover:bg-white/12"
                                     >
                                         <div className="flex items-start gap-4">
                                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10 transition-colors duration-300 group-hover:bg-white/15">
@@ -167,22 +167,22 @@ const Signup = () => {
                     </div>
 
                     {/* RIGHT FORM */}
-                    <div className="flex w-full flex-col items-center justify-center px-0 py-2 sm:px-8 lg:w-1/2 lg:-translate-y-3 lg:px-12 lg:py-4 xl:px-16">
-                        <div className="auth-card-float relative h-auto w-full max-w-md overflow-hidden rounded-2xl border border-white/25 bg-white/90 p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_36px_90px_-42px_rgba(99,102,241,0.55)] sm:p-6 lg:p-6 xl:p-7" style={{ animation: 'auth-card-float 7s ease-in-out infinite' }}>
+                    <div className="flex w-full flex-col items-center justify-center px-0 py-2 sm:px-8 lg:w-1/2 lg:px-10 lg:py-2 xl:px-16">
+                        <div className="relative h-auto w-full max-w-md overflow-hidden rounded-2xl border border-white/25 bg-white/90 p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_36px_90px_-42px_rgba(99,102,241,0.55)] sm:p-6 lg:p-5 xl:p-6">
                             <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-fuchsia-400/18 blur-3xl" />
-                            <div className="relative mb-3">
-                                <div className="mb-2.5 inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
+                            <div className="relative mb-2.5">
+                                <div className="mb-2 inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
                                     Free setup
                                 </div>
                                 <h2 className="text-xl font-black tracking-normal text-gray-800 sm:text-2xl lg:text-[1.55rem]">
                                     Create Your Workspace
                                 </h2>
-                                <p className="mt-1.5 text-xs leading-5 text-slate-600 sm:text-sm">
+                                <p className="mt-1 text-xs leading-5 text-slate-600">
                                     Join VyaparOS with a cleaner full-screen signup flow built for modern firms and overflow-free desktop layouts.
                                 </p>
                             </div>
 
-                            <form className="flex flex-col gap-y-2.5 sm:gap-y-3" onSubmit={handleSignup}>
+                            <form className="flex flex-col gap-y-2" onSubmit={handleSignup}>
                                 <Input
                                     id="name"
                                     label={<span className="text-sm">Full Name <span className="text-fuchsia-500">*</span></span>}
@@ -191,7 +191,8 @@ const Signup = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
+                                    disableMotion
+                                    inputClassName="w-full h-10 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                 />
 
                                 <Input
@@ -203,7 +204,8 @@ const Signup = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
+                                    disableMotion
+                                    inputClassName="w-full h-10 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                 />
 
                                 <Input
@@ -215,7 +217,8 @@ const Signup = () => {
                                     onChange={handleChange}
                                     maxLength={10}
                                     required
-                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
+                                    disableMotion
+                                    inputClassName="w-full h-10 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                 />
 
                                 <Input
@@ -227,7 +230,8 @@ const Signup = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
+                                    disableMotion
+                                    inputClassName="w-full h-10 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -245,7 +249,8 @@ const Signup = () => {
                                     onChange={handleChange}
                                     required
                                     error={isPasswordMismatch ? 'Passwords do not match' : ''}
-                                    inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
+                                    disableMotion
+                                    inputClassName="w-full h-10 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
                                             {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -260,15 +265,16 @@ const Signup = () => {
                                     </label>
                                 </div>
 
-                                <div className="relative mt-2 sm:mt-3">
+                                <div className="relative mt-2">
                                     <div className="pointer-events-none absolute -inset-2 rounded-[1.4rem] bg-gradient-to-r from-blue-500/25 via-indigo-500/25 to-fuchsia-500/25 opacity-80 blur-xl transition-opacity duration-300" />
                                     <Button
                                         id="signup-button"
                                         type="submit"
                                         disabled={!isFormValid || loading}
                                         isLoading={loading}
+                                        disableMotion
                                         fullWidth
-                                        className={`relative z-10 w-full h-10 sm:h-11 rounded-2xl text-sm text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
+                                        className={`relative z-10 w-full h-10 rounded-2xl text-sm text-white transition-shadow duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] ${isFormValid ? 'bg-[linear-gradient(135deg,#2563eb,#9333ea)] hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]' : 'bg-slate-300 shadow-none'}`}
                                         rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
                                     >
                                         {loading ? 'Creating Workspace...' : 'Create CA Dashboard'}

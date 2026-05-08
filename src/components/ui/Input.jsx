@@ -13,6 +13,7 @@ const Input = ({
     helperText,
     className = '',
     inputClassName = '',
+    disableMotion = false,
     ...props
 }) => {
     return (
@@ -29,8 +30,8 @@ const Input = ({
                     </div>
                 )}
                 <motion.input
-                    whileFocus={{ scale: 1.01 }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    whileFocus={disableMotion ? undefined : { scale: 1.01 }}
+                    transition={disableMotion ? undefined : { type: "spring", stiffness: 300 }}
                     id={id}
                     type={type}
                     placeholder={placeholder}

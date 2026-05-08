@@ -1,19 +1,23 @@
 const ambientOrbs = [
-    { top: '-8%', left: '8%', size: '19rem', delay: '0s', duration: '19s', color: 'rgba(59,130,246,0.36)' },
-    { top: '58%', left: '-6%', size: '22rem', delay: '-7s', duration: '23s', color: 'rgba(147,51,234,0.28)' },
-    { top: '18%', left: '74%', size: '20rem', delay: '-4s', duration: '21s', color: 'rgba(34,211,238,0.26)' },
-    { top: '72%', left: '66%', size: '18rem', delay: '-10s', duration: '25s', color: 'rgba(99,102,241,0.3)' },
+    { top: '-8%', left: '8%', size: '19rem', delay: '0s', duration: '24s', color: 'rgba(59,130,246,0.34)' },
+    { top: '58%', left: '-6%', size: '22rem', delay: '-7s', duration: '28s', color: 'rgba(147,51,234,0.26)' },
+    { top: '18%', left: '74%', size: '20rem', delay: '-4s', duration: '26s', color: 'rgba(34,211,238,0.25)' },
+    { top: '72%', left: '66%', size: '18rem', delay: '-10s', duration: '30s', color: 'rgba(236,72,153,0.2)' },
 ];
 
 const particles = [
-    { top: '14%', left: '26%', delay: '0s' },
-    { top: '22%', left: '62%', delay: '-3s' },
-    { top: '38%', left: '14%', delay: '-6s' },
-    { top: '48%', left: '88%', delay: '-1s' },
-    { top: '66%', left: '34%', delay: '-8s' },
-    { top: '78%', left: '78%', delay: '-5s' },
-    { top: '86%', left: '18%', delay: '-10s' },
-    { top: '10%', left: '90%', delay: '-12s' },
+    { top: '12%', left: '24%', delay: '0s', size: '0.45rem', color: 'rgba(125,211,252,0.82)', glow: 'rgba(34,211,238,0.72)' },
+    { top: '20%', left: '58%', delay: '-3s', size: '0.36rem', color: 'rgba(147,197,253,0.76)', glow: 'rgba(59,130,246,0.7)' },
+    { top: '33%', left: '13%', delay: '-6s', size: '0.42rem', color: 'rgba(196,181,253,0.74)', glow: 'rgba(139,92,246,0.68)' },
+    { top: '43%', left: '88%', delay: '-1s', size: '0.5rem', color: 'rgba(244,114,182,0.72)', glow: 'rgba(236,72,153,0.68)' },
+    { top: '60%', left: '31%', delay: '-8s', size: '0.34rem', color: 'rgba(103,232,249,0.72)', glow: 'rgba(6,182,212,0.66)' },
+    { top: '71%', left: '76%', delay: '-5s', size: '0.44rem', color: 'rgba(165,180,252,0.74)', glow: 'rgba(99,102,241,0.68)' },
+    { top: '84%', left: '18%', delay: '-10s', size: '0.38rem', color: 'rgba(216,180,254,0.72)', glow: 'rgba(168,85,247,0.64)' },
+    { top: '10%', left: '90%', delay: '-12s', size: '0.4rem', color: 'rgba(186,230,253,0.76)', glow: 'rgba(14,165,233,0.66)' },
+    { top: '52%', left: '54%', delay: '-14s', size: '0.32rem', color: 'rgba(251,207,232,0.7)', glow: 'rgba(244,114,182,0.6)' },
+    { top: '28%', left: '42%', delay: '-9s', size: '0.3rem', color: 'rgba(191,219,254,0.72)', glow: 'rgba(96,165,250,0.62)' },
+    { top: '76%', left: '47%', delay: '-16s', size: '0.36rem', color: 'rgba(221,214,254,0.72)', glow: 'rgba(124,58,237,0.62)' },
+    { top: '64%', left: '91%', delay: '-18s', size: '0.34rem', color: 'rgba(103,232,249,0.68)', glow: 'rgba(34,211,238,0.6)' },
 ];
 
 const AuthAmbientBackground = () => {
@@ -23,28 +27,18 @@ const AuthAmbientBackground = () => {
                 {`
                 @keyframes auth-orb-drift {
                     0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.62; }
-                    35% { transform: translate3d(28px, -34px, 0) scale(1.08); opacity: 0.82; }
-                    70% { transform: translate3d(-22px, 24px, 0) scale(0.96); opacity: 0.68; }
+                    35% { transform: translate3d(18px, -20px, 0) scale(1.04); opacity: 0.78; }
+                    70% { transform: translate3d(-16px, 18px, 0) scale(0.98); opacity: 0.66; }
                 }
 
                 @keyframes auth-particle-drift {
-                    0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.16; }
-                    45% { transform: translate3d(14px, -22px, 0); opacity: 0.5; }
-                    75% { transform: translate3d(-8px, 10px, 0); opacity: 0.3; }
-                }
-
-                @keyframes auth-soft-rise {
-                    from { transform: translate3d(0, 12px, 0); opacity: 0; }
-                    to { transform: translate3d(0, 0, 0); opacity: 1; }
-                }
-
-                @keyframes auth-card-float {
-                    0%, 100% { transform: translate3d(0, 0, 0); }
-                    50% { transform: translate3d(0, -5px, 0); }
+                    0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.24; }
+                    45% { transform: translate3d(12px, -18px, 0); opacity: 0.68; }
+                    75% { transform: translate3d(-8px, 10px, 0); opacity: 0.38; }
                 }
 
                 @media (prefers-reduced-motion: reduce) {
-                    .auth-orb, .auth-particle, .auth-page-enter, .auth-card-float {
+                    .auth-orb, .auth-particle {
                         animation: none !important;
                     }
                 }
@@ -74,10 +68,14 @@ const AuthAmbientBackground = () => {
             {particles.map((particle, index) => (
                 <div
                     key={index}
-                    className="auth-particle absolute h-1.5 w-1.5 rounded-full bg-cyan-100 shadow-[0_0_18px_rgba(125,211,252,0.85)]"
+                    className="auth-particle absolute rounded-full blur-[0.5px]"
                     style={{
                         top: particle.top,
                         left: particle.left,
+                        width: particle.size,
+                        height: particle.size,
+                        background: particle.color,
+                        boxShadow: `0 0 16px ${particle.glow}, 0 0 34px ${particle.glow}`,
                         animation: 'auth-particle-drift 13s ease-in-out infinite',
                         animationDelay: particle.delay,
                     }}

@@ -13,6 +13,7 @@ const Button = ({
     leftIcon,
     rightIcon,
     disabled = false,
+    disableMotion = false,
     ...props
 }) => {
     const baseStyles = "flex items-center justify-center font-semibold rounded-xl transition-all duration-300 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed";
@@ -36,8 +37,8 @@ const Button = ({
 
     return (
         <motion.button
-            whileHover={buttonDisabled ? undefined : { scale: 1.02 }}
-            whileTap={buttonDisabled ? undefined : { scale: 0.98 }}
+            whileHover={buttonDisabled || disableMotion ? undefined : { scale: 1.02 }}
+            whileTap={buttonDisabled || disableMotion ? undefined : { scale: 0.98 }}
             className={`
         ${baseStyles} 
         ${variants[variant]} 

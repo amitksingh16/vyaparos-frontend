@@ -110,7 +110,7 @@ const Login = () => {
             {loading ? <Loader type="fullscreen" text="Loading your workspace..." /> : null}
 
             {/* Main Content Layout */}
-            <div className="auth-page-enter relative z-10 flex w-full justify-center" style={{ animation: 'auth-soft-rise 650ms ease-out both' }}>
+            <div className="relative z-10 flex w-full justify-center">
                 <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-y-5 lg:h-[calc(100vh-2rem)] lg:flex-row lg:gap-y-0">
 
                     {/* LEFT PANEL */}
@@ -139,7 +139,7 @@ const Login = () => {
                                 {loginHighlights.map((highlight) => (
                                     <div
                                         key={highlight.title}
-                                        className="group rounded-[1.35rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/12"
+                                        className="group rounded-[1.35rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl transition-colors duration-300 hover:border-white/20 hover:bg-white/12"
                                     >
                                         <div className="flex items-start gap-4">
                                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10 transition-colors duration-300 group-hover:bg-white/15">
@@ -157,8 +157,8 @@ const Login = () => {
                     </div>
 
                     {/* RIGHT FORM */}
-                    <div className="flex w-full flex-col items-center justify-center px-0 py-2 sm:px-8 lg:w-1/2 lg:-translate-y-3 lg:px-12 lg:py-4 xl:px-16">
-                        <div className="auth-card-float relative w-[90%] shrink-0 overflow-hidden rounded-2xl border border-white/25 bg-white/90 p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_36px_90px_-42px_rgba(99,102,241,0.55)] sm:max-w-[400px] sm:p-7 lg:p-8 xl:p-9" style={{ animation: 'auth-card-float 7s ease-in-out infinite' }}>
+                    <div className="flex w-full flex-col items-center justify-center px-0 py-2 sm:px-8 lg:w-1/2 lg:px-12 lg:py-3 xl:px-16">
+                        <div className="relative w-[90%] shrink-0 overflow-hidden rounded-2xl border border-white/25 bg-white/90 p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_36px_90px_-42px_rgba(99,102,241,0.55)] sm:max-w-[400px] sm:p-7 lg:p-8 xl:p-9">
                             <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-blue-400/20 blur-3xl" />
                             <div className="relative mb-4">
                                 <div className="mb-3 inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
@@ -183,6 +183,7 @@ const Login = () => {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     autoFocus
+                                    disableMotion
                                     inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                 />
 
@@ -195,6 +196,7 @@ const Login = () => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
+                                    disableMotion
                                     inputClassName="w-full h-10 sm:h-11 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
                                     rightIcon={
                                         <button type="button" onClick={() => setShowPassword(!showPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
@@ -223,8 +225,9 @@ const Login = () => {
                                         type="submit"
                                         isLoading={loading}
                                         disabled={loading}
+                                        disableMotion
                                         fullWidth
-                                        className="relative z-10 w-full h-10 sm:h-11 rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] text-sm text-white transition-all duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] hover:scale-105 hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]"
+                                        className="relative z-10 w-full h-10 sm:h-11 rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] text-sm text-white transition-shadow duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]"
                                         leftIcon={<Sparkles className="h-4 w-4" />}
                                         rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
                                     >
