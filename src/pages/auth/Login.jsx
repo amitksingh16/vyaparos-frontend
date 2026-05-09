@@ -128,7 +128,7 @@ const Login = () => {
                                 </div>
                             </div>
 
-                            <h1 className="mb-3 text-center text-2xl font-black leading-[1.16] tracking-normal text-white lg:mb-4 lg:text-left lg:text-4xl lg:leading-[1.02] xl:text-6xl">
+                            <h1 className="mb-3 text-center text-2xl font-black leading-[1.16] tracking-normal text-white lg:mb-4 lg:text-left lg:text-[2.15rem] lg:leading-[1.02] xl:text-[3.35rem]">
                                 Step back into your firm's digital control room.
                             </h1>
                             <p className="mb-5 mt-1 max-w-[95%] text-center text-sm leading-relaxed text-slate-300 lg:mb-6 lg:max-w-[92%] lg:text-left lg:text-base lg:leading-7 xl:text-lg xl:leading-8">

@@ -7,17 +7,20 @@ const ambientOrbs = [
 
 const particles = [
     { top: '12%', left: '24%', delay: '0s', size: '0.45rem', color: 'rgba(125,211,252,0.82)', glow: 'rgba(34,211,238,0.72)' },
-    { top: '20%', left: '58%', delay: '-3s', size: '0.36rem', color: 'rgba(147,197,253,0.76)', glow: 'rgba(59,130,246,0.7)' },
+    { top: '20%', left: '58%', delay: '-3s', size: '0.42rem', color: 'rgba(147,197,253,0.8)', glow: 'rgba(59,130,246,0.72)' },
     { top: '33%', left: '13%', delay: '-6s', size: '0.42rem', color: 'rgba(196,181,253,0.74)', glow: 'rgba(139,92,246,0.68)' },
     { top: '43%', left: '88%', delay: '-1s', size: '0.5rem', color: 'rgba(244,114,182,0.72)', glow: 'rgba(236,72,153,0.68)' },
-    { top: '60%', left: '31%', delay: '-8s', size: '0.34rem', color: 'rgba(103,232,249,0.72)', glow: 'rgba(6,182,212,0.66)' },
+    { top: '60%', left: '31%', delay: '-8s', size: '0.4rem', color: 'rgba(103,232,249,0.78)', glow: 'rgba(6,182,212,0.68)' },
     { top: '71%', left: '76%', delay: '-5s', size: '0.44rem', color: 'rgba(165,180,252,0.74)', glow: 'rgba(99,102,241,0.68)' },
     { top: '84%', left: '18%', delay: '-10s', size: '0.38rem', color: 'rgba(216,180,254,0.72)', glow: 'rgba(168,85,247,0.64)' },
     { top: '10%', left: '90%', delay: '-12s', size: '0.4rem', color: 'rgba(186,230,253,0.76)', glow: 'rgba(14,165,233,0.66)' },
-    { top: '52%', left: '54%', delay: '-14s', size: '0.32rem', color: 'rgba(251,207,232,0.7)', glow: 'rgba(244,114,182,0.6)' },
+    { top: '52%', left: '54%', delay: '-14s', size: '0.38rem', color: 'rgba(251,207,232,0.74)', glow: 'rgba(244,114,182,0.62)' },
     { top: '28%', left: '42%', delay: '-9s', size: '0.3rem', color: 'rgba(191,219,254,0.72)', glow: 'rgba(96,165,250,0.62)' },
     { top: '76%', left: '47%', delay: '-16s', size: '0.36rem', color: 'rgba(221,214,254,0.72)', glow: 'rgba(124,58,237,0.62)' },
     { top: '64%', left: '91%', delay: '-18s', size: '0.34rem', color: 'rgba(103,232,249,0.68)', glow: 'rgba(34,211,238,0.6)' },
+    { top: '38%', left: '67%', delay: '-4s', size: '0.55rem', color: 'rgba(125,211,252,0.7)', glow: 'rgba(34,211,238,0.56)' },
+    { top: '88%', left: '62%', delay: '-11s', size: '0.48rem', color: 'rgba(244,114,182,0.66)', glow: 'rgba(236,72,153,0.54)' },
+    { top: '16%', left: '38%', delay: '-15s', size: '0.36rem', color: 'rgba(196,181,253,0.68)', glow: 'rgba(139,92,246,0.54)' },
 ];
 
 const AuthAmbientBackground = () => {
@@ -32,9 +35,9 @@ const AuthAmbientBackground = () => {
                 }
 
                 @keyframes auth-particle-drift {
-                    0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.24; }
-                    45% { transform: translate3d(12px, -18px, 0); opacity: 0.68; }
-                    75% { transform: translate3d(-8px, 10px, 0); opacity: 0.38; }
+                    0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.3; }
+                    45% { transform: translate3d(12px, -18px, 0); opacity: 0.74; }
+                    75% { transform: translate3d(-8px, 10px, 0); opacity: 0.46; }
                 }
 
                 @media (prefers-reduced-motion: reduce) {

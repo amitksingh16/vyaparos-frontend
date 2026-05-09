@@ -168,7 +168,7 @@ const Signup = () => {
 
                     {/* RIGHT FORM */}
                     <div className="flex w-full flex-col items-center justify-center px-0 py-2 sm:px-8 lg:w-1/2 lg:px-10 lg:py-2 xl:px-16">
-                        <div className="relative h-auto w-full max-w-md overflow-hidden rounded-2xl border border-white/25 bg-white/90 p-5 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_36px_90px_-42px_rgba(99,102,241,0.55)] sm:p-6 lg:p-5 xl:p-6">
+                        <div className="relative h-auto w-full max-w-md overflow-hidden rounded-2xl border border-white/25 bg-white/90 p-5 pb-9 shadow-[0_30px_80px_-42px_rgba(15,23,42,0.75)] backdrop-blur-xl transition-shadow duration-300 hover:shadow-[0_36px_90px_-42px_rgba(99,102,241,0.55)] sm:p-6 sm:pb-10 lg:p-5 lg:pb-9 xl:p-6 xl:pb-10">
                             <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-fuchsia-400/18 blur-3xl" />
                             <div className="relative mb-2.5">
                                 <div className="mb-2 inline-flex rounded-full border border-blue-100 bg-blue-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
