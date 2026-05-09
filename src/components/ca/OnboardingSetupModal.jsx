@@ -41,7 +41,7 @@ const SkipButton = ({ onClick }) => (
     </button>
 );
 
-const glassInputStyle = "w-full h-10 rounded-xl border border-slate-200/80 bg-white/80 px-3 text-sm font-medium text-slate-900 placeholder-slate-400 shadow-sm backdrop-blur-xl focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300";
+const glassInputStyle = "w-full h-10 rounded-xl border border-slate-300/90 bg-slate-50/95 px-3 text-sm font-semibold text-slate-950 placeholder-slate-500 shadow-[0_2px_10px_rgba(15,23,42,0.09)] backdrop-blur-xl transition-all duration-200 hover:border-blue-300 hover:bg-white hover:shadow-[0_6px_18px_rgba(59,130,246,0.16)] focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/25";
 
 const FormLabel = ({ children }) => (
     <label className="mb-1 block text-xs font-semibold text-slate-700">{children}</label>
@@ -403,9 +403,9 @@ const OnboardingSetupModal = ({
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex min-h-screen items-start justify-center overflow-y-auto bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.18),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.2),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)] px-3 py-3 sm:items-center sm:px-4 sm:py-4 [min-height:100dvh]">
+        <div className="fixed inset-0 z-[100] flex min-h-screen items-start justify-center overflow-y-auto bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.18),_transparent_30%),radial-gradient(circle_at_80%_20%,_rgba(129,140,248,0.2),_transparent_28%),linear-gradient(180deg,_#f8fbff_0%,_#eef4ff_55%,_#ffffff_100%)] px-3 py-3 [scrollbar-width:none] sm:items-center sm:px-4 sm:py-4 [min-height:100dvh] [&::-webkit-scrollbar]:hidden">
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40" />
-            <div className={`relative z-10 mx-auto w-full max-w-4xl overscroll-contain rounded-[1.5rem] border border-white/70 bg-white/70 p-4 shadow-xl shadow-blue-100/40 backdrop-blur-xl sm:rounded-[2rem] sm:p-5 md:px-8 md:py-5 ${step === 1 ? 'overflow-hidden' : 'max-h-[calc(100vh-1.5rem)] overflow-y-auto overflow-x-hidden sm:max-h-[calc(100vh-2rem)] [max-height:calc(100dvh-1.5rem)] sm:[max-height:calc(100dvh-2rem)]'}`}>
+            <div className={`relative z-10 mx-auto w-full max-w-4xl overscroll-contain rounded-[1.5rem] border border-white/70 bg-white/70 p-4 shadow-xl shadow-blue-100/40 backdrop-blur-xl [scrollbar-width:none] sm:rounded-[2rem] sm:p-5 md:px-8 md:py-5 [&::-webkit-scrollbar]:hidden ${step === 1 ? 'overflow-hidden' : 'overflow-visible'}`}>
                 <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-blue-400/20 blur-[100px] pointer-events-none"></div>
                 <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-fuchsia-400/15 blur-[100px] pointer-events-none"></div>
 
@@ -738,7 +738,7 @@ const AddClient = ({ data, setData, errors, setErrors, onSubmit, onBack, loading
                 </div>
             </div>
 
-            <div className="sticky bottom-0 z-20 -mx-1 mt-2 flex flex-col-reverse gap-2 border-t border-slate-200/70 bg-white/75 px-1 pt-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+            <div className="z-20 -mx-1 mt-2 flex flex-col-reverse gap-2 border-t border-slate-200/70 bg-white/75 px-1 pt-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
                 <BackButton onClick={onBack} />
                 <PrimaryButton
                     isSubmit
