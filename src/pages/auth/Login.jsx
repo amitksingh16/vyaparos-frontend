@@ -114,9 +114,9 @@ const Login = () => {
                 <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-y-5 lg:h-[calc(100vh-2rem)] lg:flex-row lg:gap-y-0">
 
                     {/* LEFT PANEL */}
-                    <div className="flex w-full flex-col items-center justify-center px-4 py-2 lg:w-1/2 lg:items-start lg:px-16 lg:py-4 xl:px-20">
+                    <div className="flex w-full flex-col items-center justify-center px-4 py-2 lg:w-1/2 lg:items-start lg:px-16 lg:pt-8 lg:pb-3 xl:px-20 xl:pt-10 xl:pb-4">
                         <div className="relative z-10 w-full max-w-lg flex flex-col items-center lg:items-start">
-                            <div className="mb-4 flex flex-col items-center gap-3 text-center lg:mb-6 lg:flex-row lg:text-left">
+                            <div className="mb-3 flex flex-col items-center gap-3 text-center lg:mb-4 lg:flex-row lg:text-left">
                                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl lg:h-20 lg:w-20 xl:h-24 xl:w-24">
                                     <Shield className="h-8 w-8 lg:h-10 lg:w-10 text-amber-300" />
                                 </div>
@@ -128,26 +128,26 @@ const Login = () => {
                                 </div>
                             </div>
 
-                            <h1 className="mb-3 text-center text-2xl font-black leading-[1.16] tracking-normal text-white lg:mb-4 lg:text-left lg:text-[2.15rem] lg:leading-[1.02] xl:text-[3.35rem]">
+                            <h1 className="mb-2 text-center text-2xl font-black leading-[1.16] tracking-normal text-white lg:mb-3 lg:text-left lg:text-[1.9rem] lg:leading-[1.06] xl:text-[2.75rem]">
                                 Step back into your firm's digital control room.
                             </h1>
-                            <p className="mb-5 mt-1 max-w-[95%] text-center text-sm leading-relaxed text-slate-300 lg:mb-6 lg:max-w-[92%] lg:text-left lg:text-base lg:leading-7 xl:text-lg xl:leading-8">
+                            <p className="mb-4 mt-1 max-w-[95%] text-center text-sm leading-relaxed text-slate-300 lg:mb-4 lg:max-w-[92%] lg:text-left lg:text-[0.95rem] lg:leading-6 xl:text-base xl:leading-7">
                                 Login to a calmer, sharper workspace built for deadline discipline, client visibility, and premium CA operations.
                             </p>
 
-                            <div className="hidden flex-col gap-2.5 lg:flex">
+                            <div className="hidden flex-col gap-2 lg:flex">
                                 {loginHighlights.map((highlight) => (
                                     <div
                                         key={highlight.title}
-                                        className="group rounded-[1.35rem] border border-white/12 bg-white/8 px-4 py-3 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl transition-colors duration-300 hover:border-white/20 hover:bg-white/12"
+                                        className="group rounded-[1.35rem] border border-white/12 bg-white/8 px-3.5 py-2.5 shadow-[0_18px_45px_-30px_rgba(15,23,42,0.95)] backdrop-blur-2xl transition-colors duration-300 hover:border-white/20 hover:bg-white/12"
                                     >
-                                        <div className="flex items-start gap-4">
-                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10 transition-colors duration-300 group-hover:bg-white/15">
-                                                {createElement(highlight.icon, { className: 'h-5 w-5 text-blue-200' })}
+                                        <div className="flex items-start gap-3">
+                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/10 transition-colors duration-300 group-hover:bg-white/15">
+                                                {createElement(highlight.icon, { className: 'h-4 w-4 text-blue-200' })}
                                             </div>
                                             <div>
-                                                <div className="text-base font-semibold text-white">{highlight.title}</div>
-                                                <div className="mt-1 text-sm leading-6 text-slate-300">{highlight.description}</div>
+                                                <div className="text-sm font-semibold text-white">{highlight.title}</div>
+                                                <div className="mt-0.5 text-xs leading-5 text-slate-300">{highlight.description}</div>
                                             </div>
                                         </div>
                                     </div>
