@@ -265,7 +265,7 @@ const Signup = () => {
                                     </label>
                                 </div>
 
-                                <div className="relative mt-1">
+                                <div className="relative mt-4">
                                     <div className="pointer-events-none absolute -inset-2 rounded-[1.4rem] bg-gradient-to-r from-blue-500/25 via-indigo-500/25 to-fuchsia-500/25 opacity-80 blur-xl transition-opacity duration-300" />
                                     <Button
                                         id="signup-button"
