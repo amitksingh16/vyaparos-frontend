@@ -442,8 +442,8 @@ const CADashboard = () => {
             setSelectedBulkStaff('');
         } catch (err) {
             console.error(`Error performing bulk action ${action}`, err);
-            // In a real app, you'd show an error toast here
-            alert("Failed to perform bulk action.");
+            const errMsg = err.response?.data?.message || "Failed to perform bulk action.";
+            alert(errMsg);
         } finally {
             setIsBulkActionLoading(false);
         }
@@ -540,63 +540,63 @@ const CADashboard = () => {
                 </div>
             </nav>
 
-            {/* Sticky Bulk Action Bar */}
+            {/* Centered Floating Bulk Action Card */}
             <div
-                className={`fixed top-16 left-0 right-0 z-20 transform transition-all duration-200 ease-out border-b border-indigo-900/10 shadow-md ${selectedClients.length > 0 ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
+                className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transform transition-all duration-300 ease-out 
+                    w-fit max-w-[900px] px-4 py-3 rounded-2xl backdrop-blur-xl bg-slate-900/95 border border-white/10 shadow-2xl
+                    ${selectedClients.length > 0 ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-8 opacity-0 scale-95 pointer-events-none'
                     }`}
             >
-                <div className="absolute inset-0 bg-slate-800/95 backdrop-blur-md border-t border-indigo-500/20"></div>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 relative z-10 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-700/50">
-                            <span className="bg-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">
-                                {selectedClients.length}
-                            </span>
-                            <span className="text-sm font-medium text-slate-200">
-                                Selected
-                            </span>
-                        </div>
+                <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/50">
+                        <span className="bg-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">
+                            {selectedClients.length}
+                        </span>
+                        <span className="text-sm font-medium text-slate-200 whitespace-nowrap">
+                            Selected
+                        </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={() => setSelectedClients([])}
-                            className="text-sm font-medium text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-700/50 transition-colors"
-                        >
-                            Cancel
-                        </button>
+                    <button
+                        onClick={() => setSelectedClients([])}
+                        className="text-sm font-medium text-slate-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+                    >
+                        Cancel
+                    </button>
 
-                        <div className="h-4 w-px bg-slate-700"></div>
+                    <div className="hidden sm:block h-5 w-px bg-slate-700"></div>
 
-                        {/* Primary Action */}
-                        {(user?.role === 'ca' || user?.role === 'admin') && (
-                            <div className="flex items-center gap-2 pr-2 border-r border-slate-700">
-                                <select
-                                    value={selectedBulkStaff}
-                                    onChange={(e) => setSelectedBulkStaff(e.target.value)}
-                                    className="bg-slate-700/50 text-slate-200 text-sm font-medium border border-slate-600/50 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/50 w-40"
-                                >
-                                    <option value="">Unassigned</option>
-                                    {team.map(member => (
-                                        <option key={member.id} value={member.id}>{member.name}</option>
-                                    ))}
-                                </select>
-                                <button
-                                    onClick={() => handleBulkAction('assign_staff')}
-                                    disabled={isBulkActionLoading}
-                                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 px-4 py-1.5 rounded-lg transition-all shadow-sm shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                                >
-                                    <UserIcon className="w-4 h-4" />
-                                    Assign Staff
-                                </button>
-                            </div>
-                        )}
+                    {/* Primary Action */}
+                    {(user?.role === 'ca' || user?.role === 'admin') && (
+                        <div className="flex items-center gap-2 pr-0 sm:pr-2 border-r-0 sm:border-r border-slate-700">
+                            <select
+                                value={selectedBulkStaff}
+                                onChange={(e) => setSelectedBulkStaff(e.target.value)}
+                                className="bg-slate-800 text-slate-200 text-sm font-medium border border-slate-700 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/50 w-32 sm:w-40"
+                            >
+                                <option value="">Unassigned</option>
+                                {team.map(member => (
+                                    <option key={member.id} value={member.id}>{member.name}</option>
+                                ))}
+                            </select>
+                            <button
+                                onClick={() => handleBulkAction('assign_staff')}
+                                disabled={isBulkActionLoading}
+                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 px-4 py-1.5 rounded-lg transition-all shadow-sm shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                            >
+                                <UserIcon className="w-4 h-4" />
+                                <span className="hidden sm:inline">Assign Staff</span>
+                                <span className="sm:hidden">Assign</span>
+                            </button>
+                        </div>
+                    )}
 
-                        {/* Other Actions */}
+                    {/* Other Actions */}
+                    <div className="flex items-center gap-2">
                         <button
                             onClick={() => handleBulkAction('mark_filed')}
                             disabled={isBulkActionLoading}
-                            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-200 hover:text-white bg-slate-700/50 hover:bg-slate-700 px-4 py-1.5 rounded-lg transition-all border border-slate-600/50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap hidden sm:flex"
+                            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-lg transition-all border border-slate-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                         >
                             <CheckSquare className="w-4 h-4" />
                             Mark Filed
@@ -606,7 +606,7 @@ const CADashboard = () => {
                         <button
                             onClick={() => handleBulkAction('archive')}
                             disabled={isBulkActionLoading}
-                            className="inline-flex items-center gap-1.5 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-900/30 px-3 py-1.5 rounded-lg transition-colors ml-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex items-center gap-1.5 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-900/30 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                         >
                             <Trash2 className="w-4 h-4" />
                             <span className="hidden sm:inline">Archive</span>
