@@ -239,24 +239,34 @@ const Signup = () => {
                                     }
                                 />
 
-                                <Input
-                                    id="confirmPassword"
-                                    label={<span className="text-xs">Confirm Password <span className="text-fuchsia-500">*</span></span>}
-                                    placeholder="Re-enter password"
-                                    type={showConfirmPassword ? 'text' : 'password'}
-                                    icon={<Lock className="h-5 w-5 text-slate-400" />}
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    required
-                                    error={isPasswordMismatch ? 'Passwords do not match' : ''}
-                                    disableMotion
-                                    inputClassName="w-full h-9 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
-                                    rightIcon={
-                                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
-                                            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                        </button>
-                                    }
-                                />
+                                <div>
+                                    <Input
+                                        id="confirmPassword"
+                                        label={<span className="text-xs">Confirm Password <span className="text-fuchsia-500">*</span></span>}
+                                        placeholder="Re-enter password"
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        icon={<Lock className="h-5 w-5 text-slate-400" />}
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        required
+                                        disableMotion
+                                        inputClassName="w-full h-9 rounded-2xl border-white/70 bg-white/85 px-4 shadow-[0_10px_30px_rgba(148,163,184,0.16)] hover:border-blue-200 hover:bg-white focus:ring-blue-500 text-sm"
+                                        rightIcon={
+                                            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="flex items-center justify-center transition-colors hover:text-slate-700 focus:outline-none">
+                                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        }
+                                    />
+
+                                    {/* 🔥 THE BULLETPROOF FIX: Reserved Space Error Message 🔥 */}
+                                    <div className="h-5 mt-1 px-1">
+                                        {isPasswordMismatch ? (
+                                            <span className="text-xs font-medium text-red-500 flex items-center gap-1">
+                                                ⚠️ Passwords do not match
+                                            </span>
+                                        ) : null}
+                                    </div>
+                                </div>
 
                                 <div className="mt-5 flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-3.5 py-1.5 shadow-[0_10px_30px_rgba(148,163,184,0.12)]">
                                     <input id="terms" type="checkbox" required className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 transition-colors focus:ring-blue-500" />
