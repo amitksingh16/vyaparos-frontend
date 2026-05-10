@@ -426,6 +426,11 @@ const CADashboard = () => {
                     clientIds: selectedClients,
                     assign_to: selectedBulkStaff || null
                 });
+            } else if (action === 'mark_filed') {
+                await axios.put('/ca/clients/bulk-mark-filed', {
+                    clientIds: selectedClients
+                });
+                alert("Clients successfully marked as filed");
             } else {
                 // Handle other actions here if implemented in the future
                 await new Promise(resolve => setTimeout(resolve, 600));
@@ -564,26 +569,28 @@ const CADashboard = () => {
                         <div className="h-4 w-px bg-slate-700"></div>
 
                         {/* Primary Action */}
-                        <div className="flex items-center gap-2 pr-2 border-r border-slate-700">
-                            <select
-                                value={selectedBulkStaff}
-                                onChange={(e) => setSelectedBulkStaff(e.target.value)}
-                                className="bg-slate-700/50 text-slate-200 text-sm font-medium border border-slate-600/50 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/50 w-40"
-                            >
-                                <option value="">Unassigned</option>
-                                {team.map(member => (
-                                    <option key={member.id} value={member.id}>{member.name}</option>
-                                ))}
-                            </select>
-                            <button
-                                onClick={() => handleBulkAction('assign_staff')}
-                                disabled={isBulkActionLoading}
-                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 px-4 py-1.5 rounded-lg transition-all shadow-sm shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                            >
-                                <UserIcon className="w-4 h-4" />
-                                Assign Staff
-                            </button>
-                        </div>
+                        {(user?.role === 'ca' || user?.role === 'admin') && (
+                            <div className="flex items-center gap-2 pr-2 border-r border-slate-700">
+                                <select
+                                    value={selectedBulkStaff}
+                                    onChange={(e) => setSelectedBulkStaff(e.target.value)}
+                                    className="bg-slate-700/50 text-slate-200 text-sm font-medium border border-slate-600/50 rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500/50 w-40"
+                                >
+                                    <option value="">Unassigned</option>
+                                    {team.map(member => (
+                                        <option key={member.id} value={member.id}>{member.name}</option>
+                                    ))}
+                                </select>
+                                <button
+                                    onClick={() => handleBulkAction('assign_staff')}
+                                    disabled={isBulkActionLoading}
+                                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 px-4 py-1.5 rounded-lg transition-all shadow-sm shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                                >
+                                    <UserIcon className="w-4 h-4" />
+                                    Assign Staff
+                                </button>
+                            </div>
+                        )}
 
                         {/* Other Actions */}
                         <button
