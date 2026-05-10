@@ -738,7 +738,7 @@ const AddClient = ({ data, setData, errors, setErrors, onSubmit, onBack, loading
                 </div>
             </div>
 
-            <div className="z-20 -mx-1 mt-2 flex flex-col-reverse gap-2 border-t border-slate-200/70 bg-white/75 px-1 pt-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <BackButton onClick={onBack} />
                 <PrimaryButton
                     isSubmit
