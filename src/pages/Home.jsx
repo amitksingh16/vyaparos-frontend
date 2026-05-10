@@ -34,7 +34,7 @@ const Home = () => {
                     <div className="flex items-center gap-3 sm:gap-4">
                         <Link
                             to="/login"
-                            className="hidden rounded-lg border border-white/20 bg-transparent px-4 py-2 text-sm font-semibold text-slate-600 transition-all duration-300 hover:bg-white/8 hover:text-slate-950 sm:inline-flex"
+                            className="hidden rounded-lg border border-blue-600 bg-transparent px-4 py-2 text-sm font-semibold text-blue-600 transition-all duration-300 hover:bg-blue-50 sm:inline-flex"
                         >
                             Sign In
                         </Link>

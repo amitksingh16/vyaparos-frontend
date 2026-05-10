@@ -93,7 +93,7 @@ const HeroSection = () => {
                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Link
                                 to="/login"
-                                className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white/80 px-6 py-4 text-base font-semibold text-slate-700 shadow-lg shadow-slate-200/40 backdrop-blur transition-colors duration-300 hover:border-slate-300 hover:bg-white"
+                                className="inline-flex items-center justify-center rounded-2xl border border-blue-600 bg-transparent px-6 py-4 text-base font-semibold text-blue-600 transition-all duration-300 hover:bg-blue-50"
                             >
                                 Sign In
                             </Link>
