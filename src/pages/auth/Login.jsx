@@ -212,7 +212,7 @@ const Login = () => {
                                     <button
                                         type="button"
                                         onClick={handleForgotPassword}
-                                        className="font-semibold text-slate-600 transition-colors hover:text-blue-700"
+                                        className="font-semibold text-slate-600 transition-colors hover:text-blue-700 cursor-pointer"
                                     >
                                         Forgot Password?
                                     </button>
@@ -227,7 +227,7 @@ const Login = () => {
                                         disabled={loading}
                                         disableMotion
                                         fullWidth
-                                        className="relative z-10 w-full h-10 sm:h-11 rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] text-sm text-white transition-shadow duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)]"
+                                        className="relative z-10 w-full h-10 sm:h-11 rounded-2xl bg-[linear-gradient(135deg,#2563eb,#9333ea)] text-sm text-white transition-shadow duration-300 shadow-[0_22px_55px_-22px_rgba(99,102,241,0.85)] hover:shadow-[0_28px_65px_-24px_rgba(99,102,241,0.95)] cursor-pointer"
                                         leftIcon={<Sparkles className="h-4 w-4" />}
                                         rightIcon={!loading ? <ArrowRight className="h-4 w-4" /> : null}
                                     >
