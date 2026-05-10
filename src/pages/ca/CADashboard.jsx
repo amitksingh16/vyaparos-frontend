@@ -542,7 +542,7 @@ const CADashboard = () => {
 
             {/* Centered Floating Bulk Action Card */}
             <div
-                className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transform transition-all duration-300 ease-out 
+                className={`fixed top-24 left-1/2 -translate-x-1/2 z-50 transform transition-all duration-300 ease-out 
                     w-fit max-w-[900px] px-4 py-3 rounded-2xl backdrop-blur-xl bg-slate-900/95 border border-white/10 shadow-2xl
                     ${selectedClients.length > 0 ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-8 opacity-0 scale-95 pointer-events-none'
                     }`}
@@ -576,7 +576,7 @@ const CADashboard = () => {
                             >
                                 <option value="">Unassigned</option>
                                 {team.map(member => (
-                                    <option key={member.id} value={member.id}>{member.name}</option>
+                                    <option key={member.id} value={member.id}>{member.fullName || member.name}</option>
                                 ))}
                             </select>
                             <button
