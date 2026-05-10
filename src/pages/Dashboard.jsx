@@ -97,17 +97,20 @@ const Dashboard = () => {
                 if (primaryBusinessId) {
 
                     // 2. Fetch compliance calendar for this business
+                    // 2. Fetch compliance calendar for this business
                     const compRes = await axios.get(`/compliance/calendar?business_id=${primaryBusinessId}`);
-                    const allItems = compRes.data;
+                    // 🔥 THE FIX: Array Check for Compliances
+                    const allItems = Array.isArray(compRes.data) ? compRes.data : (compRes.data?.data || []);
                     setAllTasks(allItems);
 
                     // 2.5 Fetch documents for health score
                     const docsRes = await axios.get(`/documents/${primaryBusinessId}`);
-                    const docs = docsRes.data || [];
+                    // 🔥 THE FIX: Array Check for Documents
+                    const docs = Array.isArray(docsRes.data) ? docsRes.data : (docsRes.data?.data || []);
 
                     const now = new Date();
                     const currentMonthStr = now.toISOString().slice(0, 7);
-                    
+
                     let bankCount = 0;
                     let salesCount = 0;
                     let purchaseCount = 0;
@@ -125,7 +128,6 @@ const Dashboard = () => {
                     if (salesCount > 0) categoriesPresent++;
                     if (purchaseCount > 0) categoriesPresent++;
 
-                    // Override the local compliance calculation with the new logic
                     const newHealthScore = Math.round((categoriesPresent / 3) * 100);
                     setClientHealthScore(newHealthScore);
 
@@ -173,8 +175,11 @@ const Dashboard = () => {
 
                     // 4. Fetch recent activities
                     const actRes = await axios.get(`/businesses/${primaryBusinessId}/activities`);
-                    setRawActivities(actRes.data);
-                    setRecentActivity(actRes.data.map(act => {
+                    // 🔥 THE FIX: Array Check for Activities
+                    const activitiesList = Array.isArray(actRes.data) ? actRes.data : (actRes.data?.data || []);
+
+                    setRawActivities(activitiesList);
+                    setRecentActivity(activitiesList.map(act => {
                         let type = 'info';
                         let text = act.description || act.action_type || '';
 
@@ -243,7 +248,7 @@ const Dashboard = () => {
     // mostOverdue logic removed since it was unused
     let dueWithin3DaysCount = 0;
 
-    allTasks.forEach(task => {
+    (Array.isArray(allTasks) ? allTasks : []).forEach(task => {
         if (task.status === 'filed') return;
 
         const dueDate = new Date(task.due_date);
@@ -489,14 +494,14 @@ const Dashboard = () => {
 
                 {/* Tabs */}
                 <div className="flex space-x-6 mb-6 border-b border-slate-200">
-                    <button 
-                        onClick={() => setActiveTab('overview')} 
+                    <button
+                        onClick={() => setActiveTab('overview')}
                         className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${activeTab === 'overview' ? 'border-[#0A2C4B] text-[#0A2C4B]' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
                     >
                         Compliance Overview
                     </button>
-                    <button 
-                        onClick={() => setActiveTab('documents')} 
+                    <button
+                        onClick={() => setActiveTab('documents')}
                         className={`pb-3 text-sm font-semibold transition-colors border-b-2 ${activeTab === 'documents' ? 'border-[#0A2C4B] text-[#0A2C4B]' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
                     >
                         Document Vault
@@ -504,324 +509,324 @@ const Dashboard = () => {
                 </div>
 
                 {activeTab === 'overview' ? (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column (Main Metrics) */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Left Column (Main Metrics) */}
+                        <div className="lg:col-span-2 space-y-6">
 
-                        {/* AI Client Guidance Section */}
-                        <div className="mb-6">
-                            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
-                                <Bot className="w-5 h-5 text-purple-600" />
-                                AI Client Guidance
-                            </h2>
-                            <div className="space-y-3">
-                                {aiSuggestions.length > 0 ? (
-                                    aiSuggestions.map(sugg => {
-                                        const hasHighSeverity = aiSuggestions.some(a => a.severity === 'HIGH');
-                                        const isDeemphasized = hasHighSeverity && sugg.severity === 'REVIEW';
-
-                                        const severityClass = sugg.severity === 'HIGH' ? 'severity-high'
-                                            : sugg.severity === 'MEDIUM' ? 'severity-medium' : 'severity-review';
-
-                                        const bgColor = isDeemphasized ? 'bg-slate-50 opacity-80' : 'bg-white';
-
-                                        return (
-                                            <div key={sugg.id} className={`${bgColor} rounded-[12px] p-4 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 ${severityClass}`}>
-                                                <div className="flex items-start gap-4">
-                                                    <div className="mt-1 severity-icon-text">
-                                                        {sugg.severity === 'HIGH' && <AlertTriangle className="w-5 h-5" />}
-                                                        {sugg.severity === 'MEDIUM' && <AlertCircle className="w-5 h-5" />}
-                                                        {sugg.severity === 'REVIEW' && <Info className="w-5 h-5" />}
-                                                    </div>
-                                                    <div>
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide severity-badge`}>
-                                                                {sugg.severity}
-                                                            </span>
-                                                            <h3 className={`font-semibold text-sm ${isDeemphasized ? 'text-slate-600' : 'text-slate-800'}`}>{sugg.headline}</h3>
-                                                        </div>
-                                                        <p className={`text-sm ${isDeemphasized ? 'text-slate-400' : 'text-slate-500'}`}>{sugg.subtext}</p>
-                                                    </div>
-                                                </div>
-                                                <Link to="#" className="flex-shrink-0">
-                                                    <Button variant="outline" size="sm" className={`w-full sm:w-auto text-xs whitespace-nowrap ${isDeemphasized ? 'opacity-80 hover:opacity-100' : ''}`}>
-                                                        Review Compliance &rarr;
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        );
-                                    })
-                                ) : (
-                                    <div className="bg-white rounded-[12px] p-5 shadow-sm border border-slate-200 border-l-4 border-l-green-500 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                            <div>
-                                                <p className="font-semibold text-slate-800 text-sm">No active risks detected. Client is stable.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* 2. Compliance Health Card */}
-                        <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100 relative overflow-hidden">
-                            {/* Decorative background accent */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
-
-                            <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-green-600" />
-                                Compliance Health
-                            </h2>
-
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-                                <div>
-                                    <div className="flex items-end gap-3 mb-2">
-                                        <span className="text-5xl font-bold font-display text-slate-900">{complianceScore}%</span>
-                                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold mb-1 ${complianceScore >= 90 ? 'bg-green-100 text-green-700' :
-                                            complianceScore >= 70 ? 'bg-orange-100 text-orange-700' :
-                                                'bg-red-100 text-red-700'
-                                            }`}>
-                                            {complianceScore >= 90 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
-                                            {complianceScore >= 90 ? 'Good' : complianceScore >= 70 ? 'Average' : 'Critical'}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-slate-500">
-                                        {complianceScore >= 90 ? 'Your business is highly compliant. Keep it up!' :
-                                            'Some compliances need your immediate attention.'}
-                                    </p>
-                                </div>
-
-                                <div className="w-full sm:w-1/2">
-                                    <div className="flex justify-between text-xs font-medium text-slate-500 mb-2">
-                                        <span>Risk Level</span>
-                                        <span className={complianceScore >= 90 ? 'text-green-600' : complianceScore >= 70 ? 'text-orange-600' : 'text-red-600'}>
-                                            {complianceScore >= 90 ? 'Low Risk' : complianceScore >= 70 ? 'Moderate Risk' : 'High Risk'}
-                                        </span>
-                                    </div>
-                                    <div className="w-full bg-slate-100 rounded-full h-2.5">
-                                        <div className={`h-2.5 rounded-full ${complianceScore >= 90 ? 'bg-green-500' :
-                                            complianceScore >= 70 ? 'bg-orange-500' : 'bg-red-500'
-                                            }`} style={{ width: `${complianceScore}%` }}></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* 3. Upcoming Compliance Section */}
-                        <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                    <Clock className="w-5 h-5 text-orange-500" />
-                                    Upcoming Deadlines
+                            {/* AI Client Guidance Section */}
+                            <div className="mb-6">
+                                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2 mb-4">
+                                    <Bot className="w-5 h-5 text-purple-600" />
+                                    AI Client Guidance
                                 </h2>
-                                <Link to="#" className="text-sm font-medium text-[#0A2C4B] hover:underline">View All</Link>
+                                <div className="space-y-3">
+                                    {aiSuggestions.length > 0 ? (
+                                        aiSuggestions.map(sugg => {
+                                            const hasHighSeverity = aiSuggestions.some(a => a.severity === 'HIGH');
+                                            const isDeemphasized = hasHighSeverity && sugg.severity === 'REVIEW';
+
+                                            const severityClass = sugg.severity === 'HIGH' ? 'severity-high'
+                                                : sugg.severity === 'MEDIUM' ? 'severity-medium' : 'severity-review';
+
+                                            const bgColor = isDeemphasized ? 'bg-slate-50 opacity-80' : 'bg-white';
+
+                                            return (
+                                                <div key={sugg.id} className={`${bgColor} rounded-[12px] p-4 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 ${severityClass}`}>
+                                                    <div className="flex items-start gap-4">
+                                                        <div className="mt-1 severity-icon-text">
+                                                            {sugg.severity === 'HIGH' && <AlertTriangle className="w-5 h-5" />}
+                                                            {sugg.severity === 'MEDIUM' && <AlertCircle className="w-5 h-5" />}
+                                                            {sugg.severity === 'REVIEW' && <Info className="w-5 h-5" />}
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide severity-badge`}>
+                                                                    {sugg.severity}
+                                                                </span>
+                                                                <h3 className={`font-semibold text-sm ${isDeemphasized ? 'text-slate-600' : 'text-slate-800'}`}>{sugg.headline}</h3>
+                                                            </div>
+                                                            <p className={`text-sm ${isDeemphasized ? 'text-slate-400' : 'text-slate-500'}`}>{sugg.subtext}</p>
+                                                        </div>
+                                                    </div>
+                                                    <Link to="#" className="flex-shrink-0">
+                                                        <Button variant="outline" size="sm" className={`w-full sm:w-auto text-xs whitespace-nowrap ${isDeemphasized ? 'opacity-80 hover:opacity-100' : ''}`}>
+                                                            Review Compliance &rarr;
+                                                        </Button>
+                                                    </Link>
+                                                </div>
+                                            );
+                                        })
+                                    ) : (
+                                        <div className="bg-white rounded-[12px] p-5 shadow-sm border border-slate-200 border-l-4 border-l-green-500 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                                <div>
+                                                    <p className="font-semibold text-slate-800 text-sm">No active risks detected. Client is stable.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
-                            <div className="space-y-3">
-                                {upcomingTasks.length > 0 ? upcomingTasks.map((task) => (
-                                    <div key={task.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all group">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${task.status === 'overdue' ? 'bg-[#FFF7ED] text-[#F97316]' :
-                                                task.status === 'warning' ? 'bg-orange-50 text-orange-600' :
-                                                    task.status === 'filed' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'
+                            {/* 2. Compliance Health Card */}
+                            <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100 relative overflow-hidden">
+                                {/* Decorative background accent */}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+
+                                <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                                    <Activity className="w-5 h-5 text-green-600" />
+                                    Compliance Health
+                                </h2>
+
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                                    <div>
+                                        <div className="flex items-end gap-3 mb-2">
+                                            <span className="text-5xl font-bold font-display text-slate-900">{complianceScore}%</span>
+                                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold mb-1 ${complianceScore >= 90 ? 'bg-green-100 text-green-700' :
+                                                complianceScore >= 70 ? 'bg-orange-100 text-orange-700' :
+                                                    'bg-red-100 text-red-700'
                                                 }`}>
-                                                <FileText className="w-5 h-5" />
+                                                {complianceScore >= 90 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
+                                                {complianceScore >= 90 ? 'Good' : complianceScore >= 70 ? 'Average' : 'Critical'}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-slate-500">
+                                            {complianceScore >= 90 ? 'Your business is highly compliant. Keep it up!' :
+                                                'Some compliances need your immediate attention.'}
+                                        </p>
+                                    </div>
+
+                                    <div className="w-full sm:w-1/2">
+                                        <div className="flex justify-between text-xs font-medium text-slate-500 mb-2">
+                                            <span>Risk Level</span>
+                                            <span className={complianceScore >= 90 ? 'text-green-600' : complianceScore >= 70 ? 'text-orange-600' : 'text-red-600'}>
+                                                {complianceScore >= 90 ? 'Low Risk' : complianceScore >= 70 ? 'Moderate Risk' : 'High Risk'}
+                                            </span>
+                                        </div>
+                                        <div className="w-full bg-slate-100 rounded-full h-2.5">
+                                            <div className={`h-2.5 rounded-full ${complianceScore >= 90 ? 'bg-green-500' :
+                                                complianceScore >= 70 ? 'bg-orange-500' : 'bg-red-500'
+                                                }`} style={{ width: `${complianceScore}%` }}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 3. Upcoming Compliance Section */}
+                            <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                        <Clock className="w-5 h-5 text-orange-500" />
+                                        Upcoming Deadlines
+                                    </h2>
+                                    <Link to="#" className="text-sm font-medium text-[#0A2C4B] hover:underline">View All</Link>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {upcomingTasks.length > 0 ? upcomingTasks.map((task) => (
+                                        <div key={task.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 hover:border-slate-200 hover:shadow-sm transition-all group">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${task.status === 'overdue' ? 'bg-[#FFF7ED] text-[#F97316]' :
+                                                    task.status === 'warning' ? 'bg-orange-50 text-orange-600' :
+                                                        task.status === 'filed' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'
+                                                    }`}>
+                                                    <FileText className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-semibold text-[#0A2C4B]">{task.title}</p>
+                                                    <p className="text-xs text-slate-500 font-medium">
+                                                        {task.originalStatus === 'filed' ? `Filed on ${task.dueDate}` :
+                                                            task.originalStatus === 'overdue' ? `Was due on ${task.dueDate}` :
+                                                                `Due in ${task.dueIn} days (${task.dueDate})`}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {task.originalStatus === 'filed' ? (
+                                                    <>
+                                                        <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
+                                                            <CheckCircle2 className="w-3.5 h-3.5" /> Filed
+                                                        </span>
+                                                        <Button variant="outline" size="sm" disabled className="opacity-50 cursor-not-allowed">
+                                                            Mark as Filed
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${task.originalStatus === 'overdue' ? 'bg-[#FFF7ED] text-[#F97316] border-[#FDBA74]' :
+                                                            task.dueIn <= 7 ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'
+                                                            }`}>
+                                                            {task.originalStatus === 'overdue' ? 'Overdue' : task.dueIn <= 7 ? 'Urgent' : 'Pending'}
+                                                        </span>
+                                                        <Button
+                                                            onClick={() => markAsFiled(task.id)}
+                                                            disabled={actionLoading}
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-colors"
+                                                        >
+                                                            Mark as Filed
+                                                        </Button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <div className="text-center py-6 text-slate-500 text-sm">
+                                            {loading ? "Loading deadlines..." : "No upcoming deadlines found."}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Column (Actions & Activity) */}
+                        <div className="space-y-6">
+
+                            {/* 4. Quick Actions Section */}
+                            <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100">
+                                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                                    <Zap className="w-5 h-5 text-blue-500" />
+                                    Quick Actions
+                                </h2>
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={async () => {
+                                            if (!currentBizId) return;
+                                            try {
+                                                const response = await axios.get(`/actions/${currentBizId}/filing-report`, {
+                                                    responseType: 'blob', // Important for PDF
+                                                });
+                                                const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+                                                const link = document.createElement('a');
+                                                link.href = url;
+                                                link.setAttribute('download', `${clientName.replace(/\s+/g, '_')}_Filing_Report.pdf`);
+                                                document.body.appendChild(link);
+                                                link.click();
+                                                link.parentNode.removeChild(link);
+                                            } catch {
+                                                alert('Error downloading report.');
+                                            }
+                                        }}
+                                        className="flex items-center gap-3 w-full p-3.5 rounded-xl border border-slate-200 hover:border-[#0A2C4B] hover:bg-[#0A2C4B]/5 text-left transition-colors group"
+                                    >
+                                        <div className="text-slate-500 group-hover:text-[#0A2C4B] transition-colors">
+                                            <FileText className="w-5 h-5" />
+                                        </div>
+                                        <span className="font-medium text-slate-700 group-hover:text-[#0A2C4B] transition-colors">Filing Report</span>
+                                    </button>
+
+                                    <button
+                                        onClick={async () => {
+                                            if (!currentBizId) return;
+                                            try {
+                                                const { data } = await axios.post(`/actions/${currentBizId}/whatsapp-reminder`);
+                                                if (data.url) window.open(data.url, '_blank');
+                                            } catch (e) {
+                                                alert(e.response?.data?.message || 'Error triggering WhatsApp reminder');
+                                            }
+                                        }}
+                                        className="flex items-center gap-3 w-full p-3.5 rounded-xl border border-slate-200 hover:border-green-600 hover:bg-green-50 text-left transition-colors group"
+                                    >
+                                        <div className="text-green-500 group-hover:text-green-600 transition-colors">
+                                            <MessageCircle className="w-5 h-5" />
+                                        </div>
+                                        <span className="font-medium text-slate-700 group-hover:text-green-700 transition-colors">Send WhatsApp Reminder</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* 5. Recent Activity */}
+                            <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100">
+                                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                                    <History className="w-5 h-5 text-slate-500" />
+                                    Recent Activity
+                                </h2>
+                                <div className="space-y-4">
+                                    {recentActivity.length > 0 ? recentActivity.map((activity, index) => (
+                                        <div key={activity.id} className="flex gap-4 relative">
+                                            {/* Timeline connector line */}
+                                            {index !== recentActivity.length - 1 && (
+                                                <div className="absolute left-2.5 top-7 bottom-[-16px] w-[2px] bg-slate-100"></div>
+                                            )}
+
+                                            <div className={`relative z-10 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 ${activity.type === 'success' ? 'bg-green-100 text-green-600' :
+                                                activity.type === 'error' ? 'bg-red-100 text-red-600' :
+                                                    'bg-indigo-50 text-indigo-600'
+                                                }`}>
+                                                {activity.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> :
+                                                    activity.type === 'error' ? <AlertCircle className="w-4 h-4" /> :
+                                                        <History className="w-4 h-4" />}
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-[#0A2C4B]">{task.title}</p>
-                                                <p className="text-xs text-slate-500 font-medium">
-                                                    {task.originalStatus === 'filed' ? `Filed on ${task.dueDate}` :
-                                                        task.originalStatus === 'overdue' ? `Was due on ${task.dueDate}` :
-                                                            `Due in ${task.dueIn} days (${task.dueDate})`}
-                                                </p>
+                                                <p className="text-sm font-medium text-slate-700">{activity.action}</p>
+                                                <p className="text-xs text-slate-500 mt-0.5">{activity.time}</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            {task.originalStatus === 'filed' ? (
-                                                <>
-                                                    <span className="px-3 py-1 rounded-full text-xs font-semibold border bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
-                                                        <CheckCircle2 className="w-3.5 h-3.5" /> Filed
-                                                    </span>
-                                                    <Button variant="outline" size="sm" disabled className="opacity-50 cursor-not-allowed">
-                                                        Mark as Filed
-                                                    </Button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${task.originalStatus === 'overdue' ? 'bg-[#FFF7ED] text-[#F97316] border-[#FDBA74]' :
-                                                        task.dueIn <= 7 ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-200'
-                                                        }`}>
-                                                        {task.originalStatus === 'overdue' ? 'Overdue' : task.dueIn <= 7 ? 'Urgent' : 'Pending'}
-                                                    </span>
-                                                    <Button
-                                                        onClick={() => markAsFiled(task.id)}
-                                                        disabled={actionLoading}
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-colors"
-                                                    >
-                                                        Mark as Filed
-                                                    </Button>
-                                                </>
-                                            )}
+                                    )) : (
+                                        <div className="text-center py-4 text-slate-500 text-sm">
+                                            No recent activity found.
                                         </div>
-                                    </div>
-                                )) : (
-                                    <div className="text-center py-6 text-slate-500 text-sm">
-                                        {loading ? "Loading deadlines..." : "No upcoming deadlines found."}
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
+
+                            {/* 6. Communication Settings */}
+                            <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100">
+                                <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+                                    <Bell className="w-5 h-5 text-indigo-500" />
+                                    Communication Settings
+                                </h2>
+                                <div className="space-y-4">
+
+                                    <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 text-green-600">
+                                                <MessageSquare className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-slate-800 text-sm">WhatsApp Alerts</p>
+                                                <p className="text-xs text-slate-500">Receive urgent T-minus reminders on WhatsApp</p>
+                                            </div>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={whatsappAlerts}
+                                                onChange={() => toggleSetting('whatsapp_alerts')}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#F97316]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F97316]"></div>
+                                        </label>
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-600">
+                                                <Mail className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-slate-800 text-sm">Email Digest</p>
+                                                <p className="text-xs text-slate-500">Get a weekly summary of upcoming tasks</p>
+                                            </div>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={emailDigest}
+                                                onChange={() => toggleSetting('email_digest')}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#0A2C4B]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0A2C4B]"></div>
+                                        </label>
+                                    </div>
+
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-
-                    {/* Right Column (Actions & Activity) */}
-                    <div className="space-y-6">
-
-                        {/* 4. Quick Actions Section */}
-                        <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100">
-                            <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                                <Zap className="w-5 h-5 text-blue-500" />
-                                Quick Actions
-                            </h2>
-                            <div className="flex flex-col gap-3">
-                                <button 
-                                    onClick={async () => {
-                                        if(!currentBizId) return;
-                                        try {
-                                            const response = await axios.get(`/actions/${currentBizId}/filing-report`, {
-                                                responseType: 'blob', // Important for PDF
-                                            });
-                                            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-                                            const link = document.createElement('a');
-                                            link.href = url;
-                                            link.setAttribute('download', `${clientName.replace(/\s+/g, '_')}_Filing_Report.pdf`);
-                                            document.body.appendChild(link);
-                                            link.click();
-                                            link.parentNode.removeChild(link);
-                                        } catch {
-                                            alert('Error downloading report.');
-                                        }
-                                    }}
-                                    className="flex items-center gap-3 w-full p-3.5 rounded-xl border border-slate-200 hover:border-[#0A2C4B] hover:bg-[#0A2C4B]/5 text-left transition-colors group"
-                                >
-                                    <div className="text-slate-500 group-hover:text-[#0A2C4B] transition-colors">
-                                        <FileText className="w-5 h-5" />
-                                    </div>
-                                    <span className="font-medium text-slate-700 group-hover:text-[#0A2C4B] transition-colors">Filing Report</span>
-                                </button>
-
-                                <button 
-                                    onClick={async () => {
-                                        if(!currentBizId) return;
-                                        try {
-                                            const { data } = await axios.post(`/actions/${currentBizId}/whatsapp-reminder`);
-                                            if(data.url) window.open(data.url, '_blank');
-                                        } catch(e) {
-                                            alert(e.response?.data?.message || 'Error triggering WhatsApp reminder');
-                                        }
-                                    }}
-                                    className="flex items-center gap-3 w-full p-3.5 rounded-xl border border-slate-200 hover:border-green-600 hover:bg-green-50 text-left transition-colors group"
-                                >
-                                    <div className="text-green-500 group-hover:text-green-600 transition-colors">
-                                        <MessageCircle className="w-5 h-5" />
-                                    </div>
-                                    <span className="font-medium text-slate-700 group-hover:text-green-700 transition-colors">Send WhatsApp Reminder</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* 5. Recent Activity */}
-                        <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100">
-                            <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                                <History className="w-5 h-5 text-slate-500" />
-                                Recent Activity
-                            </h2>
-                            <div className="space-y-4">
-                                {recentActivity.length > 0 ? recentActivity.map((activity, index) => (
-                                    <div key={activity.id} className="flex gap-4 relative">
-                                        {/* Timeline connector line */}
-                                        {index !== recentActivity.length - 1 && (
-                                            <div className="absolute left-2.5 top-7 bottom-[-16px] w-[2px] bg-slate-100"></div>
-                                        )}
-
-                                        <div className={`relative z-10 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 ${activity.type === 'success' ? 'bg-green-100 text-green-600' :
-                                            activity.type === 'error' ? 'bg-red-100 text-red-600' :
-                                                'bg-indigo-50 text-indigo-600'
-                                            }`}>
-                                            {activity.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> :
-                                                activity.type === 'error' ? <AlertCircle className="w-4 h-4" /> :
-                                                    <History className="w-4 h-4" />}
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-slate-700">{activity.action}</p>
-                                            <p className="text-xs text-slate-500 mt-0.5">{activity.time}</p>
-                                        </div>
-                                    </div>
-                                )) : (
-                                    <div className="text-center py-4 text-slate-500 text-sm">
-                                        No recent activity found.
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* 6. Communication Settings */}
-                        <div className="bg-white rounded-[16px] p-5 shadow-sm border border-slate-100">
-                            <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-                                <Bell className="w-5 h-5 text-indigo-500" />
-                                Communication Settings
-                            </h2>
-                            <div className="space-y-4">
-
-                                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 text-green-600">
-                                            <MessageSquare className="w-4 h-4" />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-slate-800 text-sm">WhatsApp Alerts</p>
-                                            <p className="text-xs text-slate-500">Receive urgent T-minus reminders on WhatsApp</p>
-                                        </div>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={whatsappAlerts}
-                                            onChange={() => toggleSetting('whatsapp_alerts')}
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#F97316]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F97316]"></div>
-                                    </label>
-                                </div>
-
-                                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-600">
-                                            <Mail className="w-4 h-4" />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-slate-800 text-sm">Email Digest</p>
-                                            <p className="text-xs text-slate-500">Get a weekly summary of upcoming tasks</p>
-                                        </div>
-                                    </div>
-                                    <label className="relative inline-flex items-center cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={emailDigest}
-                                            onChange={() => toggleSetting('email_digest')}
-                                            className="sr-only peer"
-                                        />
-                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#0A2C4B]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0A2C4B]"></div>
-                                    </label>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
                 ) : (
                     <DocumentVault businessId={currentBizId} user={user} clientName={clientName} />
                 )}
