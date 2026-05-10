@@ -268,7 +268,7 @@ const Signup = () => {
                                     </div>
                                 </div>
 
-                                <div className="mt-5 flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-3.5 py-1.5 shadow-[0_10px_30px_rgba(148,163,184,0.12)]">
+                                <div className="mt-3 flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-white/75 px-3.5 py-1.5 shadow-[0_10px_30px_rgba(148,163,184,0.12)]">
                                     <input id="terms" type="checkbox" required className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 transition-colors focus:ring-blue-500" />
                                     <label htmlFor="terms" className="cursor-pointer select-none text-xs leading-5 text-slate-500">
                                         I agree to the <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Terms</Link> and <Link to="#" className="font-medium text-blue-700 transition-colors hover:text-fuchsia-600">Privacy Policy</Link>.
